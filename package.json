@@ -1,5 +1,5 @@
 {
-  "name": "react-native-todo",
+  "name": "assistry-mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -7,35 +7,55 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "email": "email dev"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+    "@hookform/resolvers": "^3.9.1",
+    "@react-email/components": "0.0.31",
     "@react-navigation/native": "^7.0.14",
+    "@tamagui/config": "^1.120.2",
+    "@tanstack/react-query": "^5.62.10",
+    "constate": "^3.3.2",
     "expo": "~52.0.23",
+    "expo-document-picker": "^13.0.1",
     "expo-font": "~13.0.2",
+    "expo-image-picker": "~16.0.3",
     "expo-linking": "~7.0.3",
     "expo-router": "~4.0.15",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
     "expo-system-ui": "~4.0.6",
     "expo-web-browser": "~14.0.1",
+    "lucide-react": "^0.469.0",
+    "nativewind": "^2.0.11",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-dropzone": "^14.3.5",
+    "react-hook-form": "^7.54.2",
     "react-native": "0.76.5",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
-    "react-native-web": "~0.19.13"
+    "react-native-web": "~0.19.13",
+    "resend": "^4.0.1",
+    "tailwindcss": "^3.3.2",
+    "tamagui": "^1.120.2",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/plugin-transform-react-jsx": "^7.25.9",
     "@types/react": "~18.3.12",
+    "@types/react-dom": "^19.0.2",
+    "@types/react-native": "^0.72.8",
     "jest": "^29.2.1",
     "jest-expo": "~52.0.2",
+    "react-email": "3.0.4",
     "react-test-renderer": "18.3.1",
     "typescript": "~5.3.3"
   },
