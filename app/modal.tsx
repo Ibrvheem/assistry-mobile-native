@@ -7,14 +7,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import ControlledInput from "@/components/molecules/controlled-input";
 import ControlledTextArea from "@/components/molecules/controlled-textarea";
 import { useState } from "react";
-import { Button, Label } from "tamagui";
+import { Button, Label, ListItem, Select } from "tamagui";
 import LoadingChildren from "@/components/molecules/loading-children";
 import * as ImagePicker from "expo-image-picker";
 
 export default function ModalScreen() {
   const methods = useForm({});
   const [image, setImage] = useState<string | null>(null);
-
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -57,7 +56,11 @@ export default function ModalScreen() {
               label="What’s the reward? 💸"
               placeholder="e.g., $10 or a thank-you note!"
             />
-
+            <View>
+              <select>
+                <option>hello</option>
+              </select>
+            </View>
             <View className="bg-transparent">
               <Label
                 className="font-bold text-lg text-[#1C332B] my-4"
@@ -85,7 +88,6 @@ export default function ModalScreen() {
                 )}
               </TouchableOpacity>
             </View>
-
             <Button className={"h-14 bg-green-500 w-full mt-4"}>
               <LoadingChildren loading={false}>Submit Task</LoadingChildren>
             </Button>

@@ -1,8 +1,14 @@
-const url = "https://c252-197-210-70-27.ngrok-free.app";
+import Cookies from "js-cookie";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const getAuthHeader = () => {
+const url = process.env.EXPO_PUBLIC_API_URL;
+
+const getAuthHeader = async () => {
+  const token = await AsyncStorage.getItem("token");
+  console.log(token, "here");
+
   return {
-    Authorization: `Bearer ${""}`,
+    Authorization: `Bearer ${token}`,
   };
 };
 
@@ -22,9 +28,10 @@ const handleResponse = async (response: Response) => {
 
 export const api = {
   get: async (endpoint: string, params?: any) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${url}/${endpoint}`, {
       headers: {
-        ...getAuthHeader(),
+        ...authHeader,
         "Content-Type": "application/json",
       },
       cache: "no-store",
@@ -34,10 +41,11 @@ export const api = {
   },
 
   post: async (endpoint: string, payload: any) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${url}/${endpoint}`, {
       method: "POST",
       headers: {
-        ...getAuthHeader(),
+        ...authHeader,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
@@ -46,10 +54,11 @@ export const api = {
   },
 
   put: async (endpoint: string, payload: any) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${url}/${endpoint}`, {
       method: "PUT",
       headers: {
-        ...getAuthHeader(),
+        ...authHeader,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
@@ -58,10 +67,11 @@ export const api = {
   },
 
   patch: async (endpoint: string, payload: any) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${url}/${endpoint}`, {
       method: "PATCH",
       headers: {
-        ...getAuthHeader(),
+        ...authHeader,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
@@ -70,10 +80,11 @@ export const api = {
   },
 
   delete: async (endpoint: string) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${url}/${endpoint}`, {
       method: "DELETE",
       headers: {
-        ...getAuthHeader(),
+        ...authHeader,
         "Content-Type": "application/json",
       },
     });
@@ -81,10 +92,11 @@ export const api = {
   },
 
   formData: async (endpoint: string, formData: FormData) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${url}/${endpoint}`, {
       method: "POST",
       headers: {
-        ...getAuthHeader(),
+        ...authHeader,
       },
       body: formData,
     });

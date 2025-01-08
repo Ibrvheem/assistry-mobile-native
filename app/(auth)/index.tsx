@@ -75,6 +75,18 @@ export default function SignInPage() {
                   Verify Registration Number
                 </LoadingChildren>
               </Button>
+              <Text className="mt-2 text-right">
+                Have an account?{" "}
+                <Text
+                  onPress={() => {
+                    router.push("/(auth)/signin");
+                  }}
+                  style={{ fontFamily: "PoppinsBold" }}
+                  className="text-green-500 underline"
+                >
+                  Sign In
+                </Text>
+              </Text>
             </View>
           </FormProvider>
         </View>

@@ -12,3 +12,15 @@ export const formatPhoneNumber = (phone: string) => {
 
   return phone; // Return the original phone number if it doesn't match the expected length
 };
+
+export function formatCurrency(
+  amount: number,
+  currency?: "Naira" | "Yuan"
+): string {
+  const currencySymbol = currency === "Yuan" ? "¥" : "₦";
+  const nairaAmount = amount / 100; // Convert from kobo to naira
+  return `${currencySymbol}${nairaAmount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
