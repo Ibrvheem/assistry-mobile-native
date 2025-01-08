@@ -13,10 +13,16 @@ export function getStudentData(payload: VerifyStudentRegNo) {
 
 export function requestOTP(payload: RequestOTPPayload) {
   const response = api.post("auth/send-otp", payload);
+
   return response;
 }
 export function verifyOTP(payload: VerifyOTP) {
   const response = api.post("auth/verify-otp", payload);
+  return response;
+}
+
+export function signIn(payload: CreatePasswordPayload) {
+  const response = api.post("auth/signin", payload);
   return response;
 }
 

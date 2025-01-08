@@ -16,7 +16,7 @@ export default function CreatePassword() {
   const { studentData } = useGobalStoreContext();
 
   const handlePress = () => {
-    router.push("/(app)");
+    router.push("/(dashboard)");
   };
 
   return (

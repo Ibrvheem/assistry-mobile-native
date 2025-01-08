@@ -27,11 +27,13 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: "white",
             height: 80,
+
             borderColor: "transparent",
           },
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: "600",
+            color: "gray",
           },
           tabBarIconStyle: {},
           headerShown: false,
@@ -41,7 +43,9 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="home" color={"gray"} />
+            ),
             headerShown: false,
             headerStyle: {
               backgroundColor: "white",

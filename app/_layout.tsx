@@ -20,16 +20,13 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { GlobalStoreProvider } from "@/store/global-context";
-import { CirclePlus, PlusCircle } from "lucide-react";
-import Colors from "@/constants/Colors";
-import { fetchAvatar } from "./services";
 import { Avatar } from "./avatar";
-
+import * as Haptics from "expo-haptics";
 StatusBar.setBarStyle("dark-content");
 const config = createTamagui(defaultConfig);
 
 export const unstable_settings = {
-  initialRouteName: "(auth)",
+  initialRouteName: "/(auth)",
 };
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -49,6 +46,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      // router.push("/(dashboard)");
     }
   }, [loaded]);
 
@@ -77,7 +75,7 @@ function RootLayoutNav() {
                 options={{ presentation: "modal", headerShown: false }}
               />
               <Stack.Screen
-                name="(app)"
+                name="(dashboard)"
                 options={{
                   headerShown: true,
                   headerTitle: "",
@@ -87,7 +85,12 @@ function RootLayoutNav() {
                   headerBackVisible: false,
                   headerLeft: () => <Avatar />,
                   headerRight: () => (
-                    <TouchableOpacity onPress={() => router.push("/modal")}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                        router.push("/modal");
+                      }}
+                    >
                       <Text className="text-2xl">➕</Text>
                     </TouchableOpacity>
                   ),

@@ -17,6 +17,10 @@ export const verifyOTP = z.object({
   email: z.string().email(),
   otp: z.string(),
 });
+export const signInPayload = z.object({
+  reg_no: z.string(),
+  password: z.string(),
+});
 
 export const createPasswordPayload = z
   .object({
@@ -43,3 +47,4 @@ export type RequestOTPPayload = z.infer<typeof requestOTPPayload>;
 export type VerifyStudentRegNo = z.infer<typeof verifyStudentRegNo>;
 export type VerifyOTP = z.infer<typeof verifyOTP>;
 export type CreatePasswordPayload = z.infer<typeof createPasswordPayload>;
+export type SignInPayload = z.infer<typeof signInPayload>;
