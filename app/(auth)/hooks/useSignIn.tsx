@@ -25,6 +25,7 @@ export function useSignIn() {
   const mutation = useMutation({
     mutationFn: signIn,
     onSuccess: async (data: { access_token: string }) => {
+      console.log(data);
       await AsyncStorage.setItem("token", data.access_token);
 
       const token = await AsyncStorage.getItem("token");
