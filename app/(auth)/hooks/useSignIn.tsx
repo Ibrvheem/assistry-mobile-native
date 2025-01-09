@@ -9,12 +9,12 @@ import {
 } from "../types";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { createPassword, signIn } from "../services";
+import { createPassword, getUser, signIn } from "../services";
 import Cookies from "js-cookie";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function useSignIn() {
-  const { studentData } = useGobalStoreContext();
+  const { studentData, setUserData } = useGobalStoreContext();
 
   const methods = useForm<SignInPayload>({
     resolver: zodResolver(signInPayload),
@@ -24,13 +24,16 @@ export function useSignIn() {
 
   const mutation = useMutation({
     mutationFn: signIn,
-    onSuccess: async (data: { access_token: string }) => {
-      console.log(data);
+    onSuccess: async (data: { access_token: string; user: any }) => {
       await AsyncStorage.setItem("token", data.access_token);
 
       const token = await AsyncStorage.getItem("token");
-      console.log("token", token);
+
+      const user = await getUser();
+      setUserData(user);
+
       router.push("/(dashboard)");
+      setUserData(data.user);
     },
     onError: (error) => {
       console.error("Error Fetching Data:", error);

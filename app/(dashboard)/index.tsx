@@ -55,7 +55,7 @@ export default function Index() {
               className="text-xl text-white"
               style={{ fontFamily: "PoppinsBold" }}
             >
-              Hi, {studentData?.name} 👋🏾
+              Hi, name 👋🏾
             </Text>
 
             <Text

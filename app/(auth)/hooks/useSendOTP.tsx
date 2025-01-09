@@ -8,7 +8,7 @@ import { router } from "expo-router";
 
 const resend = new Resend("re_CWgXYEW4_AeMvnU5vhCDXeF5L7AUaW2FQ");
 
-export function useSendOTP() {
+export function useSendOTP(email: string) {
   const mutation = useMutation({
     mutationFn: (payload: RequestOTPPayload) => requestOTP(payload),
 
@@ -20,7 +20,7 @@ export function useSendOTP() {
       try {
         const response = await resend.emails.send({
           from: "Assistry <onboarding@resend.dev>",
-          to: "i.aliyu019@gmail.com",
+          to: email,
           subject: "Phone Number Verification",
           html: emailContent,
         });
