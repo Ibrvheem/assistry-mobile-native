@@ -8,7 +8,6 @@ import { useVerifyOTP } from "./hooks/useVerifyOTP";
 import LoadingChildren from "@/components/molecules/loading-children";
 
 export default function OTP() {
-  const { sendOTP } = useSendOTP();
   const { verifyOTP, loading } = useVerifyOTP();
   const { studentData } = useGobalStoreContext();
 
@@ -19,6 +18,7 @@ export default function OTP() {
     router.push("/(auth)");
     return null;
   }
+  const { sendOTP } = useSendOTP(studentData?.email);
 
   const handleInputChange = (text: string, index: number) => {
     if (/^\d?$/.test(text)) {

@@ -14,12 +14,12 @@ export default function SignInPage() {
     router.push("/(auth)");
     return;
   }
-  const { sendOTP, loading } = useSendOTP();
 
   if (!studentData) {
     router.push("/(auth)");
     return null; // Prevent rendering if no student data
   }
+  const { sendOTP, loading } = useSendOTP(studentData.email);
 
   const handleOtpPress = () => {
     router.push("/(auth)/otp");
