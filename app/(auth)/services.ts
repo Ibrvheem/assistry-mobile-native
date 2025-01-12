@@ -6,6 +6,10 @@ import {
   VerifyStudentRegNo,
 } from "./types";
 
+export function getUser() {
+  const response = api.get("users/me");
+  return response;
+}
 export function getStudentData(payload: VerifyStudentRegNo) {
   const response = api.post("udus", payload);
   return response;

@@ -20,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getByYou } from "./services";
 import dayjs from "dayjs";
 import { formatCurrency } from "@/lib/helpers";
+import { useGobalStoreContext } from "@/store/global-context";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0); // 0 for 'By you', 1 for 'For you'
@@ -27,8 +28,6 @@ export default function Index() {
     queryKey: ["by-you"],
     queryFn: getByYou,
   });
-
-  console.log(data);
 
   const { width } = useWindowDimensions(); // Get screen width
   const containerWidth = width * 0.95; // Use 90% of the screen width for the container
@@ -42,6 +41,7 @@ export default function Index() {
       },
     ],
   }));
+  const { studentData } = useGobalStoreContext();
 
   return (
     <View
@@ -55,7 +55,7 @@ export default function Index() {
               className="text-xl text-white"
               style={{ fontFamily: "PoppinsBold" }}
             >
-              Hi, Ibrahim 👋🏾
+              Hi, name 👋🏾
             </Text>
 
             <Text
@@ -99,7 +99,7 @@ export default function Index() {
                   className="text-slate-300"
                   style={{ fontFamily: "PoppinsBold" }}
                 >
-                  📍Nile University
+                  📍UDUS
                 </Text>
               </View>
             </View>

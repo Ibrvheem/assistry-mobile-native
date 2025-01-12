@@ -56,11 +56,7 @@ export default function ModalScreen() {
               label="What’s the reward? 💸"
               placeholder="e.g., $10 or a thank-you note!"
             />
-            <View>
-              <select>
-                <option>hello</option>
-              </select>
-            </View>
+
             <View className="bg-transparent">
               <Label
                 className="font-bold text-lg text-[#1C332B] my-4"
