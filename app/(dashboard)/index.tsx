@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   useWindowDimensions,
   ScrollView,
+  LogBox,
 } from "react-native";
 import React, { useState } from "react";
 import { Button } from "tamagui";
@@ -42,6 +43,8 @@ export default function Index() {
     ],
   }));
   const { studentData } = useGobalStoreContext();
+
+  LogBox.ignoreAllLogs(true);
 
   return (
     <View
@@ -171,8 +174,8 @@ export default function Index() {
           </View>
         </View>
         <ScrollView className="">
-          <View className="p-4 pb-20">
-            {data?.map((each) => {
+          <View className="p-4 pb-80">
+            {data?.map((each: any) => {
               const currentTime = dayjs();
               const expirationTime = dayjs(each.created_at).add(
                 each.expires,
@@ -227,7 +230,6 @@ export default function Index() {
               );
             })}
           </View>
-          ;
         </ScrollView>
       </SafeAreaView>
     </View>

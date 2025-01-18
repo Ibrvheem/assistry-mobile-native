@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, Text, View } from "react-native";
+import { TextInput, Text, View, KeyboardTypeOptions } from "react-native";
 import { useFormContext, Controller } from "react-hook-form"; // Using Controller to handle form registration
 import { Input, Label } from "tamagui";
 
@@ -7,23 +7,27 @@ interface ControlledInputProps {
   name: string;
   placeholder: string;
   label: string;
+  description?: string;
   className?: string;
   secureTextEntry?: boolean;
   disabled?: boolean;
+  keyboardType?: KeyboardTypeOptions;
 }
 
 const ControlledInput = ({
   name,
   placeholder,
   label,
+  description,
   className,
   secureTextEntry = false,
   disabled = false,
+  keyboardType,
 }: ControlledInputProps) => {
   const {
     control,
     formState: { errors },
-  } = useFormContext(); // Access control and errors from context
+  } = useFormContext();
 
   return (
     <View>
@@ -47,9 +51,14 @@ const ControlledInput = ({
             placeholder={placeholder}
             disabled={disabled}
             secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
           />
         )}
       />
+      {description && (
+        <Text className="text-gray-500 text-xs font-bold">{description}</Text>
+      )}
+
       {errors[name] && (
         <Text className="text-red-500 mb-2 font-bold">
           {errors[name]?.message?.toString()}

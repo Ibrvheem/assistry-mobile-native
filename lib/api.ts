@@ -5,7 +5,6 @@ const url = process.env.EXPO_PUBLIC_API_URL;
 
 const getAuthHeader = async () => {
   const token = await AsyncStorage.getItem("token");
-  console.log(token, "here");
 
   return {
     Authorization: `Bearer ${token}`,

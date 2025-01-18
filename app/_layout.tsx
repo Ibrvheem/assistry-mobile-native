@@ -5,7 +5,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
+import { useRouter, Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -13,7 +13,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 export { ErrorBoundary } from "expo-router";
 import { createTamagui, TamaguiProvider, View } from "tamagui";
 import defaultConfig from "@tamagui/config/v3";
-import { Image, StatusBar, Text, TouchableOpacity } from "react-native";
+import { Image, LogBox, StatusBar, Text, TouchableOpacity } from "react-native";
 import {
   QueryClient,
   QueryClientProvider,
@@ -22,11 +22,12 @@ import {
 import { GlobalStoreProvider } from "@/store/global-context";
 import { Avatar } from "./avatar";
 import * as Haptics from "expo-haptics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 StatusBar.setBarStyle("dark-content");
 const config = createTamagui(defaultConfig);
 
 export const unstable_settings = {
-  initialRouteName: "/(auth)",
+  initialRouteName: "(auth)",
 };
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -43,10 +44,22 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+  LogBox.ignoreAllLogs(true);
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
-      // router.push("/(dashboard)");
+      router.push("/(dashboard)");
+
+      async function findToken() {
+        // const token = await AsyncStorage.getItem("token");
+        // if (token) {
+        //   router.push("/(dashboard)"); // Navigate to dashboard if token exists
+        // } else {
+        //   router.push("/(auth)"); // Navigate to auth if no token
+        // }
+      }
+      findToken().finally(() => {
+        SplashScreen.hideAsync(); // Hide splash screen after navigation decision
+      });
     }
   }, [loaded]);
 
@@ -71,10 +84,6 @@ function RootLayoutNav() {
             <Stack>
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen
-                name="modal"
-                options={{ presentation: "modal", headerShown: false }}
-              />
-              <Stack.Screen
                 name="(dashboard)"
                 options={{
                   headerShown: true,
@@ -95,6 +104,10 @@ function RootLayoutNav() {
                     </TouchableOpacity>
                   ),
                 }}
+              />
+              <Stack.Screen
+                name="modal"
+                options={{ presentation: "modal", headerShown: false }}
               />
             </Stack>
           </ThemeProvider>

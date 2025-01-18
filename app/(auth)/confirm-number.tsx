@@ -9,7 +9,6 @@ import LoadingChildren from "@/components/molecules/loading-children";
 
 export default function SignInPage() {
   const { studentData } = useGobalStoreContext();
-  console.log(studentData?.phone_no);
   if (!studentData) {
     router.push("/(auth)");
     return;

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image } from "react-native";
+import { View, Text, SafeAreaView, Image, LogBox } from "react-native";
 import React from "react";
 import { Button, Input, Spinner } from "tamagui";
 import { useNavigation } from "@react-navigation/native";
@@ -18,9 +18,9 @@ export default function SignInPage() {
   const handlePress = () => {
     router.push("/(auth)/confirm-number");
   };
+  LogBox.ignoreAllLogs(true);
   const { methods, onSubmit, error, loading } = useConfirmRegistrationNo();
 
-  console.log(studentData, "after", error);
   return (
     <View className="bg-[#DFF0DF] bg-opacity-0 h-full">
       <SafeAreaView>

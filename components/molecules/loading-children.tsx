@@ -13,14 +13,18 @@ export default function LoadingChildren({
   return (
     <View className="flex flex-row justify-center items-center">
       {loading && (
-        <Spinner color={"white"} className="text-red-400 m-auto mr-2" />
-      )}{" "}
-      <Text
-        className={`font-bold text-white text-base`}
-        style={{ fontFamily: "PoppinsBold", color: `${textColor}` }}
-      >
-        {children}
-      </Text>
+        <Spinner color="white" className="text-red-400 m-auto mr-2" />
+      )}
+      {children ? (
+        <Text
+          className={`font-bold !text-white text-base`}
+          style={{ fontFamily: "PoppinsBold", color: textColor }}
+        >
+          {typeof children === "string" || typeof children === "number"
+            ? children
+            : null}
+        </Text>
+      ) : null}
     </View>
   );
 }

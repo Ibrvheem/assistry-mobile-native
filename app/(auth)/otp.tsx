@@ -102,7 +102,6 @@ export default function OTP() {
               className={"h-14 bg-green-500 w-full"}
               onPress={() => {
                 const otpCode = otp.join("");
-                console.log("Entered OTP:", otpCode);
                 verifyOTP({
                   email: studentData.email,
                   otp: otpCode,

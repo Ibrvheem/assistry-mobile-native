@@ -25,7 +25,6 @@ export function useCreatePasswordHook() {
     },
   });
   const onSubmit = handleSubmit((values: CreatePasswordPayload) => {
-    console.log(values);
     const { confirm_password, ...rest } = values;
     mutation.mutate({ ...rest, reg_no: studentData?.reg_no ?? "" });
   });
