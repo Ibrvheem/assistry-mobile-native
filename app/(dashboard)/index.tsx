@@ -5,6 +5,7 @@ import {
   useWindowDimensions,
   ScrollView,
   LogBox,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
 import { Button } from "tamagui";
@@ -22,23 +23,24 @@ import { getByYou } from "./services";
 import dayjs from "dayjs";
 import { formatCurrency } from "@/lib/helpers";
 import { useGobalStoreContext } from "@/store/global-context";
+import AssistEmptyState from "@/components/atoms/assist-empty-state";
+import { Avatar } from "../avatar";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
-  const indicatorPosition = useSharedValue(0); // 0 for 'By you', 1 for 'For you'
+  const indicatorPosition = useSharedValue(0);
   const { data, isLoading, error } = useQuery({
     queryKey: ["by-you"],
     queryFn: getByYou,
   });
 
-  const { width } = useWindowDimensions(); // Get screen width
-  const containerWidth = width * 0.95; // Use 90% of the screen width for the container
-  const tabWidth = containerWidth / 2; // Dynamically calculate the tab width (50% of container width)
+  const { width } = useWindowDimensions();
+  const containerWidth = width * 0.95;
+  const tabWidth = containerWidth / 2;
 
-  // Animated indicator style
   const animatedIndicatorStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: withTiming(indicatorPosition.value * tabWidth), // Move indicator dynamically
+        translateX: withTiming(indicatorPosition.value * tabWidth),
       },
     ],
   }));
@@ -174,62 +176,87 @@ export default function Index() {
           </View>
         </View>
         <ScrollView className="">
-          <View className="p-4 pb-80">
-            {data?.map((each: any) => {
-              const currentTime = dayjs();
-              const expirationTime = dayjs(each.created_at).add(
-                each.expires,
-                "hours"
-              ); // Adjust based on your expiration logic
-              const timeLeftMinutes = expirationTime.diff(
-                currentTime,
-                "minute"
-              );
+          {tabs === "by-you" ? (
+            <View className="p-4 pb-80">
+              {data?.map((each: any) => {
+                const currentTime = dayjs();
+                const expirationTime = dayjs(each.created_at).add(
+                  each.expires,
+                  "hours"
+                );
+                const timeLeftMinutes = expirationTime.diff(
+                  currentTime,
+                  "minute"
+                );
 
-              return (
-                <View
-                  key={each.id} // Ensure a unique key for each item
-                  className="h-auto border border-slate-200 rounded-md mt-2 p-3"
-                >
-                  <Text style={{ fontFamily: "PoppinsBold" }}>{each.task}</Text>
-                  <Text style={{ fontFamily: "PoppinsMedium" }}>
-                    {each.description}
-                  </Text>
-                  <View className="flex flex-row items-center justify-between">
-                    <Text style={{ fontFamily: "PoppinsMedium" }}>
-                      💸 {formatCurrency(each.incentive)}
-                    </Text>
-                    <View className="flex flex-row items-center">
-                      <Text
-                        style={{ fontFamily: "PoppinsMedium" }}
-                        className="text-xs text-gray-500"
-                      >
-                        {timeLeftMinutes > 0
-                          ? `Expires in ${timeLeftMinutes} Minute${timeLeftMinutes > 1 ? "s" : ""}`
-                          : "Expired"}
-                      </Text>
-                      <CircularProgress
-                        timeLeft={Math.max(0, timeLeftMinutes)}
-                        totalTime={2 * 60}
-                      />
+                return (
+                  <TouchableOpacity
+                    key={each.id}
+                    className="h-auto border border-slate-200 rounded-md mt-2 p-3"
+                  >
+                    <View className="flex flex-row justify-between ">
+                      <View className="flex flex-row items-center">
+                        <View className="mr-2">
+                          <Avatar />
+                        </View>
+                        <View>
+                          <Text
+                            style={{ fontFamily: "Poppins" }}
+                            className="font-bold text-gray-700 capitalize"
+                          >
+                            {each.task}
+                          </Text>
+                          <Text
+                            style={{ fontFamily: "Poppins" }}
+                            className="text-gray-700 text-xs"
+                          >
+                            by You
+                          </Text>
+                        </View>
+                      </View>
+                      <View className="mt-2">
+                        <Text className="text-gray-600">
+                          {dayjs(each.created_at).format("dddd, DD MMM YYYY")}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                  <View className="flex flex-row items-center justify-between mt-2 ">
-                    <Button variant="outlined" className="w-[49%]">
-                      <LoadingChildren loading={false} textColor="black">
-                        View
-                      </LoadingChildren>
-                    </Button>
-                    <Button className="bg-green-500 w-[49%]">
-                      <LoadingChildren loading={false}>
-                        Accept Request
-                      </LoadingChildren>
-                    </Button>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
+                    <Text
+                      style={{ fontFamily: "Poppins" }}
+                      className="text-gray-600"
+                    >
+                      {each.description}
+                    </Text>
+                    <View className="h-[1px] w-full bg-gray-200 my-2"></View>
+                    <View className="flex flex-row items-center justify-between">
+                      <Text
+                        style={{ fontFamily: "Poppins" }}
+                        className="text-gray-500"
+                      >
+                        💸 {formatCurrency(each.incentive)}
+                      </Text>
+                      <Text
+                        style={{ fontFamily: "Poppins" }}
+                        className="text-gray-500"
+                      >
+                        📍 Hostel A
+                      </Text>
+
+                      <Text
+                        style={{ fontFamily: "Poppins" }}
+                        className="text-gray-500"
+                      >
+                        ⏱️ {each.expires} hours
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <View>
+              <AssistEmptyState />
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </View>
