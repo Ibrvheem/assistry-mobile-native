@@ -38,6 +38,10 @@ export default function ModalScreen() {
         >
           Post a Task 📢
         </Text>
+            <Image source={require("../assets/emojis/speaker.png")}
+              style={{width: 30, height: 30}}
+              />
+    
         <View className="mt-8 bg-transparent">
           <FormProvider {...methods}>
             <ControlledInput
@@ -45,17 +49,30 @@ export default function ModalScreen() {
               label="What’s the task? 👀"
               placeholder="e.g., Buy groceries"
             />
+          <Image source={require("../assets/emojis/eyess.png")}
+              style={{width: 30, height: 30}}
+              />
+           
             <ControlledTextArea
               rows={8}
               name="description"
               label="Describe it in detail ✍️"
+              
               placeholder="e.g., Need someone to pick up fruits and vegetables from the market."
             />
+                <Image source={require("../assets/emojis/hand.png")}
+              style={{width: 30, height: 30}}
+              />
+         
             <ControlledInput
               name="incentive"
               label="What’s the reward? 💸"
               placeholder="e.g., $10 or a thank-you note!"
             />
+               <Image source={require("../assets/emojis/moneywithwings.png")}
+              style={{width: 30, height: 30}}
+              />
+              
 
             <View className="bg-transparent">
               <Label
@@ -64,6 +81,10 @@ export default function ModalScreen() {
               >
                 Add Visuals (Optional) 📷
               </Label>
+              <Image source={require("../assets/emojis/cameraa.png")}
+              style={{width: 30, height: 30}}
+              />
+           
               <TouchableOpacity
                 onPress={pickImage}
                 className="h-36  border-2 border-gray-300 border-dashed rounded-md flex items-center justify-center"

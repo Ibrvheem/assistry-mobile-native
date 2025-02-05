@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { View, Text, SafeAreaView, TextInput } from "react-native";
+import { View, Text, SafeAreaView, TextInput, Image } from "react-native";
 import { Button } from "tamagui";
 import { router } from "expo-router";
 import { useSendOTP } from "./hooks/useSendOTP";
@@ -52,8 +52,11 @@ export default function OTP() {
                 className="text-3xl mt-8 text-[#1C332B]"
                 style={{ fontFamily: "PoppinsBold" }}
               >
-                Enter Your OTP Code 📱🔐
+                Enter Your OTP Code 📱🔐  🔐
               </Text>
+              <Image source={require("../../assets/emojis/lockwithkey.png")}
+              style={{width: 30, height: 30}}
+              />
               <Text className="text-lg font-bold text-[#1C332B]">
                 We've sent a 6-digit OTP to your number. Please enter it below.
               </Text>

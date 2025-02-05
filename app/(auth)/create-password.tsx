@@ -38,6 +38,9 @@ export default function CreatePassword() {
               >
                 Create Password 🔐
               </Text>
+              <Image source={require("../../assets/emojis/partyface.png")}
+              style={{width: 30, height: 30}}
+              />
               <Text
                 style={{ fontFamily: "PoppinsMedium" }}
                 className="text-lg font-bold text-[#1C332B] my-4"
@@ -69,6 +72,9 @@ export default function CreatePassword() {
               >
                 <LoadingChildren loading={loading}>
                   Get Started 🚀
+                  <Image source={require("../../assets/emojis/rocket.png")}
+                   style={{width: 30, height: 30}}
+                   />
                 </LoadingChildren>
               </Button>
             </View>

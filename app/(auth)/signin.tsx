@@ -39,6 +39,9 @@ export default function SignIn() {
               >
                 Sign In 🚀
               </Text>
+              <Image source={require("../../assets/emojis/rocket.png")}
+              style={{width: 30, height: 30}}
+              />
               <Text
                 style={{ fontFamily: "PoppinsMedium" }}
                 className="text-lg font-bold text-[#1C332B] my-4"

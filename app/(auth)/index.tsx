@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useGobalStoreContext } from "@/store/global-context";
 import { useConfirmRegistrationNo } from "./hooks/useConfirmRegistrationNo";
 import LoadingChildren from "@/components/molecules/loading-children";
+import PartyFace from "@/assets/emojis/party_face";
 
 export default function SignInPage() {
   const navigation = useNavigation();
@@ -37,9 +38,16 @@ export default function SignInPage() {
               <Text
                 className="text-3xl mt-8 text-[#1C332B]"
                 style={{ fontFamily: "PoppinsBold" }}
+                
               >
-                Welcome! Let’s Assist You In 🥳
+                Welcome! Let’s Assist You In 🥳  
               </Text>
+              <Image source={require("../../assets/emojis/partyface.png")}
+              style={{width: 30, height: 30}}
+              />
+            
+
+              
               <Text className="text-lg font-bold text-[#1C332B]">
                 Please provide your registration number.
               </Text>
