@@ -44,7 +44,6 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  LogBox.ignoreAllLogs(true);
   useEffect(() => {
     if (loaded) {
       router.push("/(dashboard)");

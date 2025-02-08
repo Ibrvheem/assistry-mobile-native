@@ -18,7 +18,6 @@ export default function SignInPage() {
   const handlePress = () => {
     router.push("/(auth)/confirm-number");
   };
-  LogBox.ignoreAllLogs(true);
   const { methods, onSubmit, error, loading } = useConfirmRegistrationNo();
 
   return (

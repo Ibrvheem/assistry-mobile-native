@@ -9,7 +9,7 @@ import { fetchAvatar } from "./services";
 
 const queryClient = new QueryClient();
 
-export function Avatar() {
+export function Avatar({ size = 40 }: { size?: number }) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["avatar"],
     queryFn: fetchAvatar,
@@ -34,8 +34,8 @@ export function Avatar() {
       <Image
         source={{ uri: data.url }}
         style={{
-          width: 40,
-          height: 40,
+          width: size,
+          height: size,
           borderRadius: 0,
           marginBottom: 10,
         }}

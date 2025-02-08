@@ -5,7 +5,6 @@ import {
   useWindowDimensions,
   ScrollView,
   LogBox,
-  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
 import { Button } from "tamagui";
@@ -16,15 +15,12 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
-import LoadingChildren from "@/components/molecules/loading-children";
-import CircularProgress from "@/components/molecules/circular-progress";
 import { useQuery } from "@tanstack/react-query";
 import { getByYou } from "./services";
 import dayjs from "dayjs";
 import { formatCurrency } from "@/lib/helpers";
 import { useGobalStoreContext } from "@/store/global-context";
 import AssistEmptyState from "@/components/atoms/assist-empty-state";
-import { Avatar } from "../avatar";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0);
@@ -177,78 +173,41 @@ export default function Index() {
         </View>
         <ScrollView className="">
           {tabs === "by-you" ? (
-            <View className="p-4 pb-80">
+            <View className="p-4 pb-80 w-full">
               {data?.map((each: any) => {
                 const currentTime = dayjs();
                 const expirationTime = dayjs(each.created_at).add(
                   each.expires,
                   "hours"
                 );
-                const timeLeftMinutes = expirationTime.diff(
-                  currentTime,
-                  "minute"
-                );
-
                 return (
-                  <TouchableOpacity
-                    key={each.id}
-                    className="h-auto border border-slate-200 rounded-md mt-2 p-3"
-                  >
-                    <View className="flex flex-row justify-between ">
-                      <View className="flex flex-row items-center">
-                        <View className="mr-2">
-                          <Avatar />
-                        </View>
-                        <View>
-                          <Text
-                            style={{ fontFamily: "Poppins" }}
-                            className="font-bold text-gray-700 capitalize"
-                          >
-                            {each.task}
-                          </Text>
-                          <Text
-                            style={{ fontFamily: "Poppins" }}
-                            className="text-gray-700 text-xs"
-                          >
-                            by You
-                          </Text>
-                        </View>
+                  <View className="h-auto w-full rounded-2xl border border-gray-200 mb-2 shadow-lg p-2 flex flex-row gap-2 mt-1">
+                    <View className="h-16 w-16 bg-orange-400 rounded-xl"></View>
+                    <View className="">
+                      <View className="h-auto w-48 rounded-sm animate-pulse mb-2">
+                        <Text style={{ fontFamily: "Poppins" }}>
+                          Cold Stone Ice Cream
+                        </Text>
                       </View>
-                      <View className="mt-2">
-                        <Text className="text-gray-600">
-                          {dayjs(each.created_at).format("dddd, DD MMM YYYY")}
+                      <View className="h-auto  rounded-sm animate-pulse mb-2">
+                        <Text style={{ fontFamily: "Poppins" }}>
+                          💰 {formatCurrency(2000 * 100)}
+                        </Text>
+                      </View>
+                      {/* <View className="h-4 w-72 bg-gray-200 rounded-sm animate-pulse mb-2"></View> */}
+                      <View className="w-72 h-auto rounded-sm animate-pulse mb-2 flex flex-row items-center justify-between">
+                        <Text>
+                          📍{" "}
+                          <Text style={{ fontFamily: "Poppins" }}>
+                            Ibrahim Aliyu Hostel
+                          </Text>
+                        </Text>
+                        <Text className="text-gray-500 font-mono font-semibold text-xs">
+                          24mins ago.
                         </Text>
                       </View>
                     </View>
-                    <Text
-                      style={{ fontFamily: "Poppins" }}
-                      className="text-gray-600"
-                    >
-                      {each.description}
-                    </Text>
-                    <View className="h-[1px] w-full bg-gray-200 my-2"></View>
-                    <View className="flex flex-row items-center justify-between">
-                      <Text
-                        style={{ fontFamily: "Poppins" }}
-                        className="text-gray-500"
-                      >
-                        💸 {formatCurrency(each.incentive)}
-                      </Text>
-                      <Text
-                        style={{ fontFamily: "Poppins" }}
-                        className="text-gray-500"
-                      >
-                        📍 Hostel A
-                      </Text>
-
-                      <Text
-                        style={{ fontFamily: "Poppins" }}
-                        className="text-gray-500"
-                      >
-                        ⏱️ {each.expires} hours
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>

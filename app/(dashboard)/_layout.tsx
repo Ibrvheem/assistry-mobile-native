@@ -1,16 +1,14 @@
 import React, { useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { router, Stack, Tabs } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import {
+  Cog6ToothIcon,
+  HomeIcon,
+  SparklesIcon as SparklesIconOutline,
+  UserCircleIcon,
+} from "react-native-heroicons/outline";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -42,10 +40,13 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="home" color={"gray"} />
+            tabBarLabelStyle: {
+              display: "none",
+            },
+            tabBarIcon: ({ color, size }) => (
+              <HomeIcon color={color} size={size} />
             ),
+            title: "Home",
             headerShown: false,
             headerStyle: {
               backgroundColor: "white",
@@ -56,19 +57,35 @@ export default function TabLayout() {
         <Tabs.Screen
           name="settings"
           options={{
-            title: "Settings",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="gear" color={"gray"} />
+            tabBarLabelStyle: {
+              display: "none",
+            },
+            tabBarIcon: ({ color, size }) => (
+              <Cog6ToothIcon color={color} size={size} />
             ),
+            title: "Settings",
             headerShown: false,
             headerStyle: {
               backgroundColor: "white",
             },
           }}
         />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal", headerShown: false }}
+        <Tabs.Screen
+          name="profile"
+          options={{
+            tabBarLabelStyle: {
+              display: "none",
+            },
+            tabBarIcon: ({ color, size }) => (
+              <UserCircleIcon color={color} size={size} />
+            ),
+            title: "profile",
+            headerShown: false,
+
+            headerStyle: {
+              backgroundColor: "white",
+            },
+          }}
         />
       </Tabs>
     </>

@@ -41,6 +41,14 @@ export const createPasswordPayload = z
     message: "Passwords do not match",
   });
 
+export const userDataSchema = z.object({
+  first_name: z.string(),
+  last_name: z.string(),
+  email: z.string(),
+  phone_no: z.string(),
+});
+
+export type UserDataSchema = z.infer<typeof userDataSchema>;
 export type StudentData = z.infer<typeof studentDataSchema>;
 export type RequestOTPPayload = z.infer<typeof requestOTPPayload>;
 export type VerifyStudentRegNo = z.infer<typeof verifyStudentRegNo>;
