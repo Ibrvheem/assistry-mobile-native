@@ -4,9 +4,9 @@ import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
 import {
+  ChatBubbleLeftIcon,
   Cog6ToothIcon,
   HomeIcon,
-  SparklesIcon as SparklesIconOutline,
   UserCircleIcon,
 } from "react-native-heroicons/outline";
 
@@ -25,7 +25,6 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: "white",
             height: 80,
-
             borderColor: "transparent",
           },
           tabBarLabelStyle: {
@@ -37,6 +36,7 @@ export default function TabLayout() {
           headerShown: false,
         }}
       >
+        {/* Static tab screens */}
         <Tabs.Screen
           name="index"
           options={{
@@ -70,6 +70,23 @@ export default function TabLayout() {
             },
           }}
         />
+        {/* Static "Messages" screen */}
+        <Tabs.Screen
+          name="messages"
+          options={{
+            tabBarLabelStyle: {
+              display: "none",
+            },
+            tabBarIcon: ({ color, size }) => (
+              <ChatBubbleLeftIcon color={color} size={size} />
+            ),
+            title: "Messages",
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: "white",
+            },
+          }}
+        />
         <Tabs.Screen
           name="profile"
           options={{
@@ -79,15 +96,22 @@ export default function TabLayout() {
             tabBarIcon: ({ color, size }) => (
               <UserCircleIcon color={color} size={size} />
             ),
-            title: "profile",
+            title: "Profile",
             headerShown: false,
-
             headerStyle: {
               backgroundColor: "white",
             },
           }}
         />
       </Tabs>
+
+      {/* Stack navigation for dynamic route (like /messages/[id]) */}
+      <Stack.Screen
+        name="messages/[id]"
+        options={{
+          headerShown: true,
+        }}
+      />
     </>
   );
 }

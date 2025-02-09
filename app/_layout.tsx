@@ -7,7 +7,7 @@ import {
 import { useFonts } from "expo-font";
 import { useRouter, Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/components/useColorScheme";
 export { ErrorBoundary } from "expo-router";
@@ -23,6 +23,7 @@ import { GlobalStoreProvider } from "@/store/global-context";
 import { Avatar } from "./avatar";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CreateTaskModal from "@/components/organism/create-task-modal";
 StatusBar.setBarStyle("dark-content");
 const config = createTamagui(defaultConfig);
 
@@ -72,6 +73,7 @@ const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const [open, setOpen] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -96,7 +98,7 @@ function RootLayoutNav() {
                     <TouchableOpacity
                       onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                        router.push("/modal");
+                        setOpen(true);
                       }}
                     >
                       <Text className="text-2xl">➕</Text>
@@ -110,6 +112,7 @@ function RootLayoutNav() {
               />
             </Stack>
           </ThemeProvider>
+          <CreateTaskModal open={open} setOpen={setOpen} />
         </TamaguiProvider>
       </GlobalStoreProvider>
     </QueryClientProvider>
