@@ -6,7 +6,7 @@ import { Input, Label } from "tamagui";
 interface ControlledInputProps {
   name: string;
   placeholder: string;
-  label: string;
+  label?: string;
   description?: string;
   className?: string;
   secureTextEntry?: boolean;

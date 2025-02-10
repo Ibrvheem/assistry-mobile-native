@@ -5,7 +5,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { useRouter, Stack, router } from "expo-router";
+import { useRouter, Stack, router, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
@@ -74,6 +74,13 @@ const queryClient = new QueryClient();
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  // List of dashboard screens where the header should be hidden
+  const hideHeaderOn = ["/profile", "/settings", "/messages"];
+
+  const shouldShowHeader = !hideHeaderOn.some((route) =>
+    pathname.startsWith(route)
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -87,11 +94,12 @@ function RootLayoutNav() {
               <Stack.Screen
                 name="(dashboard)"
                 options={{
-                  headerShown: true,
+                  headerShown: shouldShowHeader,
                   headerTitle: "",
                   headerStyle: {
                     backgroundColor: "white",
                   },
+
                   headerBackVisible: false,
                   headerLeft: () => <Avatar />,
                   headerRight: () => (

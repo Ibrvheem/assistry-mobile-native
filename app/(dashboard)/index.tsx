@@ -6,7 +6,7 @@ import {
   ScrollView,
   LogBox,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "tamagui";
 import Svg, { Path } from "react-native-svg";
 import Animated, {
@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { formatCurrency } from "@/lib/helpers";
 import { useGobalStoreContext } from "@/store/global-context";
 import AssistEmptyState from "@/components/atoms/assist-empty-state";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0);
@@ -40,10 +41,7 @@ export default function Index() {
       },
     ],
   }));
-  const { studentData } = useGobalStoreContext();
-
-  LogBox.ignoreAllLogs(true);
-
+  const { userData } = useGobalStoreContext();
   return (
     <View
       className="h-full"
@@ -56,7 +54,7 @@ export default function Index() {
               className="text-xl text-white"
               style={{ fontFamily: "PoppinsBold" }}
             >
-              Hi, name 👋🏾
+              Hi, {userData?.first_name} 👋🏾
             </Text>
 
             <Text

@@ -26,8 +26,9 @@ export function useSignIn() {
     mutationFn: signIn,
     onSuccess: async (data: { access_token: string; user: any }) => {
       await AsyncStorage.setItem("token", data.access_token);
-      console.log(data.user);
-      setUserData(data.user);
+
+      await AsyncStorage.setItem("userData", JSON.stringify(data.user));
+
       // const token = await AsyncStorage.getItem("token");
 
       // const user = await getUser();
