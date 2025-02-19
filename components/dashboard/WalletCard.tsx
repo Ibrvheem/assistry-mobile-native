@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { formatCurrency } from "@/lib/helpers";
 
 export default function WalletCard({
   balance,
@@ -19,7 +20,9 @@ export default function WalletCard({
       <View style={styles.topSection}>
         <View style={styles.balanceContainer}>
           <Text style={styles.balanceLabel}>Current Balance</Text>
-          <Text style={styles.balanceAmount}>${balance.toFixed(2)}</Text>
+          <Text style={styles.balanceAmount}>
+            {formatCurrency(balance * 100)}
+          </Text>
         </View>
         <Pressable
           style={styles.fundButton}
@@ -33,13 +36,13 @@ export default function WalletCard({
         <View style={styles.statItem}>
           <Ionicons name="arrow-up-circle" size={24} color="#ffffff" />
           <Text style={styles.statLabel}>Earned</Text>
-          <Text style={styles.statAmount}>${balance.toFixed(2)}</Text>
+          <Text style={styles.statAmount}>{formatCurrency(balance * 100)}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.statItem}>
           <Ionicons name="arrow-down-circle" size={24} color="#ffffff" />
           <Text style={styles.statLabel}>Spent</Text>
-          <Text style={styles.statAmount}>${spent.toFixed(2)}</Text>
+          <Text style={styles.statAmount}>{formatCurrency(spent * 100)}</Text>
         </View>
       </View>
     </LinearGradient>

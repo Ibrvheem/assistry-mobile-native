@@ -71,7 +71,7 @@ export default function TaskDetailsScreen() {
     categoryColors[task.category as keyof typeof categoryColors];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -233,7 +233,7 @@ export default function TaskDetailsScreen() {
           </View>
         </Animated.View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
