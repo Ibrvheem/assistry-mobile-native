@@ -5,6 +5,7 @@ import {
   useWindowDimensions,
   ScrollView,
   LogBox,
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Button } from "tamagui";
@@ -16,18 +17,22 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useQuery } from "@tanstack/react-query";
-import { getByYou } from "./services";
+import { getByYou, getForYou } from "./services";
 import dayjs from "dayjs";
 import { formatCurrency } from "@/lib/helpers";
 import { useGobalStoreContext } from "@/store/global-context";
 import AssistEmptyState from "@/components/atoms/assist-empty-state";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Avatar } from "../avatar";
+import TaskCard from "@/components/dashboard/TaskCard";
+import WalletCard from "@/components/dashboard/WalletCard";
+import { router } from "expo-router";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0);
   const { data, isLoading, error } = useQuery({
     queryKey: ["by-you"],
-    queryFn: getByYou,
+    queryFn: getForYou,
   });
 
   const { width } = useWindowDimensions();
@@ -47,175 +52,145 @@ export default function Index() {
       className="h-full"
       style={{ backgroundColor: "white", boxSizing: "border-box" }}
     >
-      <SafeAreaView>
-        <View className="p-2">
-          <View className="bg-black h-56 rounded-lg p-4 flex items-center justify-center">
-            <Text
-              className="text-xl text-white"
-              style={{ fontFamily: "PoppinsBold" }}
-            >
-              Hi, {userData?.first_name} 👋🏾
-            </Text>
-
-            <Text
-              className="text-sm text-gray-500 text-center"
-              style={{ fontFamily: "PoppinsBold" }}
-            >
-              Your Balance
-            </Text>
-            <Text
-              className="text-5xl py-4 text-green-500"
-              style={{ fontFamily: "PoppinsBold" }}
-            >
-              {formatCurrency(250000)}
-            </Text>
-            <View className="flex flex-row items-center gap-2">
-              <View className="bg-zinc-600 p-2 px-4 rounded-md flex flex-row items-center">
-                <Svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  width={20}
-                  height={20}
-                  className="text-green-500 mr-2"
-                >
-                  <Path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
-                  />
-                </Svg>
-                <Text
-                  className="text-slate-300"
-                  style={{ fontFamily: "PoppinsBold" }}
-                >
-                  Completed 54 tasks
-                </Text>
-              </View>
-              <View className="bg-zinc-600 p-2 px-4 rounded-md flex flex-row">
-                <Text
-                  className="text-slate-300"
-                  style={{ fontFamily: "PoppinsBold" }}
-                >
-                  📍UDUS
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View className="flex justify-center items-center mt-4 bg-slate-200 mx-1.5 rounded-md">
-          {/* Container for tabs */}
-          <View
-            className="rounded-md h-[45px] items-center"
-            style={{
-              width: containerWidth,
-              flexDirection: "row",
-            }}
-          >
-            {/* Animated Indicator */}
-            <Animated.View
-              className={"shadow-lg"}
-              style={[
-                {
-                  position: "absolute",
-                  width: tabWidth,
-                  height: 40,
-                  backgroundColor: "white",
-                  borderRadius: 6,
-                },
-                animatedIndicatorStyle,
-              ]}
-            />
-
-            {/* "By You" Tab */}
-            <Button
-              className="w-[50%] bg-transparent"
-              onPress={() => {
-                setTabs("by-you");
-                indicatorPosition.value = 0;
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily:
-                    tabs === "by-you" ? "PoppinsBold" : "PoppinsMedium",
-                  textAlign: "center",
+      <ScrollView>
+        <WalletCard balance={2000} spent={1500} />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Campus Tasks</Text>
+          {data?.map((each) => {
+            return (
+              <TaskCard
+                title={each.task}
+                description={each.description}
+                incentive={each.incentive}
+                location={each.location ?? "Coke Village"}
+                postedBy={`${each.user.first_name} ${each.user.last_name}`}
+                postedAt={each.created_at}
+                imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
+                onPress={() => {
+                  router.push(`/tasks/${each.id}`);
+                  console.log("Task pressed:", each.id);
                 }}
-              >
-                By you 🤳🏾
-              </Text>
-            </Button>
-
-            {/* "For You" Tab */}
-            <Button
-              className="w-[50%] bg-transparent"
-              onPress={() => {
-                setTabs("for-you");
-                indicatorPosition.value = 1;
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily:
-                    tabs === "for-you" ? "PoppinsBold" : "PoppinsMedium",
-                  textAlign: "center",
-                }}
-              >
-                For you 💸
-              </Text>
-            </Button>
-          </View>
+              />
+            );
+          })}
         </View>
-        <ScrollView className="">
-          {tabs === "by-you" ? (
-            <View className="p-4 pb-80 w-full">
-              {data?.map((each: any) => {
-                const currentTime = dayjs();
-                const expirationTime = dayjs(each.created_at).add(
-                  each.expires,
-                  "hours"
-                );
-                return (
-                  <View className="h-auto w-full rounded-2xl border border-gray-200 mb-2 shadow-lg p-2 flex flex-row gap-2 mt-1">
-                    <View className="h-16 w-16 bg-orange-400 rounded-xl"></View>
-                    <View className="">
-                      <View className="h-auto w-48 rounded-sm animate-pulse mb-2">
-                        <Text style={{ fontFamily: "Poppins" }}>
-                          Cold Stone Ice Cream
-                        </Text>
-                      </View>
-                      <View className="h-auto  rounded-sm animate-pulse mb-2">
-                        <Text style={{ fontFamily: "Poppins" }}>
-                          💰 {formatCurrency(2000 * 100)}
-                        </Text>
-                      </View>
-                      {/* <View className="h-4 w-72 bg-gray-200 rounded-sm animate-pulse mb-2"></View> */}
-                      <View className="w-72 h-auto rounded-sm animate-pulse mb-2 flex flex-row items-center justify-between">
-                        <Text>
-                          📍{" "}
-                          <Text style={{ fontFamily: "Poppins" }}>
-                            Ibrahim Aliyu Hostel
-                          </Text>
-                        </Text>
-                        <Text className="text-gray-500 font-mono font-semibold text-xs">
-                          24mins ago.
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                );
-              })}
-            </View>
-          ) : (
-            <View>
-              <AssistEmptyState />
-            </View>
-          )}
-        </ScrollView>
-      </SafeAreaView>
+      </ScrollView>
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
+  header: {
+    padding: 16,
+    paddingTop: 8,
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  userInfo: {
+    flex: 1,
+    marginRight: 16,
+  },
+  nameSection: {
+    marginBottom: 4,
+  },
+  greeting: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  studentInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  majorText: {
+    fontSize: 15,
+    color: "#666",
+    fontWeight: "500",
+  },
+  bulletPoint: {
+    fontSize: 15,
+    color: "#666",
+    marginHorizontal: 6,
+  },
+  yearText: {
+    fontSize: 15,
+    color: "#666",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    marginTop: 8,
+    gap: 12,
+  },
+  stat: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statText: {
+    marginLeft: 4,
+    fontSize: 13,
+    color: "#666",
+    fontWeight: "500",
+  },
+  profileImageContainer: {
+    position: "relative",
+  },
+  profileImage: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#f0f0f0",
+  },
+  onlineIndicator: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#4CAF50",
+    borderWidth: 2,
+    borderColor: "#ffffff",
+  },
+  universityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+  universityText: {
+    fontSize: 13,
+    color: "#666",
+    marginLeft: 6,
+  },
+  studentIdText: {
+    fontSize: 13,
+    color: "#666",
+  },
+  section: {
+    marginTop: 24,
+    paddingBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
+    marginLeft: 16,
+    marginBottom: 8,
+  },
+});

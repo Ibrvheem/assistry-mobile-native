@@ -3,11 +3,15 @@ import { postTask } from "../services";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateTaskSchema, createTaskSchema } from "../(dashboard)/types";
+import { Dispatch, SetStateAction, useState } from "react";
 
-export function usePostTask() {
-  const methods = useForm<CreateTaskSchema>({
-    resolver: zodResolver(createTaskSchema),
+export function usePostTask({
+  setOpen,
+}: {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) {
+  const methods = useForm({
+    // resolver: zodResolver(createTaskSchema),
   });
   const { handleSubmit } = methods;
 
@@ -15,6 +19,7 @@ export function usePostTask() {
     mutationFn: postTask,
     onSuccess: () => {
       router.push("/(dashboard)");
+      setOpen(false);
     },
     onError: (error) => {
       console.error("Error Fetching Data:", error);

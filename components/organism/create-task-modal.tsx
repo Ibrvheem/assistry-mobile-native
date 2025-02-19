@@ -27,7 +27,7 @@ export default function CreateTaskModal({
   open,
   setOpen,
 }: CreateTaskModalProps) {
-  const { methods, onSubmit, loading, error } = usePostTask();
+  const { methods, onSubmit, loading, error } = usePostTask({ setOpen });
   const [image, setImage] = useState<string | null>(null);
 
   const pickImage = async () => {
@@ -176,7 +176,9 @@ export default function CreateTaskModal({
                         width: "100%",
                         marginTop: 20,
                       }}
-                      onPress={methods.handleSubmit(onSubmit)}
+                      onPress={() => {
+                        onSubmit();
+                      }}
                     >
                       <LoadingChildren loading={loading}>
                         Pay & Submit Task
