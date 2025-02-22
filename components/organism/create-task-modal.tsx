@@ -7,6 +7,8 @@ import {
   ScrollView,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Pressable,
+  StyleSheet,
 } from "react-native";
 import { Button, Label, Sheet, YStack } from "tamagui";
 import { StatusBar } from "expo-status-bar";
@@ -17,6 +19,9 @@ import ControlledInput from "@/components/molecules/controlled-input";
 import ControlledTextArea from "@/components/molecules/controlled-textarea";
 import LoadingChildren from "@/components/molecules/loading-children";
 import { usePostTask } from "@/app/hooks/usePostTask";
+import Animated, { FadeInUp } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 
 interface CreateTaskModalProps {
   open: boolean;
@@ -96,6 +101,12 @@ export default function CreateTaskModal({
                       label="Describe it in detail ✍️"
                       placeholder="e.g., Need someone to pick up fruits and vegetables from the market."
                     />
+                    <ControlledInput
+                      name="location"
+                      label="Location"
+                      placeholder="Male Hostel"
+                      keyboardType="numeric"
+                    />
 
                     <View
                       style={{
@@ -123,52 +134,29 @@ export default function CreateTaskModal({
                       </View>
                     </View>
 
-                    <View>
-                      <Label
-                        style={{
-                          fontSize: 16,
-                          fontWeight: "bold",
-                          color: "#1C332B",
-                          marginVertical: 10,
-                        }}
-                      >
-                        Add Visuals (Optional) 📷
-                      </Label>
-                      <TouchableOpacity
-                        onPress={pickImage}
-                        style={{
-                          height: 50,
-                          borderWidth: 2,
-                          borderColor: "#ccc",
-                          backgroundColor: "#f5f5f5",
-                          borderRadius: 5,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {image ? (
-                          <Image
-                            source={{ uri: image }}
-                            style={{
-                              height: "100%",
-                              width: "100%",
-                              borderRadius: 5,
-                            }}
-                          />
-                        ) : (
-                          <Text
-                            style={{
-                              fontSize: 14,
-                              fontWeight: "bold",
-                              color: "#1C332B",
-                            }}
+                    <Animated.View entering={FadeInUp.delay(600).springify()}>
+                      <View style={[styles.lastSection]}>
+                        <Text style={[styles.label]}>Add Photos</Text>
+                        <Pressable style={styles.imageUpload}>
+                          <LinearGradient
+                            colors={["#22C55E", "#4ADE80"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.imageUploadGradient}
                           >
-                            Open Photos
-                          </Text>
-                        )}
-                      </TouchableOpacity>
-                    </View>
-
+                            <View style={styles.imageUploadContent}>
+                              <Ionicons name="images" size={32} color="#fff" />
+                              <Text style={styles.imageUploadText}>
+                                Upload Images
+                              </Text>
+                              <Text style={styles.imageUploadSubtext}>
+                                Add up to 3 images
+                              </Text>
+                            </View>
+                          </LinearGradient>
+                        </Pressable>
+                      </View>
+                    </Animated.View>
                     <Button
                       style={{
                         height: 56,
@@ -196,3 +184,50 @@ export default function CreateTaskModal({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  section: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
+  },
+  lastSection: {
+    borderBottomWidth: 0,
+    paddingBottom: 32,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+  },
+  imageUpload: {
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  imageUploadGradient: {
+    padding: 24,
+  },
+  imageUploadContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imageUploadText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#fff",
+    marginTop: 12,
+  },
+  imageUploadSubtext: {
+    fontSize: 14,
+    color: "rgba(255,255,255,0.8)",
+    marginTop: 4,
+  },
+});

@@ -16,7 +16,11 @@ import Animated, {
   FadeIn,
   FadeInDown,
   SlideInDown,
+  FadeOut,
 } from "react-native-reanimated";
+import { useQuery } from "@tanstack/react-query";
+import { getTask } from "./services";
+import { formatCurrency } from "@/lib/helpers";
 
 const { width } = Dimensions.get("window");
 
@@ -54,21 +58,52 @@ const mockTask = {
 };
 
 const categoryColors = {
-  academic: { primary: "#FF6B6B", gradient: ["#FF6B6B", "#FF8E8E"] },
-  errands: { primary: "#4ECDC4", gradient: ["#4ECDC4", "#7EE8E1"] },
-  delivery: { primary: "#45B7D1", gradient: ["#45B7D1", "#6CD5EF"] },
-  tutoring: { primary: "#96CEB4", gradient: ["#96CEB4", "#BEDAC9"] },
-  events: { primary: "#D4A5A5", gradient: ["#D4A5A5", "#E8C7C7"] },
-  other: { primary: "#9B89B3", gradient: ["#9B89B3", "#BEB1CF"] },
+  academic: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
+  errands: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
+  delivery: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
+  tutoring: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
+  events: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
+  other: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
 };
 
 export default function TaskDetailsScreen() {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams() as { id: string };
+  console.log(id, "id here");
   const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
+  const [acceptanceState, setAcceptanceState] = useState<
+    "idle" | "accepting" | "accepted" | "error"
+  >("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const task = mockTask; // In real app, fetch task by id
   const categoryColor =
     categoryColors[task.category as keyof typeof categoryColors];
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: [`task-${id}`],
+    queryFn: () => getTask(id),
+  });
+  console.log("singletask", data);
+
+  const handleAcceptTask = async () => {
+    try {
+      setAcceptanceState("accepting");
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setAcceptanceState("accepted");
+      setTimeout(() => {
+        router.back();
+      }, 1000);
+    } catch (error) {
+      setAcceptanceState("error");
+      setErrorMessage("Failed to accept task. Please try again.");
+      setTimeout(() => {
+        setAcceptanceState("idle");
+        setErrorMessage(null);
+      }, 3000);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -77,14 +112,14 @@ export default function TaskDetailsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View entering={FadeIn.duration(300)}>
-          <View style={styles.header}>
+          <SafeAreaView style={styles.header}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color="#000" />
             </Pressable>
             <Pressable style={styles.shareButton}>
               <Ionicons name="share-outline" size={24} color="#000" />
             </Pressable>
-          </View>
+          </SafeAreaView>
 
           <View style={styles.imageContainer}>
             <Image
@@ -98,13 +133,15 @@ export default function TaskDetailsScreen() {
               style={styles.imageOverlay}
             />
             <View style={styles.imageContent}>
-              <Text style={styles.incentive}>${task.incentive}</Text>
+              <Text style={styles.incentive}>
+                {formatCurrency(data?.incentive * 100)}
+              </Text>
               <Text style={styles.postedAt}>{task.postedAt}</Text>
             </View>
           </View>
 
           <View style={styles.content}>
-            <Text style={styles.title}>{task.title}</Text>
+            <Text style={styles.title}>{data?.task}</Text>
 
             <Pressable style={styles.posterContainer}>
               <Image
@@ -114,7 +151,9 @@ export default function TaskDetailsScreen() {
                 transition={200}
               />
               <View style={styles.posterInfo}>
-                <Text style={styles.posterName}>{task.postedBy}</Text>
+                <Text style={styles.posterName}>
+                  {data?.user.first_name} {data?.user.last_name}
+                </Text>
                 <View style={styles.posterStats}>
                   <View style={styles.stat}>
                     <Ionicons name="star" size={16} color="#FFD700" />
@@ -145,11 +184,11 @@ export default function TaskDetailsScreen() {
                 size={20}
                 color={categoryColor.primary}
               />
-              <Text style={styles.location}>{task.location}</Text>
+              <Text style={styles.location}>{data?.location}</Text>
             </View>
 
             <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.description}>{task.description}</Text>
+            <Text style={styles.description}>{data?.description}</Text>
 
             <Text style={styles.sectionTitle}>Additional Photos</Text>
             <ScrollView
@@ -184,13 +223,38 @@ export default function TaskDetailsScreen() {
           <Pressable
             onPress={() => setShowAcceptConfirm(true)}
             style={styles.acceptButtonContent}
+            disabled={acceptanceState !== "idle"}
           >
-            <Text style={styles.acceptButtonText}>Accept Task</Text>
-            <View style={styles.acceptButtonAmount}>
-              <Text style={styles.acceptButtonAmountText}>
-                ${task.incentive}
-              </Text>
-            </View>
+            {acceptanceState === "idle" && (
+              <>
+                <Text style={styles.acceptButtonText}>Accept Task</Text>
+                <View style={styles.acceptButtonAmount}>
+                  <Text style={styles.acceptButtonAmountText}>
+                    {formatCurrency(data?.incentive * 100)}
+                  </Text>
+                </View>
+              </>
+            )}
+            {acceptanceState === "accepting" && (
+              <View style={styles.acceptingContainer}>
+                <Ionicons
+                  name="sync"
+                  size={24}
+                  color="#fff"
+                  style={styles.spinningIcon}
+                />
+                <Text style={styles.acceptButtonText}>Accepting...</Text>
+              </View>
+            )}
+            {acceptanceState === "accepted" && (
+              <View style={styles.acceptedContainer}>
+                <Ionicons name="checkmark-circle" size={24} color="#fff" />
+                <Text style={styles.acceptButtonText}>Task Accepted!</Text>
+              </View>
+            )}
+            {acceptanceState === "error" && (
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            )}
           </Pressable>
         </LinearGradient>
       </Animated.View>
@@ -199,6 +263,7 @@ export default function TaskDetailsScreen() {
         <Animated.View
           style={styles.confirmModal}
           entering={FadeInDown.springify()}
+          exiting={FadeOut}
         >
           <View style={styles.confirmContent}>
             <Text style={styles.confirmTitle}>Accept this task?</Text>
@@ -222,8 +287,7 @@ export default function TaskDetailsScreen() {
                 <Pressable
                   onPress={() => {
                     setShowAcceptConfirm(false);
-                    // Handle task acceptance
-                    router.back();
+                    handleAcceptTask();
                   }}
                 >
                   <Text style={styles.confirmAcceptText}>Accept</Text>
@@ -439,6 +503,7 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     borderRadius: 16,
+    marginBottom: 10,
     overflow: "hidden",
   },
   acceptButtonContent: {
@@ -462,6 +527,29 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  acceptingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    gap: 12,
+  },
+  spinningIcon: {
+    transform: [{ rotate: "0deg" }],
+  },
+  acceptedContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    gap: 12,
+  },
+  errorText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
+    width: "100%",
   },
   confirmModal: {
     position: "absolute",

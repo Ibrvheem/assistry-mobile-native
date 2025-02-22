@@ -46,8 +46,6 @@ export default function Index() {
       },
     ],
   }));
-  const { userData } = useGobalStoreContext();
-  console.log("data", data);
   return (
     <View
       className="h-full"
@@ -68,7 +66,11 @@ export default function Index() {
                 postedAt={each.created_at}
                 imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
                 onPress={() => {
-                  router.push(`/tasks/${each.id}`);
+                  router.push({
+                    pathname: "/tasks/[id]",
+                    params: { id: each._id },
+                  });
+
                   console.log("Task pressed:", each.id);
                 }}
               />

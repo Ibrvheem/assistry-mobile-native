@@ -28,7 +28,7 @@ StatusBar.setBarStyle("dark-content");
 const config = createTamagui(defaultConfig);
 
 export const unstable_settings = {
-  initialRouteName: "(auth)",
+  initialRouteName: "(dashboard)",
 };
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -51,9 +51,9 @@ export default function RootLayout() {
       async function findToken() {
         const token = await AsyncStorage.getItem("token");
         if (token) {
-          router.push("/(dashboard)"); // Navigate to dashboard if token exists
+          router.replace("/(dashboard)"); // Navigate to dashboard if token exists
         } else {
-          router.push("/(auth)"); // Navigate to auth if no token
+          router.replace("/(auth)"); // Navigate to auth if no token
         }
       }
       findToken().finally(() => {
@@ -75,7 +75,7 @@ function RootLayoutNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   // List of dashboard screens where the header should be hidden
-  const hideHeaderOn = ["/profile", "/settings", "/messages"];
+  const hideHeaderOn = ["/profile", "/settings", "/messages", "/tasks"];
 
   const shouldShowHeader = !hideHeaderOn.some((route) =>
     pathname.startsWith(route)
