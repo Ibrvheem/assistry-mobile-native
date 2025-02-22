@@ -47,15 +47,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      router.push("/(dashboard)");
-
+      // router.push("/(dashboard)");
       async function findToken() {
-        // const token = await AsyncStorage.getItem("token");
-        // if (token) {
-        //   router.push("/(dashboard)"); // Navigate to dashboard if token exists
-        // } else {
-        //   router.push("/(auth)"); // Navigate to auth if no token
-        // }
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          router.push("/(dashboard)"); // Navigate to dashboard if token exists
+        } else {
+          router.push("/(auth)"); // Navigate to auth if no token
+        }
       }
       findToken().finally(() => {
         SplashScreen.hideAsync(); // Hide splash screen after navigation decision

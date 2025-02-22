@@ -12,7 +12,7 @@ export default function WalletCard({
 }) {
   return (
     <LinearGradient
-      colors={["#007AFF", "#00C6FF"]}
+      colors={["#22C55E", "#4ADE80"]}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -28,7 +28,7 @@ export default function WalletCard({
           style={styles.fundButton}
           onPress={() => console.log("Fund wallet")}
         >
-          <Ionicons name="add-circle" size={20} color="#007AFF" />
+          <Ionicons name="add-circle" size={20} color="#22C55E" />
           <Text style={styles.fundButtonText}>Fund Wallet</Text>
         </Pressable>
       </View>
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   fundButtonText: {
-    color: "#007AFF",
+    color: "#22C55E",
     fontWeight: "600",
     marginLeft: 4,
   },

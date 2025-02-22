@@ -47,6 +47,7 @@ export default function Index() {
     ],
   }));
   const { userData } = useGobalStoreContext();
+  console.log("data", data);
   return (
     <View
       className="h-full"

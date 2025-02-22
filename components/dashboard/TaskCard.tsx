@@ -102,20 +102,20 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   incentiveContainer: {
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#dcfce7",
     padding: 8,
     borderRadius: 8,
     alignItems: "center",
   },
   incentiveLabel: {
     fontSize: 12,
-    color: "#007AFF",
+    color: "#22C55E",
     fontWeight: "500",
   },
   incentive: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#007AFF",
+    color: "#22C55E",
   },
   description: {
     fontSize: 14,

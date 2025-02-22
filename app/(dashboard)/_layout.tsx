@@ -69,6 +69,14 @@ export default function DashboardLayout() {
           title: "Messages",
         }}
       />
+      <Tabs.Screen
+        name="tasks/[id]"
+        options={{
+          tabBarStyle: { display: "none" },
+          href: null,
+          title: "Messages",
+        }}
+      />
 
       <Tabs.Screen
         name="profile"
