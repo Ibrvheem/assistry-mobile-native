@@ -19,11 +19,15 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { GlobalStoreProvider } from "@/store/global-context";
+import {
+  GlobalStoreProvider,
+  useGobalStoreContext,
+} from "@/store/global-context";
 import { Avatar } from "./avatar";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CreateTaskModal from "@/components/organism/create-task-modal";
+import { getUsers } from "./(dashboard)/services";
 StatusBar.setBarStyle("dark-content");
 const config = createTamagui(defaultConfig);
 
@@ -74,6 +78,8 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { userData } = useGobalStoreContext();
+  console.log(userData);
   // List of dashboard screens where the header should be hidden
   const hideHeaderOn = ["/profile", "/settings", "/messages", "/tasks"];
 
@@ -100,7 +106,11 @@ function RootLayoutNav() {
                   },
 
                   headerBackVisible: false,
-                  headerLeft: () => <Avatar />,
+                  headerLeft: () => (
+                    <>
+                      <Avatar showGreeting={true} />
+                    </>
+                  ),
                   headerRight: () => (
                     <TouchableOpacity
                       onPress={() => {

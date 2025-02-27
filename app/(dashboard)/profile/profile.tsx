@@ -1,8 +1,9 @@
 import { View } from "@/components/Themed";
 import React from "react";
 import { SafeAreaView, ScrollView, Text, TouchableOpacity } from "react-native";
-import { Avatar } from "../avatar";
+import { Avatar } from "../../avatar";
 import { Button, Separator } from "tamagui";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -12,8 +13,10 @@ import {
   ExclamationCircleIcon,
   UserMinusIcon,
 } from "react-native-heroicons/outline";
+import { router, useRouter } from "expo-router";
 
 export default function ProfilePage() {
+  const { replace } = useRouter();
   return (
     <ScrollView className="flex-1 bg-white">
       <SafeAreaView>
@@ -110,7 +113,21 @@ export default function ProfilePage() {
             Account
           </Text>
           <View className="bg-gray-100 rounded-2xl border border-gray-300 p-2 px-4">
-            <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400">
+            <TouchableOpacity
+              className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400"
+              onPress={() => {
+                const handleLogout = async () => {
+                  try {
+                    await AsyncStorage.removeItem("token");
+                    replace("/(auth)/signin");
+                  } catch (error) {
+                    console.error("Error removing token:", error);
+                  }
+                };
+
+                handleLogout();
+              }}
+            >
               <View className="flex items-center justify-center w-10 h-10 p-1 bg-white rounded-xl border border-gray-300">
                 <ExclamationCircleIcon color={"gray"} size={20} />
               </View>

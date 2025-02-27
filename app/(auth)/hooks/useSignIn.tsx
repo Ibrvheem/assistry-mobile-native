@@ -28,6 +28,7 @@ export function useSignIn() {
       await AsyncStorage.setItem("token", data.access_token);
 
       await AsyncStorage.setItem("userData", JSON.stringify(data.user));
+      console.log(data.user);
 
       // const token = await AsyncStorage.getItem("token");
 

@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import { formatCurrency } from "@/lib/helpers";
 
 type TaskProps = {
   title: string;
@@ -31,7 +32,7 @@ export default function TaskCard({
             <Text style={styles.title}>{title}</Text>
             <View style={styles.incentiveContainer}>
               <Text style={styles.incentiveLabel}>Reward</Text>
-              <Text style={styles.incentive}>${incentive}</Text>
+              <Text style={styles.incentive}>{formatCurrency(incentive)}</Text>
             </View>
           </View>
         </View>

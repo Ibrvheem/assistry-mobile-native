@@ -32,20 +32,26 @@ export default function CreateTaskModal({
   open,
   setOpen,
 }: CreateTaskModalProps) {
-  const { methods, onSubmit, loading, error } = usePostTask({ setOpen });
-  const [image, setImage] = useState<string | null>(null);
+  const { methods, onSubmit, loading, error, images, setImages } = usePostTask({
+    setOpen,
+  });
 
   const pickImage = async () => {
+    if (images.length >= 3) return; // Restrict to 3 images
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
     if (!result.canceled && result.assets.length > 0) {
-      setImage(result.assets[0].uri);
+      setImages((prev) => [...prev, result.assets[0].uri].slice(0, 3));
     }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
   };
 
   return (
@@ -105,7 +111,6 @@ export default function CreateTaskModal({
                       name="location"
                       label="Location"
                       placeholder="Male Hostel"
-                      keyboardType="numeric"
                     />
 
                     <View
@@ -137,7 +142,11 @@ export default function CreateTaskModal({
                     <Animated.View entering={FadeInUp.delay(600).springify()}>
                       <View style={[styles.lastSection]}>
                         <Text style={[styles.label]}>Add Photos</Text>
-                        <Pressable style={styles.imageUpload}>
+                        <Pressable
+                          style={styles.imageUpload}
+                          onPress={pickImage}
+                          disabled={images.length >= 3}
+                        >
                           <LinearGradient
                             colors={["#22C55E", "#4ADE80"]}
                             start={{ x: 0, y: 0 }}
@@ -147,16 +156,43 @@ export default function CreateTaskModal({
                             <View style={styles.imageUploadContent}>
                               <Ionicons name="images" size={32} color="#fff" />
                               <Text style={styles.imageUploadText}>
-                                Upload Images
+                                {images.length >= 3
+                                  ? "Max 3 Images Reached"
+                                  : "Upload Images"}
                               </Text>
                               <Text style={styles.imageUploadSubtext}>
-                                Add up to 3 images
+                                {images.length}/3 images added
                               </Text>
                             </View>
                           </LinearGradient>
                         </Pressable>
+
+                        {/* Image Previews */}
+                        {images.length > 0 && (
+                          <View style={styles.imagePreviewContainer}>
+                            {images.map((img, index) => (
+                              <View key={index} style={styles.imageWrapper}>
+                                <Image
+                                  source={{ uri: img }}
+                                  style={styles.imagePreview}
+                                />
+                                <TouchableOpacity
+                                  style={styles.removeImageButton}
+                                  onPress={() => removeImage(index)}
+                                >
+                                  <Ionicons
+                                    name="close-circle"
+                                    size={24}
+                                    color="red"
+                                  />
+                                </TouchableOpacity>
+                              </View>
+                            ))}
+                          </View>
+                        )}
                       </View>
                     </Animated.View>
+
                     <Button
                       style={{
                         height: 56,
@@ -229,5 +265,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "rgba(255,255,255,0.8)",
     marginTop: 4,
+  },
+  imagePreviewContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 10,
+  },
+  imageWrapper: {
+    position: "relative",
+    borderRadius: 10,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 4,
   },
 });

@@ -6,14 +6,23 @@ import {
 } from "@tanstack/react-query";
 import { Image, View, Text, ActivityIndicator } from "react-native";
 import { fetchAvatar } from "./services";
+import { useGobalStoreContext } from "@/store/global-context";
 
 const queryClient = new QueryClient();
 
-export function Avatar({ size = 40 }: { size?: number }) {
+export function Avatar({
+  size = 40,
+  showGreeting = false,
+}: {
+  size?: number;
+  showGreeting?: boolean;
+}) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["avatar"],
     queryFn: fetchAvatar,
   });
+  const { userData } = useGobalStoreContext();
+  console.log(userData);
 
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -31,16 +40,21 @@ export function Avatar({ size = 40 }: { size?: number }) {
 
   if (data) {
     return (
-      <Image
-        source={{ uri: data.url }}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: 0,
-          marginBottom: 10,
-        }}
-        resizeMode="cover"
-      />
+      <View className="flex items-center flex-row gap-2">
+        <Image
+          source={{ uri: data.url }}
+          style={{
+            width: size,
+            height: size,
+            borderRadius: 0,
+            marginBottom: 10,
+          }}
+          resizeMode="cover"
+        />
+        {showGreeting && (
+          <Text className="font-medium">Hi, {userData?.first_name}</Text>
+        )}
+      </View>
     );
   }
 

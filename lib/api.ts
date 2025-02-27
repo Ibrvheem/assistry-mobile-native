@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const url = "https://9ce2-197-210-71-32.ngrok-free.app";
+const url = "https://f08d-102-91-4-120.ngrok-free.app";
 
 const getAuthHeader = async () => {
   const token = await AsyncStorage.getItem("token");
@@ -90,9 +90,10 @@ export const api = {
     return handleResponse(response);
   },
 
-  formData: async (endpoint: string, formData: FormData) => {
+  formData: async (formData: FormData) => {
     const authHeader = await getAuthHeader();
-    const response = await fetch(`${url}/${endpoint}`, {
+    console.log(formData);
+    const response = await fetch(`${url}/upload`, {
       method: "POST",
       headers: {
         ...authHeader,

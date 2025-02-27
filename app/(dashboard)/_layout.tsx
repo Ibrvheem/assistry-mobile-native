@@ -79,13 +79,21 @@ export default function DashboardLayout() {
       />
 
       <Tabs.Screen
-        name="profile"
+        name="profile/profile"
         options={{
           tabBarLabelStyle: { display: "none" },
           tabBarIcon: ({ color, size }) => (
             <UserCircleIcon color={color} size={size} />
           ),
           title: "Profile",
+        }}
+      />
+      <Tabs.Screen
+        name="profile/edit/index"
+        options={{
+          tabBarStyle: { display: "none" },
+          href: null,
+          title: "Messages",
         }}
       />
     </Tabs>

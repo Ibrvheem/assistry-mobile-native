@@ -10,7 +10,7 @@ const CircularProgress = ({
   totalTime: number;
 }) => {
   // Calculate the progress (percentage) based on time remaining
-  const progress = (timeLeft / totalTime) * 100;
+  const progress = timeLeft / totalTime;
 
   const radius = 15; // Smaller radius for a smaller circle
   const strokeWidth = 4; // Slightly smaller stroke width

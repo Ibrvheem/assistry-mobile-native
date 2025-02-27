@@ -134,7 +134,7 @@ export default function TaskDetailsScreen() {
             />
             <View style={styles.imageContent}>
               <Text style={styles.incentive}>
-                {formatCurrency(data?.incentive * 100)}
+                {formatCurrency(data?.incentive)}
               </Text>
               <Text style={styles.postedAt}>{task.postedAt}</Text>
             </View>
@@ -230,7 +230,7 @@ export default function TaskDetailsScreen() {
                 <Text style={styles.acceptButtonText}>Accept Task</Text>
                 <View style={styles.acceptButtonAmount}>
                   <Text style={styles.acceptButtonAmountText}>
-                    {formatCurrency(data?.incentive * 100)}
+                    {formatCurrency(data?.incentive)}
                   </Text>
                 </View>
               </>

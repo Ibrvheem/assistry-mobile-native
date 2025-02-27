@@ -27,6 +27,7 @@ import { Avatar } from "../avatar";
 import TaskCard from "@/components/dashboard/TaskCard";
 import WalletCard from "@/components/dashboard/WalletCard";
 import { router } from "expo-router";
+import EmptyTaskState from "@/components/molecules/empty-task-state";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0);
@@ -55,27 +56,35 @@ export default function Index() {
         <WalletCard balance={2000} spent={1500} />
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Campus Tasks</Text>
-          {data?.map((each) => {
-            return (
-              <TaskCard
-                title={each.task}
-                description={each.description}
-                incentive={each.incentive}
-                location={each.location ?? "Coke Village"}
-                postedBy={`${each.user.first_name} ${each.user.last_name}`}
-                postedAt={each.created_at}
-                imageUrl="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
-                onPress={() => {
-                  router.push({
-                    pathname: "/tasks/[id]",
-                    params: { id: each._id },
-                  });
+          {data?.length > 0 ? (
+            data?.map((each) => {
+              return (
+                <TaskCard
+                  title={each.task}
+                  description={each.description}
+                  incentive={each.incentive}
+                  location={each.location ?? "Coke Village"}
+                  postedBy={`${each.user.first_name} ${each.user.last_name}`}
+                  postedAt={each.created_at}
+                  imageUrl={
+                    each?.assets[0]?.url
+                      ? each?.assets[0]?.url
+                      : "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
+                  }
+                  onPress={() => {
+                    router.push({
+                      pathname: "/tasks/[id]",
+                      params: { id: each._id },
+                    });
 
-                  console.log("Task pressed:", each.id);
-                }}
-              />
-            );
-          })}
+                    console.log("Task pressed:", each.id);
+                  }}
+                />
+              );
+            })
+          ) : (
+            <EmptyTaskState />
+          )}
         </View>
       </ScrollView>
     </View>
