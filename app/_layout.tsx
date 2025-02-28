@@ -13,7 +13,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 export { ErrorBoundary } from "expo-router";
 import { createTamagui, TamaguiProvider, View } from "tamagui";
 import defaultConfig from "@tamagui/config/v3";
-import { Image, LogBox, StatusBar, Text, TouchableOpacity } from "react-native";
+import { Image, LogBox, Platform, Text, TouchableOpacity } from "react-native";
 import {
   QueryClient,
   QueryClientProvider,
@@ -28,7 +28,7 @@ import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CreateTaskModal from "@/components/organism/create-task-modal";
 import { getUsers } from "./(dashboard)/services";
-StatusBar.setBarStyle("dark-content");
+import { StatusBar } from "expo-status-bar";
 const config = createTamagui(defaultConfig);
 
 export const unstable_settings = {
@@ -129,6 +129,8 @@ function RootLayoutNav() {
               />
             </Stack>
           </ThemeProvider>
+          <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+
           <CreateTaskModal open={open} setOpen={setOpen} />
         </TamaguiProvider>
       </GlobalStoreProvider>

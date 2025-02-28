@@ -19,11 +19,11 @@ import Animated, {
   SlideInDown,
   FadeOut,
 } from "react-native-reanimated";
-import { useQuery } from "@tanstack/react-query";
-import { getTask } from "./services";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { acceptTask, getTask } from "./services";
 import { formatCurrency } from "@/lib/helpers";
 import TaskDetailsSkeleton from "@/components/tasks/task-details-loading-skeleton";
-import { TaskSchema } from "../types";
+import { TaskSchema, TaskStatus } from "../types";
 
 const categoryColors = {
   academic: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
@@ -46,14 +46,18 @@ export default function TaskDetailsScreen() {
     queryFn: () => getTask(id),
   }) as { data: TaskSchema; isLoading: boolean; error: unknown };
 
-  const assets = useMemo(() => data?.assets ?? [], [data]);
+  const assets = useMemo(() => (data?.assets ? [...data.assets] : []), [data]);
 
+  const queryClient = useQueryClient();
   const handleAcceptTask = async () => {
     try {
       setAcceptanceState("accepting");
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
+      const response = await acceptTask({ taskId: id });
+      await queryClient.invalidateQueries({
+        queryKey: ["by-you", "for-you", "accepted", `task-${id}`],
+      });
       setAcceptanceState("accepted");
-      setTimeout(() => router.back(), 1000);
+      return response;
     } catch {
       setAcceptanceState("error");
       setTimeout(() => setAcceptanceState("idle"), 3000);
@@ -67,7 +71,7 @@ export default function TaskDetailsScreen() {
   ) : (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Animated.View entering={FadeIn.duration(300)}>
+        <View>
           <SafeAreaView style={styles.header}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color="#000" />
@@ -152,14 +156,16 @@ export default function TaskDetailsScreen() {
               renderItem={({ item }) => (
                 <Image
                   source={{
-                    uri: item?.url || "https://via.placeholder.com/200",
+                    uri:
+                      item?.url ||
+                      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZSUyMHBob3RvJTIwaGF1c2F8ZW58MHx8MHx8fDA%3D",
                   }}
                   style={styles.additionalImage}
                 />
               )}
             />
           </View>
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* Accept Task Button */}
@@ -172,12 +178,24 @@ export default function TaskDetailsScreen() {
         >
           <Pressable
             onPress={() => setShowAcceptConfirm(true)}
-            disabled={acceptanceState !== "idle"}
             style={styles.acceptButtonContent}
           >
-            {acceptanceState === "idle" && (
+            {data.status === TaskStatus.PENDING ? (
               <>
-                <Text style={styles.acceptButtonText}>Accept Task</Text>
+                <Text style={styles.acceptButtonText}>
+                  {acceptanceState === "accepting"
+                    ? "Accepting..."
+                    : " Accept Task"}
+                </Text>
+                <View style={styles.acceptButtonAmount}>
+                  <Text style={styles.acceptButtonAmountText}>
+                    {formatCurrency(data?.incentive)}
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={styles.acceptButtonText}>Accepted</Text>
                 <View style={styles.acceptButtonAmount}>
                   <Text style={styles.acceptButtonAmountText}>
                     {formatCurrency(data?.incentive)}
@@ -224,10 +242,11 @@ export default function TaskDetailsScreen() {
                 <Pressable
                   onPress={() => {
                     setShowAcceptConfirm(false);
+
                     handleAcceptTask();
                   }}
                 >
-                  <Text style={styles.confirmAcceptText}>Accept</Text>
+                  <Text style={styles.confirmAcceptText}>{"Accept"}</Text>
                 </Pressable>
               </LinearGradient>
             </View>

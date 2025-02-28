@@ -25,7 +25,7 @@ export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["by-you"],
+    queryKey: ["for-you"],
     queryFn: getForYou,
   });
 

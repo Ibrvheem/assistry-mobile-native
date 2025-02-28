@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const url = "https://280a-197-210-53-14.ngrok-free.app";
+const url = "https://ea0f-197-210-53-14.ngrok-free.app";
 
 const getAuthHeader = async () => {
   const token = await AsyncStorage.getItem("token");

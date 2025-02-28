@@ -12,19 +12,25 @@ import { io } from "socket.io-client";
 import { Input, Separator } from "tamagui";
 import { PaperAirplaneIcon } from "react-native-heroicons/outline";
 import { Avatar } from "@/app/avatar";
-import { useGobalStoreContext } from "@/store/global-context"; // Fixed typo
+import { useGobalStoreContext } from "@/store/global-context";
 import { router, useLocalSearchParams } from "expo-router";
 import dayjs from "dayjs";
+import { getContact } from "@/app/(auth)/services";
+import { useQuery } from "@tanstack/react-query";
 
-const SOCKET_URL = "https://bc38-197-210-53-228.ngrok-free.app";
+const SOCKET_URL = "https://ea0f-197-210-53-14.ngrok-free.app";
 
 const MessageDetail = () => {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams() as { id: string };
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const flatListRef = useRef<FlatList>(null);
   const socketRef = useRef(null);
-  const { userData } = useGobalStoreContext(); // Fixed typo
+  const { userData } = useGobalStoreContext();
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getContact(id),
+  });
 
   if (!id) {
     router.push("/(dashboard)");
@@ -41,12 +47,10 @@ const MessageDetail = () => {
 
     socket.on("receiveMessage", (newMessage) => {
       if (newMessage.senderId !== userData.id) {
-        // Prevent duplicate for own messages
         setMessages((prev) => [...prev, newMessage]);
       }
     });
 
-    // Fetch chat history when component mounts
     socket.emit("getChatHistory", { user1: userData.id, user2: id });
 
     socket.on("chatHistory", (history) => {
@@ -68,47 +72,74 @@ const MessageDetail = () => {
       createdAt: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, newMessage]); // Optimistic update
-    socketRef.current?.emit("sendMessage", newMessage); // Send to server
-    setMessage(""); // Clear input
+    setMessages((prev) => [...prev, newMessage]);
+    socketRef.current?.emit("sendMessage", newMessage);
+    setMessage("");
+  };
+
+  const renderMessages = () => {
+    let lastDate = null;
+
+    return messages.map((item, index) => {
+      const messageDate = dayjs(item.createdAt);
+      const showDate = !lastDate || !dayjs(lastDate).isSame(messageDate, "day");
+      lastDate = item.createdAt;
+
+      return (
+        <View key={index}>
+          {showDate && (
+            <View className="flex items-center my-3">
+              <Text className="bg-gray-300 px-4 py-2 rounded-full text-gray-700 text-xs font-semibold">
+                {messageDate.format("MMMM D, YYYY")}
+              </Text>
+            </View>
+          )}
+
+          <View
+            className={`max-w-[80%] mb-3 p-4 rounded-xl shadow-lg ${
+              item.senderId === userData.id
+                ? "from-green-400 rounded-br-none"
+                : "from-gray-200  rounded-bl-none"
+            }`}
+          >
+            <Text
+              className={
+                item.senderId === userData.id
+                  ? "text-white text-base"
+                  : "text-gray-900 text-base"
+              }
+            >
+              {item.message}
+            </Text>
+          </View>
+        </View>
+      );
+    });
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-gray-100">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View className="flex-1 px-6">
-          {/* Header */}
-          <View className="items-center mt-4">
+        <View className="flex-1 px-5 py-4">
+          {/* User Info */}
+          <View className="items-center mb-4">
             <Avatar size={70} />
-            <Text className="text-lg">Musa Lawan</Text>
-            <Text className="text-sm text-gray-500">
-              musalawan@assistry.com
+            <Text className="text-2xl font-semibold text-gray-800 mt-2">
+              {data?.first_name} {data?.last_name}
             </Text>
+            <Text className="text-sm text-gray-500">{data?.email}</Text>
             <Separator />
           </View>
 
-          {/* Messages List */}
+          {/* Messages */}
           <FlatList
             ref={flatListRef}
-            data={messages}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View
-                className={`w-[70%] mb-2 p-2 rounded-xl ${
-                  item.senderId === userData.id
-                    ? "bg-indigo-500 ml-auto rounded-br-none"
-                    : "bg-pink-500 rounded-bl-none"
-                }`}
-              >
-                <Text className="text-white">{item.message}</Text>
-                <Text className="text-white text-xs">
-                  {dayjs(item.createdAt).format("H:mma")}
-                </Text>
-              </View>
-            )}
+            data={[{}]}
+            keyExtractor={() => "dummy"}
+            renderItem={renderMessages}
             contentContainerStyle={{ flexGrow: 1, paddingVertical: 10 }}
             showsVerticalScrollIndicator={false}
             onContentSizeChange={() =>
@@ -116,19 +147,19 @@ const MessageDetail = () => {
             }
           />
 
-          {/* Chat Input */}
-          <View className="flex-row items-center p-2 border-t border-gray-200 bg-white">
+          {/* Input Field */}
+          <View className="flex-row items-center p-4 border-t border-gray-200 bg-white shadow-md rounded-2xl">
             <Input
-              className="flex-1 px-3 py-2 bg-gray-100 rounded-full"
-              placeholder="Type message"
+              className="flex-1 px-4 py-3 bg-gray-100 rounded-full border border-gray-300 text-gray-800"
+              placeholder="Type a message..."
               value={message}
               onChangeText={setMessage}
             />
             <TouchableOpacity
-              className="h-10 w-10 bg-indigo-500 rounded-full flex items-center justify-center ml-2"
+              className="h-12 w-12 bg-green-600 rounded-full flex items-center justify-center ml-3 shadow-lg"
               onPress={sendMessage}
             >
-              <PaperAirplaneIcon size={20} color="white" />
+              <PaperAirplaneIcon size={24} color="white" />
             </TouchableOpacity>
           </View>
         </View>

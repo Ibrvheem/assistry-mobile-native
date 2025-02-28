@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export enum TaskStatus {
+  ACCEPTED = "accepted",
+  DECLINED = "declined",
+  PENDING = "pending",
+  COMPLETED = "completed",
+  CANCELED = "canceled",
+}
+
 export const createTaskPayload = z.object({
   task: z.string(),
   description: z.string().optional(),
@@ -10,6 +18,7 @@ export const createTaskPayload = z.object({
 export const taskSchema = z.object({
   _id: z.string(),
   task: z.string(),
+  status: z.nativeEnum(TaskStatus),
   description: z.string().optional(),
   incentive: z.number(),
   expires: z.number(),
