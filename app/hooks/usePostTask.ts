@@ -13,7 +13,6 @@ export function usePostTask({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const [images, setImages] = useState<string[]>([]);
-  const {invalidateQueqries} =
 
   const methods = useForm({
     // resolver: zodResolver(createTaskSchema),
@@ -26,10 +25,9 @@ export function usePostTask({
     onSuccess: () => {
       router.push("/(dashboard)");
       setOpen(false);
-      const queryClient = useQueryClient()
-      
-      queryClient.invalidateQueries({ queryKey: ['todos'] })
-      
+      const queryClient = useQueryClient();
+
+      queryClient.invalidateQueries({ queryKey: ["by-you"] });
     },
     onError: (error) => {
       console.error("Error Fetching Data:", error);

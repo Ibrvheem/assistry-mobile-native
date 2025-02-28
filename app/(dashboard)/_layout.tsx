@@ -5,6 +5,7 @@ import {
   Cog6ToothIcon,
   ChatBubbleLeftIcon,
   UserCircleIcon,
+  ListBulletIcon,
 } from "react-native-heroicons/outline";
 
 export default function DashboardLayout() {
@@ -47,16 +48,24 @@ export default function DashboardLayout() {
       />
 
       <Tabs.Screen
-        name="messages/index"
+        name="tasks/index"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerStyle: { backgroundColor: "white" },
           headerTitleStyle: { color: "black" },
-          headerTitle: "Messages",
           tabBarLabelStyle: { display: "none" },
           tabBarIcon: ({ color, size }) => (
-            <ChatBubbleLeftIcon color={color} size={size} />
+            <ListBulletIcon color={color} size={size} />
           ),
+          title: "Messages",
+        }}
+      />
+
+      <Tabs.Screen
+        name="messages/index"
+        options={{
+          tabBarStyle: { display: "none" },
+          href: null,
           title: "Messages",
         }}
       />

@@ -1,33 +1,26 @@
 import {
   View,
   Text,
-  SafeAreaView,
   useWindowDimensions,
   ScrollView,
   LogBox,
   StyleSheet,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Button } from "tamagui";
-import Svg, { Path } from "react-native-svg";
-import Animated, {
+import React, { useState } from "react";
+import {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
 import { useQuery } from "@tanstack/react-query";
-import { getByYou, getForYou } from "./services";
-import dayjs from "dayjs";
-import { formatCurrency } from "@/lib/helpers";
-import { useGobalStoreContext } from "@/store/global-context";
-import AssistEmptyState from "@/components/atoms/assist-empty-state";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Avatar } from "../avatar";
-import TaskCard from "@/components/dashboard/TaskCard";
+import { getForYou } from "./services";
 import WalletCard from "@/components/dashboard/WalletCard";
 import { router } from "expo-router";
 import EmptyTaskState from "@/components/molecules/empty-task-state";
+import { TaskSchema } from "./types";
+import WalletCardSkeleton from "@/components/dashboard/wallet-card-skeleton";
+import TaskCard from "@/components/dashboard/TaskCard";
+import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
 export default function Index() {
   const [tabs, setTabs] = useState("for-you");
   const indicatorPosition = useSharedValue(0);
@@ -47,7 +40,15 @@ export default function Index() {
       },
     ],
   }));
-  return (
+  return isLoading ? (
+    <View
+      className="h-full"
+      style={{ backgroundColor: "white", boxSizing: "border-box" }}
+    >
+      <WalletCardSkeleton />
+      <TaskLoadingSkeleton />
+    </View>
+  ) : (
     <View
       className="h-full"
       style={{ backgroundColor: "white", boxSizing: "border-box" }}
@@ -57,14 +58,18 @@ export default function Index() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Campus Tasks</Text>
           {data?.length > 0 ? (
-            data?.map((each) => {
+            data?.map((each: TaskSchema) => {
               return (
                 <TaskCard
                   title={each.task}
-                  description={each.description}
+                  description={each?.description ?? ""}
                   incentive={each.incentive}
                   location={each.location ?? "Coke Village"}
-                  postedBy={`${each.user.first_name} ${each.user.last_name}`}
+                  postedBy={
+                    each?.user
+                      ? `${each.user.first_name} ${each.user.last_name}`
+                      : "You"
+                  }
                   postedAt={each.created_at}
                   imageUrl={
                     each?.assets[0]?.url
@@ -76,8 +81,6 @@ export default function Index() {
                       pathname: "/tasks/[id]",
                       params: { id: each._id },
                     });
-
-                    console.log("Task pressed:", each.id);
                   }}
                 />
               );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   Dimensions,
+  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -21,41 +22,8 @@ import Animated, {
 import { useQuery } from "@tanstack/react-query";
 import { getTask } from "./services";
 import { formatCurrency } from "@/lib/helpers";
-
-const { width } = Dimensions.get("window");
-
-// Mock data - replace with real data fetching
-const mockTask = {
-  id: "4",
-  title: "Lab Equipment Setup",
-  description:
-    "Need help setting up equipment for tomorrow's Chemistry lab (CHEM202). Experience with spectrophotometers preferred. The setup includes calibrating the instruments, preparing standard solutions, and ensuring all safety protocols are in place. This is a great opportunity for Chemistry students to gain hands-on experience with professional lab equipment.",
-  incentive: 35,
-  location: "Chemistry Building, Lab 305",
-  imageUrl:
-    "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=400",
-  postedBy: "Prof. David L.",
-  postedAt: "1 hour ago",
-  category: "academic",
-  requirements: [
-    "Experience with spectrophotometers",
-    "Basic knowledge of lab safety",
-    "Available for 2 hours",
-    "Must be a Chemistry student",
-  ],
-  additionalImages: [
-    "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=400",
-    "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=400",
-  ],
-  posterProfile: {
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400",
-    rating: 4.9,
-    tasksPosted: 15,
-    department: "Chemistry Department",
-    memberSince: "Sep 2024",
-  },
-};
+import TaskDetailsSkeleton from "@/components/tasks/task-details-loading-skeleton";
+import { TaskSchema } from "../types";
 
 const categoryColors = {
   academic: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
@@ -68,49 +36,37 @@ const categoryColors = {
 
 export default function TaskDetailsScreen() {
   const { id } = useLocalSearchParams() as { id: string };
-  console.log(id, "id here");
   const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
   const [acceptanceState, setAcceptanceState] = useState<
     "idle" | "accepting" | "accepted" | "error"
   >("idle");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const task = mockTask; // In real app, fetch task by id
-  const categoryColor =
-    categoryColors[task.category as keyof typeof categoryColors];
 
   const { data, isLoading, error } = useQuery({
     queryKey: [`task-${id}`],
     queryFn: () => getTask(id),
-  });
-  console.log("singletask", data);
+  }) as { data: TaskSchema; isLoading: boolean; error: unknown };
+
+  const assets = useMemo(() => data?.assets ?? [], [data]);
 
   const handleAcceptTask = async () => {
     try {
       setAcceptanceState("accepting");
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
       setAcceptanceState("accepted");
-      setTimeout(() => {
-        router.back();
-      }, 1000);
-    } catch (error) {
+      setTimeout(() => router.back(), 1000);
+    } catch {
       setAcceptanceState("error");
-      setErrorMessage("Failed to accept task. Please try again.");
-      setTimeout(() => {
-        setAcceptanceState("idle");
-        setErrorMessage(null);
-      }, 3000);
+      setTimeout(() => setAcceptanceState("idle"), 3000);
     }
   };
 
-  return (
+  return isLoading ? (
+    <View className="flex-1 bg-white">
+      <TaskDetailsSkeleton />
+    </View>
+  ) : (
     <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeIn.duration(300)}>
           <SafeAreaView style={styles.header}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
@@ -121,12 +77,15 @@ export default function TaskDetailsScreen() {
             </Pressable>
           </SafeAreaView>
 
+          {/* Main Image */}
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: task.imageUrl }}
+              source={{
+                uri:
+                  data?.assets?.[0]?.url || "https://via.placeholder.com/300",
+              }}
               style={styles.mainImage}
               contentFit="cover"
-              transition={200}
             />
             <LinearGradient
               colors={["transparent", "rgba(0,0,0,0.7)"]}
@@ -136,41 +95,32 @@ export default function TaskDetailsScreen() {
               <Text style={styles.incentive}>
                 {formatCurrency(data?.incentive)}
               </Text>
-              <Text style={styles.postedAt}>{task.postedAt}</Text>
+              <Text style={styles.postedAt}>{data?.created_at}</Text>
             </View>
           </View>
 
+          {/* Task Details */}
           <View style={styles.content}>
             <Text style={styles.title}>{data?.task}</Text>
 
+            {/* User Info */}
             <Pressable style={styles.posterContainer}>
               <Image
-                source={{ uri: task.posterProfile.image }}
+                source={{
+                  uri: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZSUyMHBob3RvJTIwaGF1c2F8ZW58MHx8MHx8fDA%3D",
+                }}
                 style={styles.posterImage}
                 contentFit="cover"
-                transition={200}
               />
               <View style={styles.posterInfo}>
                 <Text style={styles.posterName}>
-                  {data?.user.first_name} {data?.user.last_name}
+                  {data?.user?.first_name} {data?.user?.last_name}
                 </Text>
                 <View style={styles.posterStats}>
-                  <View style={styles.stat}>
-                    <Ionicons name="star" size={16} color="#FFD700" />
-                    <Text style={styles.statText}>
-                      {task.posterProfile.rating}
-                    </Text>
-                  </View>
-                  <View style={styles.stat}>
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={16}
-                      color="#4CAF50"
-                    />
-                    <Text style={styles.statText}>
-                      {task.posterProfile.tasksPosted} tasks
-                    </Text>
-                  </View>
+                  <Ionicons name="star" size={16} color="#FFD700" />
+                  <Text style={styles.statText}>3.03</Text>
+                  <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                  <Text style={styles.statText}>10 tasks</Text>
                 </View>
               </View>
               <Pressable style={styles.viewProfile}>
@@ -178,52 +128,52 @@ export default function TaskDetailsScreen() {
               </Pressable>
             </Pressable>
 
+            {/* Location */}
             <View style={styles.locationContainer}>
               <Ionicons
                 name="location"
                 size={20}
-                color={categoryColor.primary}
+                color={categoryColors.delivery.primary}
               />
               <Text style={styles.location}>{data?.location}</Text>
             </View>
 
+            {/* Description */}
             <Text style={styles.sectionTitle}>Description</Text>
             <Text style={styles.description}>{data?.description}</Text>
 
+            {/* Additional Photos */}
             <Text style={styles.sectionTitle}>Additional Photos</Text>
-            <ScrollView
+            <FlatList
+              data={assets}
               horizontal
+              keyExtractor={(item, index) => index.toString()}
               showsHorizontalScrollIndicator={false}
-              style={styles.additionalImages}
-            >
-              {task.additionalImages.map((img, index) => (
+              renderItem={({ item }) => (
                 <Image
-                  key={index}
-                  source={{ uri: img }}
+                  source={{
+                    uri: item?.url || "https://via.placeholder.com/200",
+                  }}
                   style={styles.additionalImage}
-                  contentFit="cover"
-                  transition={200}
                 />
-              ))}
-            </ScrollView>
+              )}
+            />
           </View>
         </Animated.View>
       </ScrollView>
 
-      <Animated.View
-        style={styles.bottomBar}
-        entering={SlideInDown.springify()}
-      >
+      {/* Accept Task Button */}
+      <View style={styles.bottomBar}>
         <LinearGradient
-          colors={categoryColor.gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          colors={
+            [...categoryColors.events.gradient] as [string, string, ...string[]]
+          }
           style={styles.acceptButton}
         >
           <Pressable
             onPress={() => setShowAcceptConfirm(true)}
-            style={styles.acceptButtonContent}
             disabled={acceptanceState !== "idle"}
+            style={styles.acceptButtonContent}
           >
             {acceptanceState === "idle" && (
               <>
@@ -235,30 +185,11 @@ export default function TaskDetailsScreen() {
                 </View>
               </>
             )}
-            {acceptanceState === "accepting" && (
-              <View style={styles.acceptingContainer}>
-                <Ionicons
-                  name="sync"
-                  size={24}
-                  color="#fff"
-                  style={styles.spinningIcon}
-                />
-                <Text style={styles.acceptButtonText}>Accepting...</Text>
-              </View>
-            )}
-            {acceptanceState === "accepted" && (
-              <View style={styles.acceptedContainer}>
-                <Ionicons name="checkmark-circle" size={24} color="#fff" />
-                <Text style={styles.acceptButtonText}>Task Accepted!</Text>
-              </View>
-            )}
-            {acceptanceState === "error" && (
-              <Text style={styles.errorText}>{errorMessage}</Text>
-            )}
           </Pressable>
         </LinearGradient>
-      </Animated.View>
+      </View>
 
+      {/* Confirmation Modal */}
       {showAcceptConfirm && (
         <Animated.View
           style={styles.confirmModal}
@@ -279,7 +210,13 @@ export default function TaskDetailsScreen() {
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </Pressable>
               <LinearGradient
-                colors={categoryColor.gradient}
+                colors={
+                  categoryColors.events.gradient as [
+                    string,
+                    string,
+                    ...string[],
+                  ]
+                }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={[styles.confirmButton, styles.confirmAcceptButton]}
@@ -300,7 +237,6 @@ export default function TaskDetailsScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
