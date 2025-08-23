@@ -187,14 +187,7 @@ export default function SignInPage() {
             {" "}
             {/* Provide the form context */}
             <View className="mt-6 w-full">
-              {error && (
-                <Text
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-sm  text-[#f85959]"
-                >
-                  {error.toString()}
-                </Text>
-              )}
+              
               <Text 
                 className="mt-2 mb-2 text-[#1C332B]"
                 style={{
@@ -215,6 +208,14 @@ export default function SignInPage() {
                 placeholder="CST/18/IFT/00111"
                 placeholderTextColor="#9CA3AF"  
               />
+              {error && (
+                <Text
+                  style={{ fontFamily: "PoppinsBold" }}
+                  className="text-sm  text-[#f85959]"
+                >
+                  {error.toString()}
+                </Text>
+              )}
               <View className="flex-row justify-end mt-2">
               <Button
                 style={{ fontFamily: "PoppinsBold", color: "white"}}
