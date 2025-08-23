@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image, LogBox } from "react-native";
+import { View, Text, SafeAreaView, Image,ImageBackground, LogBox } from "react-native";
 import React from "react";
 import { Button, Input, Spinner } from "tamagui";
 import { useNavigation } from "@react-navigation/native";
@@ -23,35 +23,90 @@ export default function SignInPage() {
   return (
     <View className="bg-[#DFF0DF] bg-opacity-0 h-full">
       <SafeAreaView>
+         {/* Background photo */}
+        <ImageBackground
+          source={require("../../assets/logos/bck.png")} // your photo
+          className="w-full h-96 rounded-md overflow-hidden mt-6"
+          resizeMode="cover"
+        >
+          {/* Left logo (top-left) */}
+          <View className="absolute top-4 left-4">
+            <View className="rounded-lg p-1 shadow">
+              <Image
+                source={require("../../assets/logos/image.png")}
+                style={{ width: 48, height: 48 }} // tweak size
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+
+          {/* Right logos cluster (top-right) */}
+          <View className="absolute top-4 right-4 flex-row items-center">
+            {/* first right logo */}
+            <View className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
+              <Image
+                source={require("../../assets/logos/udus.png")}
+                style={{ width: 25, height: 25 }}
+                resizeMode="contain"
+              />
+            </View>
+
+            {/* overlapping logos: use negative margin to overlap */}
+            <View style={{ marginLeft: -10 }} className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
+              <Image
+                source={require("../../assets/logos/abu.png")}
+                style={{ width: 25, height: 25 }}
+                resizeMode="contain"
+              />
+            </View>
+
+            <View style={{ marginLeft: -10 }} className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
+              <Image
+                source={require("../../assets/logos/buk.jpg")}
+                style={{ width: 25, height: 25 }}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+        </ImageBackground>
+        {/* <View className="mt-6">
+          <Image
+                source={require("../../assets/logos/Frame 4.png")}
+                // style={{ width: 300, height: 400 }}
+                className="rounded-md"
+              />
+        </View> */}
         <View className="p-4">
-          <View className="space-y-4 ">
-            <View className="flex flex-row items-center gap-2 w-full">
+          <View className="space-y-4">
+            {/* <View className="flex flex-row items-center gap-2 w-full">
               <Image
                 source={require("../../assets/logos/image.png")}
                 style={{ width: 50, height: 50 }}
                 className="rounded-md"
               />
-            </View>
+            </View> */}
             <View className="space-y-2">
               <Text
-                className="text-3xl mt-8 text-[#1C332B]"
+                className="text-[#1C332B]"
                 style={{ fontFamily: "PoppinsBold" }}
               >
-                Welcome! Let’s Assist You In 🥳
+                Welcome To Assistry! 
               </Text>
-              <Text className="text-lg font-bold text-[#1C332B]">
-                Please provide your registration number.
+              <Text
+                className="text-[#1C332B]"
+                style={{ fontFamily: "PoppinsBold" }}
+              >
+                Your all in one campus solutions
               </Text>
-              <Text className="text-lg  text-[#1C332B">
-                This ensures your safety and the safety of others on the
-                platform.
+              <Text className="text-[#1C332B">
+                Get STarted by putting in Your REG NO 
               </Text>
             </View>
           </View>
           <FormProvider {...methods}>
             {" "}
             {/* Provide the form context */}
-            <View className="mt-12 w-full">
+            <View className="mt-2 w-full">
               {error && (
                 <Text
                   style={{ fontFamily: "PoppinsBold" }}
