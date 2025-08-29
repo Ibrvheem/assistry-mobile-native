@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import {Deposit,} from "./types";
 
 export async function getByYou() {
   const response = await api.get("tasks/by-you");
@@ -18,6 +19,15 @@ export async function getYourTaskAcceptedByOthers() {
 }
 export async function getAvailable() {
   const response = await api.get("tasks/available");
+  return response;
+}
+export async function getWallet() {
+  const response = await api.get("wallet");
+  return response;
+}
+
+export async function deposit(payload: Deposit) {
+  const response = await api.post("wallet/deposit", payload);
   return response;
 }
 export async function getUsers() {

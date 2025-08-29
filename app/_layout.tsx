@@ -111,16 +111,16 @@ function RootLayoutNav() {
                       <Avatar showGreeting={true} />
                     </>
                   ),
-                  headerRight: () => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                        setOpen(true);
-                      }}
-                    >
-                      <Text className="text-2xl">➕</Text>
-                    </TouchableOpacity>
-                  ),
+                  // headerRight: () => (
+                  //   <TouchableOpacity
+                  //     onPress={() => {
+                  //       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                  //       setOpen(true);
+                  //     }}
+                  //   >
+                  //     <Text className="text-2xl">➕</Text>
+                  //   </TouchableOpacity>
+                  // ),
                 }}
               />
               <Stack.Screen

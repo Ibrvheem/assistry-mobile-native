@@ -95,6 +95,21 @@ export default function CreateTaskModal({
                     </Text>
                   )}
 
+                  <Button 
+                  style={styles.closeButton2}
+                  onPress={() => setOpen(false)}>
+                  <Text>Close</Text>
+                  </Button>
+
+
+                  {/* Close button now actually closes the modal */}
+                  {/* <Pressable
+                  onPress={() => setOpen(false)}
+                  style={styles.closeButton}
+                  accessibilityLabel="Close"
+                  >
+                  <Text style={styles.closeButtonText}>×</Text>
+                  </Pressable> */}
                   <FormProvider {...methods}>
                     <ControlledInput
                       name="task"
@@ -289,4 +304,31 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 4,
   },
+closeButton: {
+position: "absolute",
+top: 12,
+right: 12,
+width: 36,
+height: 36,
+borderRadius: 18,
+backgroundColor: "#000",
+alignItems: "center",
+justifyContent: "center",
+zIndex: 10,
+},
+closeButton2: {
+  position: "absolute",
+width: 'auto',
+height: 6,
+ top: 10,          // distance from top
+  right: 10,        // distance from right
+borderRadius: 18,
+backgroundColor:'DBCBCB'
+},
+closeButtonText: {
+color: "#fff",
+fontSize: 20,
+lineHeight: 20,
+fontWeight: "700",
+},
 });

@@ -1,7 +1,8 @@
 import Cookies from "js-cookie";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const url = "https://ea0f-197-210-53-14.ngrok-free.app";
+// const url = "https://8ca91dbe2935.ngrok-free.app";
+const url = "https://assistry-backend.onrender.com";
 
 const getAuthHeader = async () => {
   const token = await AsyncStorage.getItem("token");
@@ -26,21 +27,75 @@ const handleResponse = async (response: Response) => {
 };
 
 export const api = {
+  // get: async (endpoint: string, params?: any) => {
+  //   const authHeader = await getAuthHeader();
+  //   // console.log("PAYLOAD:", params);
+  //   const response = await fetch(`${url}/${endpoint}`, {
+  //     headers: {
+  //       ...authHeader,
+  //       "Content-Type": "application/json",
+  //     },
+  //     cache: "no-store",
+  //     ...params,
+  //   });
+  //   return handleResponse(response);
+  // },
+
   get: async (endpoint: string, params?: any) => {
     const authHeader = await getAuthHeader();
-    const response = await fetch(`${url}/${endpoint}`, {
+
+    // support either api.get('x', { params: {...} }) or api.get('x', {...})
+    // const paramObj = params?.params ?? params ?? {};
+    const raw = params?.params ?? params ?? {};
+    const { _: _, ...withoutUnderscore } = raw; // drop "_" if present
+    const paramObj = Object.fromEntries(
+      Object.entries(withoutUnderscore).filter(([k, v]) => v !== undefined && v !== null)
+    );
+
+    // build query string
+    const qs = new URLSearchParams();
+    Object.entries(paramObj).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) qs.append(k, String(v));
+    });
+
+    const fullUrl = `${url}/${endpoint}${qs.toString() ? `?${qs.toString()}` : ''}`;
+
+    // console.log('GET URL:', fullUrl);
+
+    console.log(qs.toString());
+
+    const response = await fetch(fullUrl, {
+      method: 'GET',
       headers: {
         ...authHeader,
-        "Content-Type": "application/json",
+        // no Content-Type needed for GET
       },
-      cache: "no-store",
-      ...params,
+      cache: 'no-store',
     });
+
+//     try {
+//   const urlObj = new URL(fullUrl);
+//   console.log('QUERY PARAMS:', Array.from(urlObj.searchParams.entries()));
+// } catch (e) {
+//   console.log('cannot parse URL', fullUrl);
+// }
+
+// console.log('STATUS', response.status, response.statusText);
+//   // Try parse JSON first, otherwise text
+//   let body;
+//   try {
+//     body = await response.json();
+//   } catch {
+//     body = await response.text();
+//   }
+//   console.log('RESPONSE BODY', body);
+
     return handleResponse(response);
   },
 
   post: async (endpoint: string, payload: any) => {
     const authHeader = await getAuthHeader();
+    // console.log("PAYLOAD:", payload);
     const response = await fetch(`${url}/${endpoint}`, {
       method: "POST",
       headers: {
@@ -49,6 +104,7 @@ export const api = {
       },
       body: JSON.stringify(payload),
     });
+    // console.log("REPONSE:", response);
     return handleResponse(response);
   },
 

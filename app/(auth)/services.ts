@@ -15,17 +15,31 @@ export function getContact(id: string) {
   return response;
 }
 export function getStudentData(payload: VerifyStudentRegNo) {
+  // console.log("Sending request to:", payload);
   const response = api.post("udus", payload);
+  // console.log("Sending request to:", response);
   return response;
 }
 
+// export function requestOTP(payload: RequestOTPPayload) {
+//   const response = api.post("auth/send-otp", payload);
+
+//   return response;
+// }
+// export function verifyOTP(payload: VerifyOTP) {
+//   const response = api.post("auth/verify-otp", payload);
+//   return response;
+// }
+
 export function requestOTP(payload: RequestOTPPayload) {
-  const response = api.post("auth/send-otp", payload);
+  console.log('PAYLOAD', payload);
+  const response = api.post("otp/send", payload);
+  console.log('response', response);
 
   return response;
 }
 export function verifyOTP(payload: VerifyOTP) {
-  const response = api.post("auth/verify-otp", payload);
+  const response = api.post("otp/verify", payload);
   return response;
 }
 

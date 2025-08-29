@@ -3,96 +3,30 @@ import {
   Text,
   useWindowDimensions,
   ScrollView,
+  Pressable,
+  AppState,
+  AppStateStatus,
   LogBox,
   StyleSheet,
 } from "react-native";
-import React, { useState } from "react";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
 import {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import { useQuery } from "@tanstack/react-query";
-import { getForYou } from "./services";
+import { PlusCircleIcon } from "react-native-heroicons/outline";
+// import { useQuery } from "@tanstack/react-query";
+import { getForYou, getWallet } from "./services";
 import WalletCard from "@/components/dashboard/WalletCard";
 import { router } from "expo-router";
 import EmptyTaskState from "@/components/molecules/empty-task-state";
+import CreateTaskModal from "@/components/organism/create-task-modal";
 import { TaskSchema } from "./types";
 import WalletCardSkeleton from "@/components/dashboard/wallet-card-skeleton";
 import TaskCard from "@/components/dashboard/TaskCard";
 import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
-export default function Index() {
-  const [tabs, setTabs] = useState("for-you");
-  const indicatorPosition = useSharedValue(0);
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["for-you"],
-    queryFn: getForYou,
-  });
-
-  const { width } = useWindowDimensions();
-  const containerWidth = width * 0.95;
-  const tabWidth = containerWidth / 2;
-
-  const animatedIndicatorStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: withTiming(indicatorPosition.value * tabWidth),
-      },
-    ],
-  }));
-  return isLoading ? (
-    <View
-      className="h-full"
-      style={{ backgroundColor: "white", boxSizing: "border-box" }}
-    >
-      <WalletCardSkeleton />
-      <TaskLoadingSkeleton />
-    </View>
-  ) : (
-    <View
-      className="h-full"
-      style={{ backgroundColor: "white", boxSizing: "border-box" }}
-    >
-      <ScrollView>
-        <WalletCard balance={2000} spent={1500} />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Campus Tasks</Text>
-          {data?.length > 0 ? (
-            data?.map((each: TaskSchema) => {
-              return (
-                <TaskCard
-                  title={each.task}
-                  description={each?.description ?? ""}
-                  incentive={each.incentive}
-                  location={each.location ?? "Coke Village"}
-                  postedBy={
-                    each?.user
-                      ? `${each.user.first_name} ${each.user.last_name}`
-                      : "You"
-                  }
-                  postedAt={each.created_at}
-                  imageUrl={
-                    each?.assets[0]?.url
-                      ? each?.assets[0]?.url
-                      : "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
-                  }
-                  onPress={() => {
-                    router.push({
-                      pathname: "/tasks/[id]",
-                      params: { id: each._id },
-                    });
-                  }}
-                />
-              );
-            })
-          ) : (
-            <EmptyTaskState />
-          )}
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -104,6 +38,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
+  },
+  taskheader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
   },
   headerTop: {
     flexDirection: "row",
@@ -208,4 +148,143 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginBottom: 8,
   },
+    filterButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#dcfce7",
+    padding: 8,
+    borderRadius: 20,
+  },
+  filterText: { color: "#22C55E", marginLeft: 4, fontWeight: "600" },
 });
+
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+// import { getWallet } from "@/services/wallet"; // 👈 import
+
+export default function Index() {
+  const [tabs, setTabs] = useState("for-you");
+  const [open, setOpen] = useState(false);
+  const [appActive, setAppActive] = useState(true);
+  const queryClient = useQueryClient();
+
+   useEffect(() => {
+    const sub = AppState.addEventListener("change", (next: AppStateStatus) => {
+      setAppActive(next === "active");
+    });
+    return () => sub.remove();
+  }, []);
+
+  const {
+    data: walletData,
+    isLoading: walletLoading,
+    error: walletError,
+    refetch: refetchWallet,
+  } = useQuery({
+  queryKey: ["wallet"],
+  queryFn: getWallet,
+  refetchInterval: appActive ? 300000 : false,
+  refetchIntervalInBackground: false,
+  staleTime: 5000,
+  retry: 1,
+});
+
+  // fetch wallet
+  // const {
+  //   data: walletData,
+  //   isLoading: walletLoading,
+  //   error: walletError,
+  // } = useQuery({
+  //   queryKey: ["wallet"],
+  //   queryFn: getWallet,
+  // });
+
+  // fetch tasks
+  // const {
+  //   data: tasksData,
+  //   isLoading: tasksLoading,
+  //   error: tasksError,
+  // } = useQuery({
+  //   queryKey: ["for-you"],
+  //   queryFn: getForYou,
+  // });
+
+  const {
+    data: tasksData,
+    isLoading: tasksLoading,
+    error: tasksError,
+  } = useQuery({
+    queryKey: ["for-you"],
+    queryFn: getForYou,
+    staleTime: 1000 * 60,
+    retry: 1,
+  });
+
+  useEffect(() => {
+    if (appActive) {
+      refetchWallet();
+    }
+  }, [appActive, refetchWallet]);
+
+  const balance = walletData?.data?.balance_kobo;
+  const spent = walletData?.data?.spent ?? 0;
+
+  return walletLoading || tasksLoading ? (
+    <View className="h-full" style={{ backgroundColor: "white" }}>
+      <WalletCardSkeleton />
+      <TaskLoadingSkeleton />
+    </View>
+  ) : (
+    <View className="h-full" style={{ backgroundColor: "white" }}>
+      <ScrollView>
+        {/* 👇 now balance comes from backend */}
+        <WalletCard balance={balance} spent={spent} />
+
+        <View style={styles.section}>
+          <View style={styles.taskheader}>
+            <Text style={styles.sectionTitle}>Campus Tasks</Text>
+            <Pressable
+              style={styles.filterButton}
+              onPress={() => setOpen(true)}
+            >
+              <PlusCircleIcon size={20} color="#22C55E" />
+              <Text style={styles.filterText}>Post Task</Text>
+            </Pressable>
+          </View>
+
+          <CreateTaskModal open={open} setOpen={setOpen} />
+
+          {tasksData?.length > 0 ? (
+            tasksData.map((each: TaskSchema) => (
+              <TaskCard
+                key={each._id}
+                title={each.task}
+                description={each?.description ?? ""}
+                incentive={each.incentive}
+                location={each.location ?? "Coke Village"}
+                postedBy={
+                  each?.user
+                    ? `${each.user.first_name}`
+                    : "You"
+                }
+                postedAt={dayjs(each.created_at).format("MMMM D, h:mm A")}
+                imageUrl={
+                  each?.assets[0]?.url ??
+                  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
+                }
+                onPress={() =>
+                  router.push({
+                    pathname: "/tasks/[id]",
+                    params: { id: each._id },
+                  })
+                }
+              />
+            ))
+          ) : (
+            <EmptyTaskState />
+          )}
+        </View>
+      </ScrollView>
+    </View>
+  );
+}

@@ -78,6 +78,17 @@ export default function SignIn() {
               >
                 <LoadingChildren loading={loading}>Sign In 🚀</LoadingChildren>
               </Button>
+              <Text className="mt-2">
+                              <Text
+                                onPress={() => {
+                                  router.push("/(auth)");
+                                }}
+                                style={{ fontFamily: "PoppinsBold" }}
+                                className="text-green-500 underline"
+                              >
+                                Sign up
+                              </Text>
+                            </Text>
             </View>
           </FormProvider>
         </View>

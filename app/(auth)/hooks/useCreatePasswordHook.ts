@@ -18,7 +18,7 @@ export function useCreatePasswordHook() {
   const mutation = useMutation({
     mutationFn: createPassword,
     onSuccess: async (data) => {
-      router.push("/(auth)");
+      router.push("/(auth)/signin");
     },
     onError: (error) => {
       console.error("Error Fetching Data:", error);

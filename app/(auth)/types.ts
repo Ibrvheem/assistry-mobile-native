@@ -13,9 +13,14 @@ export const requestOTPPayload = z.object({
   email: z.string().email(),
   phone_no: z.string(),
 });
+// export const verifyOTP = z.object({
+//   email: z.string().email(),
+//   otp: z.string(),
+// });
+
 export const verifyOTP = z.object({
-  email: z.string().email(),
-  otp: z.string(),
+  phone_no: z.string(),
+  code: z.string(),
 });
 export const signInPayload = z.object({
   reg_no: z.string(),

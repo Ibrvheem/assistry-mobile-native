@@ -7,7 +7,16 @@ export enum TaskStatus {
   COMPLETED = "completed",
   CANCELED = "canceled",
 }
+export enum TransactionType {
+  CREDIT = 'credit',
+  DEBIT = 'debit',
+}
 
+export enum TransactionStatus {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+}
 export const createTaskPayload = z.object({
   task: z.string(),
   description: z.string().optional(),
@@ -39,5 +48,23 @@ export const taskSchema = z.object({
   ),
 });
 
+
+export const transactionSchema = z.object({
+  _id: z.string(), // MongoDB ObjectId serialized as string
+  wallet: z.string(), // ObjectId of Wallet
+  type: z.nativeEnum(TransactionType),
+  amount_kobo: z.number().int().nonnegative(), // stored in kobo
+  reference: z.string(), // unique identifier
+  status: z.nativeEnum(TransactionStatus).default(TransactionStatus.PENDING),
+  metadata: z.record(z.any()).default({}),
+  createdAt: z.string(), // ISO date string
+  updatedAt: z.string(), // ISO date string
+});
+export const deposit = z.object({
+  amount_kobo: z.number(),
+});
+
 export type CreateTaskPayload = z.infer<typeof createTaskPayload>;
 export type TaskSchema = z.infer<typeof taskSchema>;
+export type Deposit = z.infer<typeof deposit>;
+export type TransactionSchema= z.infer<typeof transactionSchema>;

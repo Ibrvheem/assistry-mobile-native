@@ -35,43 +35,88 @@ export function usePostTask({
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    if (images.length === 0) {
-      console.log("Error: No images added");
-      return;
-    }
-
+    // if (images.length === 0) {
+    //   console.log("Error: No images added");
+    //   return;
+    // }
     try {
-      const assets = await Promise.all(
-        images.map(async (image) => {
-          const formData = new FormData();
+      let assets: { kind: string | null; assetStorageKey: string }[] = [];
 
-          formData.append("file", {
-            uri: image,
-            name: image.split("/").pop(),
-            type: mime.getType(image) || "image/jpeg",
-          } as any);
+      if (images.length !== 0) {
+        assets = await Promise.all(
+          images.map(async (image) => {
+            const formData = new FormData();
 
-          const response = await api.formData(formData);
-          console.log(response);
-          return {
-            kind: mime.getType(image),
-            assetStorageKey: response.key,
-          };
-        })
-      );
+            formData.append("file", {
+              uri: image,
+              name: image.split("/").pop(),
+              type: mime.getType(image) || "image/jpeg",
+            } as any);
 
-      const payload = {
+            const response = await api.formData(formData);
+            return {
+              kind: mime.getType(image),
+              assetStorageKey: response.key,
+            };
+          })
+        );
+      }
+
+      const payload: any = {
         ...values,
-        assets,
         expires: Number(values.expires),
         incentive: Number(values.incentive),
       };
 
+      if (assets.length > 0) {
+        payload.assets = assets; // only include if exists
+      }
+
       console.log(payload);
       mutation.mutate(payload);
     } catch (error) {
-      console.error("Image Upload Failed:", error);
+      console.error("Submit Failed:", error);
     }
+
+
+    // try {
+
+    //   if (images.length != 0) {
+        
+      
+    //   const assets = await Promise.all(
+    //     images.map(async (image) => {
+    //       const formData = new FormData();
+
+    //       formData.append("file", {
+    //         uri: image,
+    //         name: image.split("/").pop(),
+    //         type: mime.getType(image) || "image/jpeg",
+    //       } as any);
+
+    //       const response = await api.formData(formData);
+    //       console.log(response);
+    //       return {
+    //         kind: mime.getType(image),
+    //         assetStorageKey: response.key,
+    //       };
+    //     })
+    //   );
+
+    //   }
+
+    //   const payload = {
+    //     ...values,
+    //     assets,
+    //     expires: Number(values.expires),
+    //     incentive: Number(values.incentive),
+    //   };
+
+    //   console.log(payload);
+    //   mutation.mutate(payload);
+    // } catch (error) {
+    //   console.error("Submit Failed:", error);
+    // }
   });
 
   return {

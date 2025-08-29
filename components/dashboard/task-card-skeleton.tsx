@@ -45,10 +45,10 @@ export const TaskCardSkeleton = () => {
   return (
     <View style={styles.taskCardSkeleton}>
       <SkeletonLoader width={80} height={80} style={styles.imagePlaceholder} />
-      <View style={styles.textContainer}>
+      {/* <View style={styles.textContainer}>
         <SkeletonLoader width={160} height={20} style={styles.marginBottom} />
         <SkeletonLoader width={120} height={15} />
-      </View>
+      </View> */}
     </View>
   );
 };

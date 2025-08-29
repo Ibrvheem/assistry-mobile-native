@@ -18,7 +18,7 @@ export default function OTP() {
     router.push("/(auth)");
     return null;
   }
-  const { sendOTP } = useSendOTP(studentData?.email);
+  const { sendOTP } = useSendOTP(studentData?.email,studentData?.phone_no);
 
   const handleInputChange = (text: string, index: number) => {
     if (/^\d?$/.test(text)) {
@@ -102,9 +102,13 @@ export default function OTP() {
               className={"h-14 bg-green-500 w-full"}
               onPress={() => {
                 const otpCode = otp.join("");
+                // verifyOTP({
+                //   email: studentData.email,
+                //   otp: otpCode,
+                // });
                 verifyOTP({
-                  email: studentData.email,
-                  otp: otpCode,
+                  phone_no: studentData.phone_no,
+                  code: otpCode,
                 });
               }}
             >

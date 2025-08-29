@@ -18,7 +18,7 @@ export default function SignInPage() {
     router.push("/(auth)");
     return null; // Prevent rendering if no student data
   }
-  const { sendOTP, loading } = useSendOTP(studentData.email);
+  const { sendOTP, loading } = useSendOTP(studentData.email, studentData.phone_no);
 
   const handleOtpPress = () => {
     router.push("/(auth)/otp");
@@ -34,7 +34,7 @@ export default function SignInPage() {
         <View className="p-4">
           {/* Header Section */}
           <View className="space-y-4">
-            <View className="flex flex-row items-center gap-2 w-full">
+            <View className="flex flex-row items-center gap-2 w-full mt-12">
               <Image
                 source={require("../../assets/logos/image.png")}
                 style={{ width: 50, height: 50 }}
@@ -43,23 +43,66 @@ export default function SignInPage() {
             </View>
             <View className="space-y-2">
               <Text
-                className="text-3xl mt-12 text-[#1C332B]"
-                style={{ fontFamily: "PoppinsBold" }}
+                className="mt-12 mb-16 text-[#1C332B]"
+                style={{
+                   fontFamily: "Lato",
+                    fontWeight: "700",
+                    fontSize: 26,
+                    lineHeight: 26,
+                    color: "#1C332B",
+                 }}
               >
-                Is this your phone number? {"\n"}{" "}
-                {formatPhoneNumber(studentData.phone_no)}
+                Confirm your phone number?
+               
               </Text>
-              <Text className="text-lg font-bold text-[#1C332B]">
+              <View
+                                className="mt-10 w-fit"
+                                style={{
+                                  backgroundColor: "#091D17",
+                                  borderRadius: 12,
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 20,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    color: "#DFF0DF",
+                                    fontSize: 37,
+                                    fontFamily: "Lato",
+                                    fontWeight: "900",
+                                    textAlign:'center',
+                                    letterSpacing:7
+                                  }}
+                                >
+                                  {formatPhoneNumber(studentData.phone_no)}
+                                </Text>
+              </View>
+              <Text 
+                              className="mt-2 mb-2 text-[#1C332B]"
+                              style={{
+                                fontFamily: "Lato",
+                                fontWeight: "800",
+                                fontSize: 16,
+                                lineHeight: 20,
+                                fontStyle: "italic",         // centers text horizontally
+                                letterSpacing: 0.5,           // slight spacing for readability
+                                color: "#1C332B",             // keeps brand color
+                                opacity: 0.8,              // softer look
+                              }}
+                            >
+                              A 6-digit OTP will be sent for confirmation.
+              </Text>
+              {/* <Text className="text-lg font-bold text-[#1C332B]">
                 A 6-digit OTP will be sent for confirmation.
-              </Text>
+              </Text> */}
             </View>
           </View>
 
           {/* Button Section */}
-          <View className="mt-36 w-full">
+          <View className="w-full">
             <Button
               style={{ fontFamily: "PoppinsBold", color: "white" }}
-              className="h-14 bg-green-500 w-full mb-4"
+              className="h-14 bg-green-500 w-full mb-4 mt-10"
               onPress={() =>
                 sendOTP({
                   email: studentData.email,

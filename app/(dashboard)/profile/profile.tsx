@@ -14,20 +14,22 @@ import {
   UserMinusIcon,
 } from "react-native-heroicons/outline";
 import { router, useRouter } from "expo-router";
+import { useGobalStoreContext } from "@/store/global-context";
 
 export default function ProfilePage() {
   const { replace } = useRouter();
+  const { userData } = useGobalStoreContext();
   return (
     <ScrollView className="flex-1 bg-white">
       <SafeAreaView>
         <View className="bg-white flex items-center mt-12">
           <Avatar size={100} />
-          <Text>Ibrahim Aliyu</Text>
+          <Text>{userData?.first_name}</Text>
           <Text
             className="text-slate-600 text-xs"
             style={{ fontFamily: "poppins" }}
           >
-            i.aliyu019@gmail.com
+            {userData?.email}
           </Text>
           <Button className="rounded-3xl bg-black !text-white font-semibold text-sm mt-2">
             <Text
@@ -47,7 +49,11 @@ export default function ProfilePage() {
             User
           </Text>
           <View className="bg-gray-100 rounded-2xl border border-gray-300 p-2 px-4">
-            <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400">
+            <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400"
+            onPress={() => {
+                            router.push("/(dashboard)/tasks");
+                          }}>
+            
               <View className="flex items-center justify-center w-10 h-10 p-1 bg-white rounded-xl border border-gray-300">
                 <DocumentIcon color={"gray"} size={20} />
               </View>
@@ -59,7 +65,10 @@ export default function ProfilePage() {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center">
+            <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center"
+            onPress={() => {
+                            router.push("/(dashboard)/transactions");
+                          }}>
               <View className="flex items-center justify-center w-10 h-10 p-1 bg-white rounded-xl border border-gray-300">
                 <BanknotesIcon color={"gray"} size={20} />
               </View>

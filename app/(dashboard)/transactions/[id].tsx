@@ -19,7 +19,6 @@ import Animated, {
   SlideInDown,
   FadeOut,
 } from "react-native-reanimated";
-import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { acceptTask, getTask } from "./services";
 import { formatCurrency } from "@/lib/helpers";
@@ -87,7 +86,7 @@ export default function TaskDetailsScreen() {
             <Image
               source={{
                 uri:
-                  data?.assets?.[0]?.url || "https://collection.cloudinary.com/dvihh0qu2/643fc511542ea7dc6ddfdf1026e5a677",
+                  data?.assets?.[0]?.url || "https://via.placeholder.com/300",
               }}
               style={styles.mainImage}
               contentFit="cover"
@@ -100,7 +99,7 @@ export default function TaskDetailsScreen() {
               <Text style={styles.incentive}>
                 {formatCurrency(data?.incentive)}
               </Text>
-              <Text style={styles.postedAt}>{dayjs(data.created_at).format("MMMM D, h:mm A")}</Text>
+              <Text style={styles.postedAt}>{data?.created_at}</Text>
             </View>
           </View>
 

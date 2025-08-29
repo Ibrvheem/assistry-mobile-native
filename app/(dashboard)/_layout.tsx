@@ -10,11 +10,13 @@ import {
 
 export default function DashboardLayout() {
   return (
+
+
     <Tabs
       screenOptions={({ route }) => ({
         tabBarStyle: {
           backgroundColor: "white",
-          height: 80,
+          height: 50,
           borderColor: "transparent",
         },
         tabBarLabelStyle: {
@@ -22,6 +24,7 @@ export default function DashboardLayout() {
           fontWeight: "600",
           color: "gray",
         },
+        tabBarActiveTintColor: "green",
         headerShown: false,
       })}
     >
@@ -46,6 +49,9 @@ export default function DashboardLayout() {
           title: "Settings",
         }}
       />
+
+ 
+
 
       <Tabs.Screen
         name="tasks/index"
@@ -86,6 +92,7 @@ export default function DashboardLayout() {
           title: "Messages",
         }}
       />
+      
 
       <Tabs.Screen
         name="profile/profile"
@@ -105,6 +112,16 @@ export default function DashboardLayout() {
           title: "Messages",
         }}
       />
+
+           <Tabs.Screen
+  name="transactions"            // must match the folder name
+  options={{
+    href: null,
+    // href: null,
+    // tabBarStyle: { display: "none" },
+    // tabBarButton: () => null,    // hide the tab button completely
+  }}
+/>
     </Tabs>
   );
 }

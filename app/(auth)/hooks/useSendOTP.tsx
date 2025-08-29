@@ -8,7 +8,7 @@ import { router } from "expo-router";
 
 const resend = new Resend("re_CWgXYEW4_AeMvnU5vhCDXeF5L7AUaW2FQ");
 
-export function useSendOTP(email: string) {
+export function useSendOTP(email: string, phone_no:string) {
   const mutation = useMutation({
     mutationFn: (payload: RequestOTPPayload) => requestOTP(payload),
 
@@ -16,7 +16,7 @@ export function useSendOTP(email: string) {
       const emailContent = ReactDOMServer.renderToStaticMarkup(
         <PlaidVerifyIdentityEmail validationCode={data.otp} />
       );
-
+      console.log(data);
       try {
         const response = await resend.emails.send({
           from: "Assistry <onboarding@resend.dev>",
@@ -24,7 +24,8 @@ export function useSendOTP(email: string) {
           subject: "Phone Number Verification",
           html: emailContent,
         });
-        router.push("/(auth)/otp");
+        console.warn(response);
+        router.push("/(auth)/otp")
       } catch (error) {
         console.error("Error sending email", error);
       }
