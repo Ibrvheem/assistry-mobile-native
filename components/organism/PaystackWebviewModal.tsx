@@ -54,6 +54,7 @@ import {
   ActivityIndicator,
   Pressable,
   Text,
+  Image,
   StyleSheet,
 } from "react-native";
 import { WebView } from "react-native-webview";
@@ -106,8 +107,14 @@ export default function PaystackWebviewModal({
         {loading && <ActivityIndicator style={{ marginTop: 12 }} />}
 
         <Pressable style={styles.cancelButton} onPress={onClose}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </Pressable>
+          <Image
+                        source={require("../../assets/logos/image.png")}
+                        style={{ width: 48, height: 48, borderRadius:15 }} // tweak size
+                        
+                        resizeMode="contain"
+                      />
+        </Pressable> 
+                      
 
         {/* Webview */}
         <WebView
@@ -117,6 +124,7 @@ export default function PaystackWebviewModal({
           startInLoadingState
           javaScriptEnabled
           originWhitelist={["*"]}
+          onShouldStartLoadWithRequest={() => true} 
         />
        
       </View>
@@ -127,10 +135,9 @@ export default function PaystackWebviewModal({
 const styles = StyleSheet.create({
   cancelButton: {
     padding: 6,
-    width:80,
     margin:15,
-    backgroundColor: "#ef4444",
     borderRadius: 20,
+    marginTop: 60,
     // borderRadius: 18,
   },
   cancelText: {

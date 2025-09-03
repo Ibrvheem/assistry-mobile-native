@@ -1,3 +1,4 @@
+// app/(dashboard)/tasks/index.tsx
 import { useState } from "react";
 import {
   View,
@@ -26,7 +27,8 @@ import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
 import { TaskSchema, TaskStatus } from "../types";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import CreateTaskModal from "@/components/organism/create-task-modal";
+import { Image as RNImage } from "react-native";
+// import CreateTaskModal from "@/components/organism/create-task-modal";
 import { PlusCircleIcon } from "react-native-heroicons/outline";
 dayjs.extend(relativeTime);
 type TabType = "available" | "myPosts" | "inProgress" | "yourToDo" | "accepted";
@@ -72,14 +74,16 @@ export default function TasksPage() {
         : activeTab === "yourToDo"
           ? yourToDo
           : yourTaskAcceptedByOthers;
+          
 
   const renderTaskCard = ({ item }: { item: TaskSchema }) => {
     return (
       <Animated.View entering={FadeIn.duration(300)} style={styles.taskCard}>
+        
         <View style={styles.taskHeader}>
           <Text style={styles.taskTitle}>{item?.task}</Text>
           <View style={styles.incentiveContainer}>
-            <Text style={styles.incentiveLabel}>Reward</Text>
+            {/* <Text style={styles.incentiveLabel}>Reward</Text> */}
             <Text style={styles.incentive}>
               {formatCurrency(item?.incentive)}
             </Text>
@@ -90,9 +94,9 @@ export default function TasksPage() {
           {item?.description}
         </Text>
 
-        {item?.assets && (
+        {item?.assets[0]?.url && (
           <Image
-            source={{ uri: item?.assets[0]?.url }}
+            source={{ uri: item?.assets[0]?.url.replace("auto/upload", "image/upload") }}
             style={styles.taskImage}
             contentFit="cover"
           />
@@ -183,7 +187,7 @@ export default function TasksPage() {
           <Text style={styles.filterText}>Post Task</Text>
         </Pressable>
       </View>
-      <CreateTaskModal open={open} setOpen={setOpen} />
+      {/* <CreateTaskModal open={open} setOpen={setOpen} /> */}
 
       {/* Tabs */}
       <View style={styles.tabContainer}>

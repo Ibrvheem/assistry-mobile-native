@@ -19,7 +19,7 @@ export const requestOTPPayload = z.object({
 // });
 
 export const verifyOTP = z.object({
-  phone_no: z.string(),
+  pin_id: z.string(),
   code: z.string(),
 });
 export const signInPayload = z.object({

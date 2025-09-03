@@ -17,7 +17,7 @@ export function getContact(id: string) {
 export function getStudentData(payload: VerifyStudentRegNo) {
   // console.log("Sending request to:", payload);
   const response = api.post("udus", payload);
-  // console.log("Sending request to:", response);
+  console.log("Sending request to:", response);
   return response;
 }
 

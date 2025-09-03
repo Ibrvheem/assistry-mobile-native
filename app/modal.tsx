@@ -64,13 +64,13 @@ export default function ModalScreen() {
             <FormProvider {...methods}>
               <ControlledInput
                 name="task"
-                label="What’s the task? 👀"
+                label="What’s the task? "
                 placeholder="e.g., Buy groceries"
               />
               <ControlledTextArea
                 rows={8}
                 name="description"
-                label="Describe it in detail ✍️"
+                label="Describe it in detail "
                 placeholder="e.g., Need someone to pick up fruits and vegetables from the market."
               />
               <View className="flex flex-row justify-between bg-transparent gap-2">

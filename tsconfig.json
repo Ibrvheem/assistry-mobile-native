@@ -2,6 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "jsx": "react-jsx", // 👈 important for RN + Expo SDK 49+
+    "types": [
+      "react",
+      "react-native"
+    ],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "paths": {
       "@/*": [
         "./*"
@@ -12,6 +21,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
   ]
 }

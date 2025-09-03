@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image } from "react-native";
+import { View, Text, SafeAreaView, Image,StyleSheet } from "react-native";
 import React from "react";
 import { Button, Input } from "tamagui";
 import { useNavigation } from "@react-navigation/native";
@@ -36,7 +36,7 @@ export default function CreatePassword() {
                 className="text-3xl mt-2 text-[#1C332B]"
                 style={{ fontFamily: "PoppinsBold" }}
               >
-                Create Password 🔐
+                Create Password 
               </Text>
               <Text
                 style={{ fontFamily: "PoppinsMedium" }}
@@ -47,7 +47,7 @@ export default function CreatePassword() {
             </View>
           </View>
           <FormProvider {...methods}>
-            <View className="w-full">
+            <View className="w-full  mt-7">
               <ControlledInput
                 name={"password"}
                 label="Password"
@@ -55,7 +55,7 @@ export default function CreatePassword() {
                 secureTextEntry={true}
               />
             </View>
-            <View className="w-full">
+            <View className="w-full mt-7">
               <ControlledInput
                 name={"confirm_password"}
                 label="Confirm Password"
@@ -63,12 +63,12 @@ export default function CreatePassword() {
                 secureTextEntry={true}
               />
               <Button
-                style={{ fontFamily: "PoppinsBold", color: "white" }}
+                style={styles.btn}
                 className={"h-14 bg-green-500 w-full mt-4"}
                 onPress={() => onSubmit()} // Add onPress handler
               >
                 <LoadingChildren loading={loading}>
-                  Get Started 🚀
+                  Get Started 
                 </LoadingChildren>
               </Button>
             </View>
@@ -78,3 +78,17 @@ export default function CreatePassword() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  started: {
+    fontFamily: "PoppinsBold", color: "white" 
+  },
+   btn: {
+    fontFamily: "PoppinsBold",
+    color: "white",
+    backgroundColor: "green",
+    marginTop: 16,
+    width: "40%",
+    alignSelf: "flex-end"
+  },
+});

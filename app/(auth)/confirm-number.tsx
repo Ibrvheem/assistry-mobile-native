@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image } from "react-native";
+import { View, Text, SafeAreaView, Image, StyleSheet } from "react-native";
 import React from "react";
 import { Button } from "tamagui";
 import { router } from "expo-router";
@@ -6,6 +6,7 @@ import { useGobalStoreContext } from "@/store/global-context";
 import { formatPhoneNumber } from "@/lib/helpers";
 import { useSendOTP } from "./hooks/useSendOTP";
 import LoadingChildren from "@/components/molecules/loading-children";
+import '@/global.css';
 
 export default function SignInPage() {
   const { studentData } = useGobalStoreContext();
@@ -25,7 +26,7 @@ export default function SignInPage() {
   };
 
   const handleChangeNumberPress = () => {
-    router.push("/(auth)");
+    router.push("/(auth)/onboard");
   };
 
   return (
@@ -43,7 +44,7 @@ export default function SignInPage() {
             </View>
             <View className="space-y-2">
               <Text
-                className="mt-12 mb-16 text-[#1C332B]"
+                className="mt-6 mb-0 text-[#1C332B]"
                 style={{
                    fontFamily: "Lato",
                     fontWeight: "700",
@@ -67,7 +68,7 @@ export default function SignInPage() {
                                 <Text
                                   style={{
                                     color: "#DFF0DF",
-                                    fontSize: 37,
+                                    fontSize: 30,
                                     fontFamily: "Lato",
                                     fontWeight: "900",
                                     textAlign:'center',
@@ -78,16 +79,17 @@ export default function SignInPage() {
                                 </Text>
               </View>
               <Text 
-                              className="mt-2 mb-2 text-[#1C332B]"
+                              className="mt-2  text-[#1C332B]"
                               style={{
                                 fontFamily: "Lato",
-                                fontWeight: "800",
-                                fontSize: 16,
+                                fontWeight: "600",
+                                fontSize: 14,
                                 lineHeight: 20,
                                 fontStyle: "italic",         // centers text horizontally
                                 letterSpacing: 0.5,           // slight spacing for readability
                                 color: "#1C332B",             // keeps brand color
-                                opacity: 0.8,              // softer look
+                                opacity: 0.8,   
+                                textAlign:'center'           // softer look
                               }}
                             >
                               A 6-digit OTP will be sent for confirmation.
@@ -99,10 +101,10 @@ export default function SignInPage() {
           </View>
 
           {/* Button Section */}
-          <View className="w-full">
+          <View className="w-full flex-row justify-center gap-x-32 mt-10">
             <Button
-              style={{ fontFamily: "PoppinsBold", color: "white" }}
-              className="h-14 bg-green-500 w-full mb-4 mt-10"
+              style={styles.yes} // <-- use style prop
+              // className="h-14 bg-green-500 w-full mb-4 mt-10"
               onPress={() =>
                 sendOTP({
                   email: studentData.email,
@@ -112,23 +114,23 @@ export default function SignInPage() {
             >
               <Text
                 className="font-bold text-white text-base"
-                style={{ fontFamily: "PoppinsBold" }}
+                style={{ fontFamily: "PoppinsBold", color: "white" }} // ensure text color
               >
                 <LoadingChildren loading={loading}>
-                  Yes, this is my number
+                  Yes
                 </LoadingChildren>{" "}
               </Text>
             </Button>
             <Button
-              style={{ fontFamily: "PoppinsBold" }}
-              className="h-14 bg-transparent w-full"
+              style={styles.no} // <-- use style prop
+              // className="h-14 bg-transparent w-full"
               onPress={handleChangeNumberPress}
             >
               <Text
                 className="font-bold text-[#1C332B] text-base"
-                style={{ fontFamily: "PoppinsBold" }}
+                style={{ fontFamily: "PoppinsBold", color: "#1C332B" }} // ensure text color
               >
-                No, this is not mine
+                No
               </Text>
             </Button>
           </View>
@@ -137,3 +139,26 @@ export default function SignInPage() {
     </View>
   );
 }
+
+
+
+const styles = StyleSheet.create({
+  yes: {
+    fontFamily: "PoppinsBold",
+    // color: "white",
+    backgroundColor: "green",
+    // height: 56, 
+    width: "30%",
+    // marginBottom: 16, 
+    // marginTop: 40, 
+  },
+  no: {
+    fontFamily: "PoppinsBold",
+    backgroundColor: "#9FA09F",
+    // height: 56, 
+    width: "30%",
+    // borderRadius: 8,
+    // justifyContent: "center",
+    // alignItems: "center",
+  },
+});

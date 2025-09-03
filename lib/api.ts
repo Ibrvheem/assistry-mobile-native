@@ -1,7 +1,7 @@
-import Cookies from "js-cookie";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const url = "https://8ca91dbe2935.ngrok-free.app";
+// const url = "https://6980976f8cec.ngrok-free.app";
 const url = "https://assistry-backend.onrender.com";
 
 const getAuthHeader = async () => {
@@ -95,7 +95,7 @@ export const api = {
 
   post: async (endpoint: string, payload: any) => {
     const authHeader = await getAuthHeader();
-    // console.log("PAYLOAD:", payload);
+    console.log("PAYLOAD:", payload);
     const response = await fetch(`${url}/${endpoint}`, {
       method: "POST",
       headers: {
@@ -104,7 +104,7 @@ export const api = {
       },
       body: JSON.stringify(payload),
     });
-    // console.log("REPONSE:", response);
+    console.log("REPONSE:", response);
     return handleResponse(response);
   },
 

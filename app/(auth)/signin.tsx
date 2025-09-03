@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image } from "react-native";
+import { View, Text, SafeAreaView, Image, StyleSheet } from "react-native";
 import React from "react";
 import { Button, Input } from "tamagui";
 import { useNavigation } from "@react-navigation/native";
@@ -9,6 +9,7 @@ import { FormProvider } from "react-hook-form";
 import ControlledInput from "@/components/molecules/controlled-input";
 import LoadingChildren from "@/components/molecules/loading-children";
 import { useSignIn } from "./hooks/useSignIn";
+import '@/global.css'
 
 export default function SignIn() {
   const navigation = useNavigation(); // Get the navigation object
@@ -34,22 +35,21 @@ export default function SignIn() {
             </View>
             <View className="space-y-2 pt-12">
               <Text
-                className="text-3xl mt-2 text-[#1C332B]"
-                style={{ fontFamily: "PoppinsBold" }}
+                // className="text-3xl mt-2 text-[#1C332B]"
+                // style={{ fontFamily: "PoppinsBold" }}
+                style={styles.loginText}
               >
-                Sign In 🚀
+                LOGIN
               </Text>
               <Text
-                style={{ fontFamily: "PoppinsMedium" }}
-                className="text-lg font-bold text-[#1C332B] my-4"
+              style={styles.loginTextDesc}
               >
-                Enter Details Lorem ipsum dolor sit amet consectetur adipisicing
-                elit.
+                Welcome back! Login to access your acccount
               </Text>
             </View>
           </View>
           <FormProvider {...methods}>
-            <View className="w-full">
+            <View className="w-full mt-10">
               {error && (
                 <Text
                   style={{ fontFamily: "PoppinsBold" }}
@@ -64,7 +64,7 @@ export default function SignIn() {
                 placeholder="Enter Registration No"
               />
             </View>
-            <View className="w-full">
+            <View className="w-full mt-7">
               <ControlledInput
                 name={"password"}
                 label="Password"
@@ -72,23 +72,23 @@ export default function SignIn() {
                 secureTextEntry={true}
               />
               <Button
-                style={{ fontFamily: "PoppinsBold", color: "white" }}
+                style={styles.btn}
                 className={"h-14 bg-green-500 w-full mt-4"}
                 onPress={() => onSubmit()} // Add onPress handler
               >
-                <LoadingChildren loading={loading}>Sign In 🚀</LoadingChildren>
+                <LoadingChildren loading={loading}>Login</LoadingChildren>
               </Button>
               <Text className="mt-2">
-                              <Text
-                                onPress={() => {
-                                  router.push("/(auth)");
-                                }}
-                                style={{ fontFamily: "PoppinsBold" }}
-                                className="text-green-500 underline"
-                              >
-                                Sign up
-                              </Text>
-                            </Text>
+                <Text
+                  onPress={() => {
+                    router.push("/(auth)/signup");
+                  }}
+                  style={{ fontFamily: "PoppinsBold" }}
+                  className="text-green-500 underline mt-4"
+                >
+                  create an account
+                </Text>
+              </Text>
             </View>
           </FormProvider>
         </View>
@@ -96,3 +96,31 @@ export default function SignIn() {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  btn: {
+    fontFamily: "PoppinsBold",
+    color: "white",
+    backgroundColor: "#091D17",
+    marginTop: 16,
+    width: "40%",
+    alignSelf: "flex-end"
+  },
+  loginText: {
+  fontFamily: "Fellix-SemiBold", // If you have a specific font file for SemiBold
+  fontWeight: "800",             // Or use numeric weights (100–900)
+  fontSize: 30,                  // No "px" in React Native
+  textAlign: "center",
+},
+
+loginTextDesc: {
+  fontFamily: "Fellix-Medium", // use the actual font file name if you imported Fellix
+  fontWeight: "500",   
+  color: '#333333',
+  fontSize: 14,                // unitless (no "px")
+  lineHeight: 14,              // 100% of fontSize → so same as 12
+  letterSpacing: 0,            // numeric value in RN
+  textAlign: "center",
+  marginTop: 10,               // numeric 
+},
+
+});

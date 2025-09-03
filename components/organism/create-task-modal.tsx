@@ -1,20 +1,20 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+
+// components/organism/create-task-modal.tsx
+import React, { Dispatch, SetStateAction } from "react";
 import {
   View,
   Text,
   Image,
-  Platform,
   ScrollView,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Pressable,
   StyleSheet,
+  Modal,
 } from "react-native";
-import { Button, Label, Sheet, YStack } from "tamagui";
-import { StatusBar } from "expo-status-bar";
+import { Button, YStack } from "tamagui";
 import * as ImagePicker from "expo-image-picker";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 import ControlledInput from "@/components/molecules/controlled-input";
 import ControlledTextArea from "@/components/molecules/controlled-textarea";
 import LoadingChildren from "@/components/molecules/loading-children";
@@ -28,16 +28,13 @@ interface CreateTaskModalProps {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function CreateTaskModal({
-  open,
-  setOpen,
-}: CreateTaskModalProps) {
+export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps) {
   const { methods, onSubmit, loading, error, images, setImages } = usePostTask({
     setOpen,
   });
 
   const pickImage = async () => {
-    if (images.length >= 3) return; // Restrict to 3 images
+    if (images.length >= 3) return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -45,6 +42,7 @@ export default function CreateTaskModal({
       aspect: [4, 3],
       quality: 1,
     });
+
     if (!result.canceled && result.assets.length > 0) {
       setImages((prev) => [...prev, result.assets[0].uri].slice(0, 3));
     }
@@ -55,78 +53,52 @@ export default function CreateTaskModal({
   };
 
   return (
-    <View>
-      <Sheet
-        modal
-        open={open}
-        onOpenChange={setOpen}
-        snapPoints={[80]}
-        dismissOnSnapToBottom
-      >
-        <Sheet.Frame
-          style={{
-            padding: 16,
-            backgroundColor: "white",
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-          }}
-        >
+    <Modal visible={open} animationType="slide" transparent>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
           <YStack space>
             <ScrollView style={{ minHeight: "100%", backgroundColor: "white" }}>
               <KeyboardAwareScrollView>
-                <View
-                  style={{
-                    backgroundColor: "white",
-                    height: "100%",
-                    padding: 16,
-                  }}
-                >
+                <View style={{ backgroundColor: "white", height: "100%" }}>
                   {error && (
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        color: "#D5A247",
-                        backgroundColor: "#EEDD97",
-                        padding: 8,
-                        borderRadius: 5,
-                      }}
-                    >
-                      {error.toString()}
-                    </Text>
+                    <Text style={styles.errorText}>{error.toString()}</Text>
                   )}
 
-                  <Button 
-                  style={styles.closeButton2}
-                  onPress={() => setOpen(false)}>
-                  <Text>Close</Text>
+                  <Button style={styles.closeButton2} onPress={() => setOpen(false)}>
+                    <Text>Close</Text>
                   </Button>
 
-
-                  {/* Close button now actually closes the modal */}
-                  {/* <Pressable
-                  onPress={() => setOpen(false)}
-                  style={styles.closeButton}
-                  accessibilityLabel="Close"
-                  >
-                  <Text style={styles.closeButtonText}>×</Text>
-                  </Pressable> */}
                   <FormProvider {...methods}>
+                    <View
+                    className="mt-7">
                     <ControlledInput
                       name="task"
-                      label="What’s the task? 👀"
+                      label="What’s the task?"
                       placeholder="e.g., Buy groceries"
                     />
+                    </View>
+
+                    <View
+                    className="mt-4"
+                    >
+                    
                     <ControlledTextArea
                       rows={8}
                       name="description"
-                      label="Describe it in detail ✍️"
+                      label="Description"
                       placeholder="e.g., Need someone to pick up fruits and vegetables from the market."
                     />
+                    </View>
+
+                    <View
+                    className="mt-4">
                     <ControlledInput
+                    
                       name="location"
                       label="Location"
                       placeholder="Male Hostel"
                     />
+                    </View>
 
                     <View
                       style={{
@@ -135,18 +107,22 @@ export default function CreateTaskModal({
                         gap: 8,
                       }}
                     >
-                      <View style={{ width: "48%" }}>
+                      <View 
+                      className="mt-4"
+                      style={{ width: "48%" }}>
                         <ControlledInput
                           name="incentive"
-                          label="Reward? 💸"
+                          label="Reward"
                           placeholder="N1000"
                           keyboardType="numeric"
                         />
                       </View>
-                      <View style={{ width: "48%" }}>
+                      <View 
+                      className="mt-4"
+                      style={{ width: "48%" }}>
                         <ControlledInput
                           name="expires"
-                          label="Expires In ⏱️"
+                          label="Expires In"
                           description="EG: 0.5 = 30min, 1 = 1hr"
                           placeholder="0.5"
                           keyboardType="numeric"
@@ -155,34 +131,11 @@ export default function CreateTaskModal({
                     </View>
 
                     <Animated.View entering={FadeInUp.delay(600).springify()}>
-                      <View style={[styles.lastSection]}>
-                        <Text style={[styles.label]}>Add Photos</Text>
-                        <Pressable
-                          style={styles.imageUpload}
-                          onPress={pickImage}
-                          disabled={images.length >= 3}
-                        >
-                          <LinearGradient
-                            colors={["#22C55E", "#4ADE80"]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={styles.imageUploadGradient}
-                          >
-                            <View style={styles.imageUploadContent}>
-                              <Ionicons name="images" size={32} color="#fff" />
-                              <Text style={styles.imageUploadText}>
-                                {images.length >= 3
-                                  ? "Max 3 Images Reached"
-                                  : "Upload Images"}
-                              </Text>
-                              <Text style={styles.imageUploadSubtext}>
+                      <View style={styles.lastSection}>
+                        <Text style={styles.label}>Add Photos</Text>
+                        <Text style={styles.imageUploadSubtext}>
                                 {images.length}/3 images added
                               </Text>
-                            </View>
-                          </LinearGradient>
-                        </Pressable>
-
-                        {/* Image Previews */}
                         {images.length > 0 && (
                           <View style={styles.imagePreviewContainer}>
                             {images.map((img, index) => (
@@ -205,42 +158,79 @@ export default function CreateTaskModal({
                             ))}
                           </View>
                         )}
+                        <Pressable
+                          style={styles.imageUpload}
+                          onPress={pickImage}
+                          disabled={images.length >= 3}
+                        >
+                          <LinearGradient
+                            colors={images.length >= 3 ? ["red", "red"] : ["#22C55E", "#4ADE80"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.imageUploadGradient}
+                          >
+                            <View style={styles.imageUploadContent}>
+                              <Text style={styles.imageUploadText}>Upload</Text>
+                              
+                             <Ionicons
+                                name={images.length >= 3 ? "close-circle" : "images"}
+                                size={28}
+                                color="#fff"
+                              />
+                              {/* <Text style={styles.imageUploadText}>
+                                {images.length >= 3
+                                  ? "Max 3 Images Reached"
+                                  : "Upload Images"}
+                              </Text> */}
+                              
+                            </View>
+                          </LinearGradient>
+                        </Pressable>
+
+                        
                       </View>
                     </Animated.View>
 
                     <Button
-                      style={{
-                        height: 56,
-                        backgroundColor: "#22c55e",
-                        width: "100%",
-                        marginTop: 20,
-                      }}
-                      onPress={() => {
-                        onSubmit();
-                      }}
-                    >
-                      <LoadingChildren loading={loading}>
+                                            style={styles.submitButton}
+                                            onPress={() => onSubmit()}
+                                            disabled={loading}
+                                            opacity={loading ? 0.6 : 1}
+                                          >
+                                            <LoadingChildren loading={loading}>
                         Pay & Submit Task
                       </LoadingChildren>
-                    </Button>
+                    </Button> 
                   </FormProvider>
-
-                  <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
                 </View>
               </KeyboardAwareScrollView>
             </ScrollView>
           </YStack>
-        </Sheet.Frame>
-      </Sheet>
-    </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    maxHeight: "90%",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.05)",
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#D5A247",
+    backgroundColor: "#EEDD97",
+    padding: 8,
+    borderRadius: 5,
   },
   lastSection: {
     borderBottomWidth: 0,
@@ -254,32 +244,31 @@ const styles = StyleSheet.create({
   imageUpload: {
     borderRadius: 20,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
+    marginTop: 10,
     elevation: 5,
+    width: "35%",
+    alignSelf:"flex-end"
+    
   },
   imageUploadGradient: {
-    padding: 24,
+    padding: 10,
   },
   imageUploadContent: {
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 6,
+    
   },
   imageUploadText: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "600",
     color: "#fff",
-    marginTop: 12,
+    // marginTop: 12,
   },
   imageUploadSubtext: {
-    fontSize: 14,
-    color: "rgba(255,255,255,0.8)",
-    marginTop: 4,
+    fontSize: 12,
+    color: "BLACK",
   },
   imagePreviewContainer: {
     flexDirection: "row",
@@ -304,31 +293,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 4,
   },
-closeButton: {
-position: "absolute",
-top: 12,
-right: 12,
-width: 36,
-height: 36,
-borderRadius: 18,
-backgroundColor: "#000",
-alignItems: "center",
-justifyContent: "center",
-zIndex: 10,
-},
-closeButton2: {
-  position: "absolute",
-width: 'auto',
-height: 6,
- top: 10,          // distance from top
-  right: 10,        // distance from right
-borderRadius: 18,
-backgroundColor:'DBCBCB'
-},
-closeButtonText: {
-color: "#fff",
-fontSize: 20,
-lineHeight: 20,
-fontWeight: "700",
-},
+  closeButton2: {
+    // position: "absolute",
+    // top: 8,
+    // right: 10,
+    // paddingHorizontal: 12,
+    height: 32,
+    width: "30%",
+    borderRadius: 16,
+    backgroundColor: "#DBCBCB",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "flex-end",
+  },
+  submitButton: {
+    height: 56,
+    backgroundColor: "#22c55e",
+    width: "100%",
+    marginTop: 6,
+  },
 });

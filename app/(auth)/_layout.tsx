@@ -9,6 +9,7 @@ export default function _layout() {
       <Stack.Screen name="otp" options={{}} />
       <Stack.Screen name="confirm-number" options={{}} />
       <Stack.Screen name="create-password" options={{}} />
+      <Stack.Screen name="onboard" options={{}} />
     </Stack>
   );
 }

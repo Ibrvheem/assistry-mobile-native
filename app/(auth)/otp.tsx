@@ -1,13 +1,18 @@
 import React, { useRef, useState } from "react";
-import { View, Text, SafeAreaView, TextInput } from "react-native";
+import { View, Text, SafeAreaView, TextInput,StyleSheet } from "react-native";
 import { Button } from "tamagui";
 import { router } from "expo-router";
 import { useSendOTP } from "./hooks/useSendOTP";
 import { useGobalStoreContext } from "@/store/global-context";
 import { useVerifyOTP } from "./hooks/useVerifyOTP";
 import LoadingChildren from "@/components/molecules/loading-children";
+import { useLocalSearchParams } from "expo-router";
+
 
 export default function OTP() {
+  const params = useLocalSearchParams<{ pinid: string }>();
+  const pinid = params.pinid;
+
   const { verifyOTP, loading } = useVerifyOTP();
   const { studentData } = useGobalStoreContext();
 
@@ -15,7 +20,7 @@ export default function OTP() {
   const inputs = useRef<TextInput[]>([]);
 
   if (!studentData) {
-    router.push("/(auth)");
+    router.push("/(auth)/onboard");
     return null;
   }
   const { sendOTP } = useSendOTP(studentData?.email,studentData?.phone_no);
@@ -49,10 +54,10 @@ export default function OTP() {
           <View className="space-y-4">
             <View className="space-y-2">
               <Text
-                className="text-3xl mt-8 text-[#1C332B]"
+                className="text-3xl mt-16 text-[#1C332B]"
                 style={{ fontFamily: "PoppinsBold" }}
               >
-                Enter Your OTP Code 📱🔐
+                Enter Your OTP Code 
               </Text>
               <Text className="text-lg font-bold text-[#1C332B]">
                 We've sent a 6-digit OTP to your number. Please enter it below.
@@ -64,7 +69,9 @@ export default function OTP() {
               {otp.map((digit, index) => (
                 <TextInput
                   key={index}
-                  ref={(ref) => (inputs.current[index] = ref!)}
+                  ref={(ref) => {
+                      inputs.current[index] = ref!;
+                    }}
                   value={digit}
                   onChangeText={(text) => handleInputChange(text, index)}
                   onKeyPress={(e) => handleKeyPress(e, index)}
@@ -98,7 +105,7 @@ export default function OTP() {
               </Text>
             </Text>
             <Button
-              style={{ fontFamily: "PoppinsBold", color: "white" }}
+              style={styles.btn}
               className={"h-14 bg-green-500 w-full"}
               onPress={() => {
                 const otpCode = otp.join("");
@@ -107,7 +114,7 @@ export default function OTP() {
                 //   otp: otpCode,
                 // });
                 verifyOTP({
-                  phone_no: studentData.phone_no,
+                  pin_id: pinid,
                   code: otpCode,
                 });
               }}
@@ -120,3 +127,9 @@ export default function OTP() {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  btn: {
+    fontFamily: "PoppinsBold", color: "white", backgroundColor: "green",
+    width: "40%", marginTop: 16,
+  },
+});

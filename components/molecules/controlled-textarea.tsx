@@ -1,58 +1,92 @@
 import React from "react";
-import { Text, View } from "react-native";
-import { useFormContext, Controller } from "react-hook-form"; // Using Controller to handle form registration
-import { TextArea, Label } from "tamagui";
+import {
+  View,
+  Text,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
+import { useFormContext, Controller } from "react-hook-form";
+import { TextArea } from "tamagui";
 
 interface ControlledTextAreaProps {
   name: string;
   placeholder: string;
-  label: string;
-  className?: string;
+  label?: string;
+  description?: string;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   disabled?: boolean;
-  rows?: number; // Optional rows for text area height
+  rows?: number; // optional number of rows
 }
 
 const ControlledTextArea = ({
   name,
   placeholder,
   label,
-  className,
+  description,
+  containerStyle,
+  inputStyle,
   disabled = false,
   rows = 4,
 }: ControlledTextAreaProps) => {
   const {
     control,
     formState: { errors },
-  } = useFormContext(); // Access control and errors from context
+  } = useFormContext();
 
   return (
-    <View>
-      <Text
-        className="font-bold py-2 text-lg text-[#1C332B]"
-        style={{ fontFamily: "PoppinsBold" }}
-      >
-        {label}
-      </Text>
+    <View style={containerStyle}>
+      {label && (
+        <Text
+          style={{
+            // fontFamily: "PoppinsBold",
+            // fontSize: 14,
+            color: "#1C332B",
+            // paddingVertical: 8,
+            marginBottom: 4,
+            fontFamily: "ReadexPro-Medium", // must match the font you load in Expo
+  fontWeight: "500",              // optional if you already have the Medium variant
+  fontSize: 15,                   // no "px"
+  lineHeight: 15,                 // 100% of font size → same as fontSize
+  letterSpacing: 0, 
+          }}
+        >
+          {label}
+        </Text>
+      )}
+
       <Controller
         control={control}
         name={name}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextArea
-            value={value} // Bind value
-            onChangeText={onChange} // Bind onChange handler
-            onBlur={onBlur} // Bind onBlur handler
-            borderWidth={2}
-            rows={rows} // Set rows for height
-            multiline={true} // Enable multiline input
-            style={{ fontFamily: "PoppinsBold" }}
-            className={`w-full mb-1 h-36 text-lg tracking-wider ${disabled && "bg-gray-100 text-gray-400 border-gray-300"} ${className}`}
+            value={value ?? ""} // ✅ default empty string
+            onChangeText={onChange} // ✅ consistent handler
+            onBlur={onBlur}
             placeholder={placeholder}
-            disabled={disabled}
+            editable={!disabled} // ✅ matches Input
+            // borderWidth={2}
+            rows={rows}
+              borderRadius={8}      // rounded corners
+  borderWidth={1}       // 1px border
+  borderColor="#000"    // visible border
+  fontSize={13}         // text-lg equivalent
+  opacity={1}
+            multiline
+            style={[{  fontFamily: "ReadexPro" , fontSize: 16 }, inputStyle]}
           />
         )}
       />
+
+      {description && (
+        <Text style={{ fontSize: 12, color: "#6B7280", fontWeight: "bold" }}>
+          {description}
+        </Text>
+      )}
+
       {errors[name] && (
-        <Text className="text-red-500 mb-2 font-bold">
+        <Text style={{ color: "red", marginBottom: 8, fontWeight: "bold" }}>
           {errors[name]?.message?.toString()}
         </Text>
       )}

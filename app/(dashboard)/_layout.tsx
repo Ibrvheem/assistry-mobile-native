@@ -1,3 +1,4 @@
+// app/(dashboard)/_layout.tsx
 import React from "react";
 import { Tabs } from "expo-router";
 import {
@@ -10,8 +11,6 @@ import {
 
 export default function DashboardLayout() {
   return (
-
-
     <Tabs
       screenOptions={({ route }) => ({
         tabBarStyle: {

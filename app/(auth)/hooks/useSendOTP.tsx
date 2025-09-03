@@ -17,7 +17,12 @@ export function useSendOTP(email: string, phone_no:string) {
       //   <PlaidVerifyIdentityEmail validationCode={data.otp} />
       // );
       console.log(data);
-      router.push("/(auth)/otp")
+      const pinid = data.pin_id;
+      router.push({
+  pathname: "/(auth)/otp",
+  params: { pinid: pinid },
+});
+      // router.push("/(auth)/otp")
       // try {
       //   const response = await resend.emails.send({
       //     from: "Assistry <onboarding@resend.dev>",

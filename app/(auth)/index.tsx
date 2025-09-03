@@ -1,271 +1,371 @@
-import { View, Text, SafeAreaView, Image,ImageBackground, LogBox,  TextInputProps,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-  TextInput,
-  StyleSheet,
-  Pressable, } from "react-native";
-import React from "react";
-import { Button, Input, Spinner } from "tamagui";
-import { useNavigation } from "@react-navigation/native";
-import { router } from "expo-router";
-// import ControlledInput from "@/components/molecules/controlled-input";
-import { FormProvider, useForm ,Controller, useFormContext} from "react-hook-form";
-import { getStudentData } from "./services";
-import { useMutation } from "@tanstack/react-query";
-import { useGobalStoreContext } from "@/store/global-context";
-import { useConfirmRegistrationNo } from "./hooks/useConfirmRegistrationNo";
-import LoadingChildren from "@/components/molecules/loading-children";
+// "use client"
 
+// import { useEffect, useRef } from "react"
+// import { View, Text, Animated, Dimensions, StyleSheet, Image } from "react-native"
+// import { router } from "expo-router"
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// const { width, height } = Dimensions.get("window")
 
-type FormValues = { reg_no: string };
+// export default function SplashScreen() {
+//   const logoSlideAnim = useRef(new Animated.Value(-200)).current
+//   const logoOpacityAnim = useRef(new Animated.Value(0)).current
+//   const textSlideAnim = useRef(new Animated.Value(-120)).current
+//   const textOpacityAnim = useRef(new Animated.Value(0)).current
 
-type ControlledInputProps = TextInputProps & {
-  name: keyof FormValues | string;
-  containerStyle?: StyleProp<ViewStyle>;
-  style?: StyleProp<TextStyle>;
-};
+//   useEffect(() => {
+//     // Start animations
+//     Animated.sequence([
+//       // Logo animation
+//       Animated.parallel([
+//         Animated.timing(logoSlideAnim, {
+//           toValue: 0,
+//           duration: 800,
+//           useNativeDriver: true,
+//         }),
+//         Animated.timing(logoOpacityAnim, {
+//           toValue: 1,
+//           duration: 800,
+//           useNativeDriver: true,
+//         }),
+//       ]),
+//       // Text animation (starts after logo)
+//       Animated.parallel([
+//         Animated.timing(textSlideAnim, {
+//           toValue: 0,
+//           duration: 600,
+//           useNativeDriver: true,
+//         }),
+//         Animated.timing(textOpacityAnim, {
+//           toValue: 1,
+//           duration: 600,
+//           useNativeDriver: true,
+//         }),
+//       ]),
+//     ]).start(() => {
+//       setTimeout(async () => {   // ✅ mark callback as async
+//       // const token = await AsyncStorage.getItem("token");
+//       // if (token) {
+//       //   router.replace("/(dashboard)" as any);
+//       // } else {
+//       //   router.replace("/(auth)/onboard" as any);
+//       // }
+//     }, 3000);
+//     })
+//   }, [])
 
-const ControlledInput: React.FC<ControlledInputProps> = ({
-  name,
-  containerStyle,
-  style,
-  ...props
-}) => {
-  const { control } = useFormContext<FormValues>();
+//   return (
+//     <View style={styles.container}>
+//       {/* Background with diagonal green overlay */}
+//       <View style={styles.background} />
+//       <View style={styles.diagonalOverlay} />
+
+//       {/* Content container */}
+//       <View style={styles.contentContainer}>
+//         {/* Animated Logo */}
+//         <Animated.View
+//           style={[
+//             styles.logoContainer,
+//             {
+//               transform: [{ translateX: logoSlideAnim }],
+//               opacity: logoOpacityAnim,
+//             },
+//           ]}
+//         >
+//           <View style={styles.logoFrame}>
+//             <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
+//           </View>
+//         </Animated.View>
+
+//         {/* Animated Text */}
+//         <Animated.View
+//           style={[
+//             styles.textContainer,
+//             {
+//               transform: [{ translateX: textSlideAnim }],
+//               opacity: textOpacityAnim,
+//             },
+//           ]}
+//         >
+//           <Text style={styles.brandText}>Assistry</Text>
+//           {/* Animated Text */}
+//         <Animated.View
+//         >
+//           <Text style={styles.brandDesc} >Your all in one campus solutions</Text>
+//         </Animated.View>
+//         </Animated.View>
+
+//       </View>
+//     </View>
+//   )
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#091D17",
+//   },
+//   background: {
+//     position: "absolute",
+//     top: 0,
+//     left: 0,
+//     right: 0,
+//     bottom: 0,
+//     backgroundColor: "#091D17",
+//   },
+//   diagonalOverlay: {
+//     position: "absolute",
+//     top: 0,
+//     right: 0,
+//     left: 500,
+//     width: width * 1,
+//     height: height,
+//     backgroundColor: "#4A7C59",
+//     transform: [{ skewX: "-30deg" }],
+//     transformOrigin: "top right",
+//   },
+//   contentContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     flexDirection: "row",
+//     paddingHorizontal: 40,
+//   },
+//   logoContainer: {
+//     marginRight: 20,
+//   },
+//   logoFrame: {
+//     width: 80,
+//     height: 80,
+//     marginLeft: 20,
+//     // backgroundColor: "white",
+//     borderRadius: 20,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     shadowColor: "#000",
+//     shadowOffset: {
+//       width: 0,
+//       height: 4,
+//     },
+//     shadowOpacity: 0.3,
+//     shadowRadius: 8,
+//     elevation: 8,
+//   },
+//   logo: {
+//     width: 80,
+//     height: 80,
+    
+//   },
+//   textContainer: {
+//     flex: 1,
+//   },
+//   brandText: {
+//     fontSize: 48,
+//     fontWeight: "600",
+//     color: "white",
+//     fontFamily: "System",
+//     letterSpacing: -1,
+//   },
+//   brandDesc: {
+//     fontSize: 14,
+//     fontWeight: "400",
+//     color: "white",
+//     fontFamily: "inter",
+//      letterSpacing: -1,
+//      fontStyle: "italic",
+//   }
+// })
+"use client"
+
+import { useEffect, useRef } from "react"
+import { View, Text, Animated, Dimensions, StyleSheet, Image, Easing } from "react-native"
+import { router } from "expo-router"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const { width, height } = Dimensions.get("window")
+
+export default function SplashScreen() {
+  const logoSlideAnim = useRef(new Animated.Value(-200)).current
+  const logoOpacityAnim = useRef(new Animated.Value(0)).current
+
+  const textSlideAnim = useRef(new Animated.Value(-80)).current   // ⬅ start inside logo
+  const textOpacityAnim = useRef(new Animated.Value(0)).current
+
+  const descSlideAnim = useRef(new Animated.Value(30)).current    // ⬇ starts below text
+  const descOpacityAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    Animated.sequence([
+      // 1. Logo anim
+      Animated.parallel([
+        Animated.timing(logoSlideAnim, {
+          toValue: 0,
+          duration: 1000,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoOpacityAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+      ]),
+      // 2. BrandText anim (slides out of logo)
+      Animated.parallel([
+        Animated.timing(textSlideAnim, {
+          toValue: 0,
+          duration: 1200,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+        Animated.timing(textOpacityAnim, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+      ]),
+      // 3. BrandDesc anim (slides upward from text)
+      Animated.parallel([
+        Animated.timing(descSlideAnim, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+        Animated.timing(descOpacityAnim, {
+          toValue: 1,
+          duration: 400,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start(() => {
+      setTimeout(async () => {
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          router.replace("/(dashboard)" as any);
+        } else {
+          router.replace("/(auth)/onboard" as any);
+        }
+      }, 3000);
+    })
+  }, [])
 
   return (
-    <Controller
-      control={control}
-      name={name as keyof FormValues}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-        <View style={containerStyle}>
-          <TextInput
-            value={(value as string) ?? ""}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            placeholderTextColor="#9CA3AF"
-            style={[styles.input, error && styles.inputError, style]} // ✅ styles works here
-            {...props}
-          />
-          {error?.message ? <Text style={styles.errorText}>{error.message}</Text> : null}
-        </View>
-      )}
-    />
-  );
-};
+    <View style={styles.container}>
+      {/* Background with diagonal green overlay */}
+      <View style={styles.background} />
+      <View style={styles.diagonalOverlay} />
 
-export default function SignInPage() {
-  const navigation = useNavigation();
-  const { studentData, setStudentData } = useGobalStoreContext();
-
-  const handlePress = () => {
-    router.push("/(auth)/confirm-number");
-  };
-  const { methods, onSubmit, error, loading } = useConfirmRegistrationNo();
-
-  return (
-    <View className="bg-[#DFF0DF] bg-opacity-0 h-full">
-      <SafeAreaView>
-         {/* Background photo */}
-        <ImageBackground
-          source={require("../../assets/logos/bck.png")} // your photo
-          className="w-full h-96 rounded-md overflow-hidden mt-6"
-          resizeMode="cover"
+      {/* Content container */}
+      <View style={styles.contentContainer}>
+        {/* Animated Logo */}
+        <Animated.View
+          style={[
+            styles.logoContainer,
+            {
+              transform: [{ translateX: logoSlideAnim }],
+              opacity: logoOpacityAnim,
+            },
+          ]}
         >
-          {/* Left logo (top-left) */}
-          <View className="absolute top-4 left-4">
-            <View className="rounded-lg p-1 shadow">
-              <Image
-                source={require("../../assets/logos/image.png")}
-                style={{ width: 48, height: 48 }} // tweak size
-                resizeMode="contain"
-              />
-            </View>
+          <View style={styles.logoFrame}>
+            <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
           </View>
+        </Animated.View>
 
-          {/* Right logos cluster (top-right) */}
-          <View className="absolute top-4 right-4 flex-row items-center">
-            {/* first right logo */}
-            <View className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
-              <Image
-                source={require("../../assets/logos/udus.png")}
-                style={{ width: 25, height: 25 }}
-                resizeMode="contain"
-              />
-            </View>
+        {/* Animated BrandText */}
+        <Animated.View
+          style={[
+            styles.textContainer,
+            {
+              transform: [{ translateX: textSlideAnim }],
+              opacity: textOpacityAnim,
+            },
+          ]}
+        >
+          <Text style={styles.brandText}>Assistry</Text>
 
-            {/* overlapping logos: use negative margin to overlap */}
-            <View style={{ marginLeft: -10 }} className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
-              <Image
-                source={require("../../assets/logos/abu.png")}
-                style={{ width: 25, height: 25 }}
-                resizeMode="contain"
-              />
-            </View>
-
-            <View style={{ marginLeft: -10 }} className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
-              <Image
-                source={require("../../assets/logos/buk.jpg")}
-                style={{ width: 25, height: 25 }}
-                resizeMode="contain"
-              />
-            </View>
-          </View>
-        </ImageBackground>
-        {/* <View className="mt-6">
-          <Image
-                source={require("../../assets/logos/Frame 4.png")}
-                // style={{ width: 300, height: 400 }}
-                className="rounded-md"
-              />
-        </View> */}
-        <View className="p-4">
-          <View className="space-y-4">
-            {/* <View className="flex flex-row items-center gap-2 w-full">
-              <Image
-                source={require("../../assets/logos/image.png")}
-                style={{ width: 50, height: 50 }}
-                className="rounded-md"
-              />
-            </View> */}
-            <View className="space-y-2">
-              <View style={{ alignItems: "center" }}>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontFamily: "Lato",
-                    fontWeight: "700",
-                    fontSize: 26,
-                    lineHeight: 26,
-                    color: "#1C332B",
-                  }}
-                >
-                  Welcome To{" "}
-                </Text>
-
-                <View
-                  style={{
-                    backgroundColor: "#091D17",
-                    borderRadius: 12,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#DFF0DF",
-                      fontSize: 28,
-                      fontFamily: "Lato",
-                      fontWeight: "700",
-                    }}
-                  >
-                    Assistry !
-                  </Text>
-                </View>
-              </View>
-              </View>
-              <Text
-                className="text-[#1C332B]"
-                style={{
-                    fontFamily: "Lato",
-                    fontWeight: "600",
-                    fontSize: 16,
-                    lineHeight: 16,
-                    color: "#1C332B",
-                    textAlign:'center'
-                  }}
-              >
-                Your all in one campus solutions
-              </Text>
-              
-
-            </View>
-          </View>
-          <FormProvider {...methods}>
-            {" "}
-            {/* Provide the form context */}
-            <View className="mt-6 w-full">
-              
-              <Text 
-                className="mt-2 mb-2 text-[#1C332B]"
-                style={{
-                  fontFamily: "Lato",
-                  fontWeight: "600",
-                  fontSize: 16,
-                  lineHeight: 20,
-                  fontStyle: "italic",         // centers text horizontally
-                  letterSpacing: 0.5,           // slight spacing for readability
-                  color: "#1C332B",             // keeps brand color
-                  opacity: 0.8,              // softer look
-                }}
-              >
-                Kindly input Your REG NO to get verified..
-              </Text>
-              <ControlledInput
-                name="reg_no"
-                placeholder="CST/18/IFT/00111"
-                placeholderTextColor="#9CA3AF"  
-              />
-              {error && (
-                <Text
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-sm  text-[#f85959]"
-                >
-                  {error.toString()}
-                </Text>
-              )}
-              <View className="flex-row justify-end mt-2">
-              <Button
-                style={{ fontFamily: "PoppinsBold", color: "white"}}
-                className={"mt-2 h-10 bg-green-500 w-1/4"}
-                onPress={() => onSubmit()}
-              >
-                <LoadingChildren loading={loading}>
-                  Verify
-                </LoadingChildren>
-              </Button>
-              </View>
-              <Text className="mt-2">
-                Have an account?{" "}
-                <Text
-                  onPress={() => {
-                    router.push("/(auth)/signin");
-                  }}
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-green-500 underline"
-                >
-                  Sign In
-                </Text>
-              </Text>
-            </View>
-          </FormProvider>
-        </View>
-      </SafeAreaView>
+          {/* Animated BrandDesc */}
+          <Animated.View
+            style={{
+              transform: [{ translateY: descSlideAnim }],
+              opacity: descOpacityAnim,
+            }}
+          >
+            <Text style={styles.brandDesc}>Your all in one campus solutions</Text>
+          </Animated.View>
+        </Animated.View>
+      </View>
     </View>
-  );
+  )
 }
 
-
 const styles = StyleSheet.create({
-  input: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#1C332B",
+  container: {
+    flex: 1,
+    backgroundColor: "#091D17",
   },
-  inputError: {
-    borderColor: "#EF4444",
+  background: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#091D17",
   },
-  errorText: {
-    color: "#EF4444",
-    marginTop: 4,
-    fontSize: 12,
+  diagonalOverlay: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    left: 500,
+    width: width * 1,
+    height: height,
+    backgroundColor: "#4A7C59",
+    transform: [{ skewX: "-30deg" }],
+    transformOrigin: "top right",
   },
-});
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 40,
+  },
+  logoContainer: {
+    marginRight: 20,
+  },
+  logoFrame: {
+    width: 80,
+    height: 80,
+    marginLeft: 20,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  brandText: {
+    fontSize: 48,
+    fontWeight: "600",
+    color: "white",
+    fontFamily: "System",
+    letterSpacing: -1,
+  },
+  brandDesc: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "white",
+    fontFamily: "inter",
+    letterSpacing: -1,
+    fontStyle: "italic",
+  },
+})

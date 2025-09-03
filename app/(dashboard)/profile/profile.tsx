@@ -21,8 +21,11 @@ export default function ProfilePage() {
   const { userData } = useGobalStoreContext();
   return (
     <ScrollView className="flex-1 bg-white">
-      <SafeAreaView>
-        <View className="bg-white flex items-center mt-12">
+      <SafeAreaView className="bg-white">
+        <View 
+        className="bg-white flex items-center mt-12"
+        style={{ backgroundColor:"white" }}
+        >
           <Avatar size={100} />
           <Text>{userData?.first_name}</Text>
           <Text
@@ -31,23 +34,25 @@ export default function ProfilePage() {
           >
             {userData?.email}
           </Text>
-          <Button className="rounded-3xl bg-black !text-white font-semibold text-sm mt-2">
+          <Button className="rounded-3xl bg-black !text-white font-semibold text-sm mt-2"
+          style={{ fontFamily: "poppins", color: "white", fontWeight: "600", fontSize: 14, backgroundColor: "black", marginTop: 8 }}>
             <Text
               className="text-white font-semibold"
-              style={{ fontFamily: "poppins", color: "white" }}
+              style={{ fontFamily: "poppins", color: "white", fontWeight: "600", fontSize: 14 }}
             >
               Edit profile
             </Text>
           </Button>
         </View>
 
-        <View className="bg-white px-6 mt-6 space-y-2">
-          <Text
+        <View className="bg-white px-6 mt-6 space-y-2"
+         style={{ backgroundColor:"white" }}>
+          {/* <Text
             className="text-sm text-slate-600"
             style={{ fontFamily: "poppins" }}
           >
             User
-          </Text>
+          </Text> */}
           <View className="bg-gray-100 rounded-2xl border border-gray-300 p-2 px-4">
             <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400"
             onPress={() => {
@@ -81,13 +86,14 @@ export default function ProfilePage() {
             </TouchableOpacity>
           </View>
         </View>
-        <View className="bg-white px-6 mt-6 space-y-2">
-          <Text
+        <View className="bg-white px-6 mt-6 space-y-2"
+         style={{ backgroundColor:"white" }}>
+          {/* <Text
             className="text-sm text-slate-600"
             style={{ fontFamily: "poppins" }}
           >
             Contact Support
-          </Text>
+          </Text> */}
           <View className="bg-gray-100 rounded-2xl border border-gray-300 p-2 px-4">
             <TouchableOpacity className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400">
               <View className="flex items-center justify-center w-10 h-10 p-1 bg-white rounded-xl border border-gray-300">
@@ -114,13 +120,14 @@ export default function ProfilePage() {
             </TouchableOpacity>
           </View>
         </View>
-        <View className="bg-white px-6 mt-6 space-y-2">
-          <Text
+        <View className="bg-white px-6 mt-6 space-y-2"
+         style={{ backgroundColor:"white" }}>
+          {/* <Text
             className="text-sm text-slate-600"
             style={{ fontFamily: "poppins" }}
           >
             Account
-          </Text>
+          </Text> */}
           <View className="bg-gray-100 rounded-2xl border border-gray-300 p-2 px-4">
             <TouchableOpacity
               className="bg-transparent py-2 flex flex-row gap-2 items-center border-b-[0.2px] border-gray-400"
