@@ -22,7 +22,7 @@ export default function SignIn() {
   };
 
   return (
-    <View className="bg-[#DFF0DF] bg-opacity-0 h-full">
+    <View className="bg-[#FFFF] bg-opacity-0 h-full">
       <SafeAreaView>
         <View className="p-4">
           <View className="space-y-4 ">

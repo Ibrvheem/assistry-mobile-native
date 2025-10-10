@@ -51,6 +51,7 @@ export const userDataSchema = z.object({
   last_name: z.string(),
   email: z.string(),
   phone_no: z.string(),
+  profile_picture: z.string().nullable(),
 });
 
 export type UserDataSchema = z.infer<typeof userDataSchema>;

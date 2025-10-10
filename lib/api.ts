@@ -1,7 +1,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const url = "https://6980976f8cec.ngrok-free.app";
+// const url = "https://1e9c59cb7eb9.ngrok-free.app";
 const url = "https://assistry-backend.onrender.com";
 
 const getAuthHeader = async () => {

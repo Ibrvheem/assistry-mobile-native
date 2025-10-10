@@ -13,6 +13,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import { cloudinaryUrl } from "@/lib/helpers";
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -87,7 +88,7 @@ export default function TaskDetailsScreen() {
             <Image
               source={{
                 uri:
-                  data?.assets?.[0]?.url || "https://collection.cloudinary.com/dvihh0qu2/643fc511542ea7dc6ddfdf1026e5a677",
+                  data?.assets?.[0]?.url.replace("auto/upload", "image/upload") || "https://collection.cloudinary.com/dvihh0qu2/643fc511542ea7dc6ddfdf1026e5a677",
               }}
               style={styles.mainImage}
               contentFit="cover"
@@ -112,7 +113,9 @@ export default function TaskDetailsScreen() {
             <Pressable style={styles.posterContainer}>
               <Image
                 source={{
-                  uri: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZSUyMHBob3RvJTIwaGF1c2F8ZW58MHx8MHx8fDA%3D",
+                  uri:data?.user?.profile_picture
+                        ? cloudinaryUrl(data?.user?.profile_picture)
+                        : "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZSUyMHBob3RvJTIwaGF1c2F8ZW58MHx8MHx8fDA%3D",
                 }}
                 style={styles.posterImage}
                 contentFit="cover"
@@ -128,7 +131,11 @@ export default function TaskDetailsScreen() {
                   <Text style={styles.statText}>10 tasks</Text>
                 </View>
               </View>
-              <Pressable style={styles.viewProfile}>
+              <Pressable style={styles.viewProfile} 
+              onPress={() => {
+                            // router.push("/(dashboard)/profile/view");
+                             router.push({ pathname: "/profile/view", params: {id:data?.user?._id  } })
+                          }}>
                 <Text style={styles.viewProfileText}>View Profile</Text>
               </Pressable>
             </Pressable>
@@ -154,11 +161,13 @@ export default function TaskDetailsScreen() {
               horizontal
               keyExtractor={(item, index) => index.toString()}
               showsHorizontalScrollIndicator={false}
+
               renderItem={({ item }) => (
+                
                 <Image
                   source={{
                     uri:
-                      item?.url ||
+                      item?.url.replace("auto/upload", "image/upload") ||
                       "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZSUyMHBob3RvJTIwaGF1c2F8ZW58MHx8MHx8fDA%3D",
                   }}
                   style={styles.additionalImage}

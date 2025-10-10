@@ -24,3 +24,10 @@ export function formatCurrency(
     maximumFractionDigits: 2,
   })}`;
 }
+
+ // 🖼️ Helper for Cloudinary URLs
+export function cloudinaryUrl (path?: string): string | undefined {
+    if (!path) return undefined;
+    if (path.startsWith("http")) return path;
+    return `https://res.cloudinary.com/<your-cloud-name>/image/upload/${path}`;
+  };

@@ -10,7 +10,7 @@
 // import { SafeAreaView } from "react-native-safe-area-context";
 // import { io } from "socket.io-client";
 // import { Input, Separator } from "tamagui";
-// import { PaperAirplaneIcon } from "react-native-heroicons/outline";
+// import { PaperAirplaneIcon } from "react-native-heroicons/outline/tsx";
 // import { Avatar } from "@/app/avatar";
 // import { useGobalStoreContext } from "@/store/global-context";
 // import { router, useLocalSearchParams } from "expo-router";

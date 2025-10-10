@@ -27,9 +27,14 @@ import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
 import { TaskSchema, TaskStatus } from "../types";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import CreateTaskModal from "@/components/organism/create-task-modal";
 import { Image as RNImage } from "react-native";
 // import CreateTaskModal from "@/components/organism/create-task-modal";
-import { PlusCircleIcon } from "react-native-heroicons/outline";
+// import { PlusCircleIcon } from "react-native-heroicons/outline/tsx";
+
+import { PlusCircle } from 'lucide-react-native';
+
+
 dayjs.extend(relativeTime);
 type TabType = "available" | "myPosts" | "inProgress" | "yourToDo" | "accepted";
 
@@ -179,15 +184,16 @@ export default function TasksPage() {
         <Text style={styles.title}>Campus Tasks</Text>
         <Pressable
           style={styles.filterButton}
-          onPress={() => {
-            setOpen(true);
-          }}
+          // onPress={() => {
+          //   setOpen(true);
+          // }}
+          onPress={() => setOpen(true)}
         >
-          <PlusCircleIcon size={20} color="#22C55E" />
+          <PlusCircle size={20} color="#22C55E" />
           <Text style={styles.filterText}>Post Task</Text>
         </Pressable>
       </View>
-      {/* <CreateTaskModal open={open} setOpen={setOpen} /> */}
+      <CreateTaskModal open={open} setOpen={setOpen} />
 
       {/* Tabs */}
       <View style={styles.tabContainer}>

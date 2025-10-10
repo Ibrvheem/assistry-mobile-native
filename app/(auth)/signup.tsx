@@ -90,7 +90,7 @@ export default function SignInPage() {
       behavior={keyboardVisible ? (Platform.OS === "ios" ? "padding" : "height") : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
-      <View className="bg-[#DFF0DF] bg-opacity-0 h-full">
+      <View className="bg-[#FFFF] bg-opacity-0 h-full">
         {/* <SafeAreaView> */}
          {/* Background photo */}
         <Animated.View
@@ -110,11 +110,11 @@ export default function SignInPage() {
           // className="w-full h-3/5 rounded-md overflow-hidden mt-6"
           // resizeMode="cover"
 
-          style={{ flex: 1 }}
-          resizeMode="cover"
+          style={{ flex: 1, paddingTop:-300}}
+          resizeMode="contain"
         >
 
-          <View style={{marginTop:50, marginLeft:16}}>
+          <View style={{marginTop:70, marginLeft:16}}>
                                 <Image
                                   source={require("../../assets/logos/image.png")}
                                   style={{ width: 50, height: 50}}
@@ -166,7 +166,7 @@ export default function SignInPage() {
                 className="rounded-md"
               />
             </View> */}
-            <View className="space-y-2">
+            <View className="space-y-0" style={{marginTop:-60}}>
               <View style={{ alignItems: "center" }}>
               <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center" }}>
                 <Text
@@ -175,7 +175,7 @@ export default function SignInPage() {
                     fontWeight: "700",
                     fontSize: 26,
                     lineHeight: 26,
-                    color: "#1C332B",
+                    color: "#091D17",
                   }}
                 >
                   Welcome To{" "}
@@ -183,7 +183,7 @@ export default function SignInPage() {
 
                 <View
                   style={{
-                    backgroundColor: "#091D17",
+                    backgroundColor: "#B0E17C",
                     borderRadius: 12,
                     paddingHorizontal: 10,
                     paddingVertical: 4,
@@ -191,7 +191,7 @@ export default function SignInPage() {
                 >
                   <Text
                     style={{
-                      color: "#DFF0DF",
+                      color: "#091D17",
                       fontSize: 28,
                       fontFamily: "Lato",
                       fontWeight: "700",
@@ -257,7 +257,7 @@ export default function SignInPage() {
               <View className="flex-row justify-end mt-2">
               <Button
                 style={styles.veify}
-                className={"mt-2 h-10 bg-green-500 w-1/4"}
+                className={"mt-2 h-10 w-1/4"}
                 onPress={() => onSubmit()}
               >
                 <LoadingChildren loading={loading}>
@@ -271,8 +271,8 @@ export default function SignInPage() {
                   onPress={() => {
                     router.push("/(auth)/signin");
                   }}
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-green-500 underline"
+                  style={{ fontFamily: "PoppinsBold", color:'#B0E17C' }}
+                  className="text-500 underline"
                 >
                   Sign In
                 </Text>
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   veify:{
-    fontFamily: "PoppinsBold", color: "white", backgroundColor:'green'
+    fontFamily: "PoppinsBold", color: "white", backgroundColor:'#091D17'
   }
 });
 

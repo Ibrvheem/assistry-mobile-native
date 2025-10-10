@@ -5,10 +5,16 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 export default function WalletCardSkeleton() {
   return (
     <LinearGradient
-      colors={["#22C55E", "#4ADE80"]}
+      // colors={["#22C55E", "#4ADE80"]}
+      // style={styles.container}
+      // start={{ x: 0, y: 0 }}
+      // end={{ x: 1, y: 1 }}
+
+      colors={["#0F2027", "#2C7744", "#A8E063"]}
       style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
     >
       <Animated.View entering={FadeIn} exiting={FadeOut}>
         <View style={styles.topSection}>
@@ -17,14 +23,14 @@ export default function WalletCardSkeleton() {
         </View>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <View style={styles.skeletonStatIcon} />
-            <View style={styles.skeletonStatLabel} />
+            {/* <View style={styles.skeletonStatIcon} /> */}
+            {/* <View style={styles.skeletonStatLabel} /> */}
             <View style={styles.skeletonStatAmount} />
           </View>
           <View style={styles.divider} />
           <View style={styles.statItem}>
-            <View style={styles.skeletonStatIcon} />
-            <View style={styles.skeletonStatLabel} />
+            {/* <View style={styles.skeletonStatIcon} /> */}
+            {/* <View style={styles.skeletonStatLabel} /> */}
             <View style={styles.skeletonStatAmount} />
           </View>
         </View>

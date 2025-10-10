@@ -2,9 +2,10 @@
   "expo": {
     "name": "assistry-mobile",
     "slug": "assistry-mobile",
+    "jsEngine": "jsc",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/logos/image.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

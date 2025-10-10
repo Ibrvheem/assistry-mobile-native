@@ -35,8 +35,11 @@ export const taskSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   user: z.object({
+    _id: z.string(),
     first_name: z.string(),
     last_name: z.string(),
+    profile_picture: z.string().nullable(),
+
   }),
   location: z.string(),
   assets: z.array(
@@ -64,7 +67,21 @@ export const deposit = z.object({
   amount_kobo: z.number(),
 });
 
+export const userSchema = z.object({
+  _id: z.string(),
+  first_name:z.string(),
+  last_name:z.string(),
+  profile_picture:z.string().nullable(),
+  email:z.string(),
+  phone_no:z.string(),
+  reg_no:z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  status:z.string()
+});
+
 export type CreateTaskPayload = z.infer<typeof createTaskPayload>;
 export type TaskSchema = z.infer<typeof taskSchema>;
+export type UserSchema = z.infer<typeof userSchema>;
 export type Deposit = z.infer<typeof deposit>;
 export type TransactionSchema= z.infer<typeof transactionSchema>;

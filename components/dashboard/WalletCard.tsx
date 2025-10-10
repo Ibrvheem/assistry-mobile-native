@@ -53,8 +53,9 @@ export default function WalletCard({
   return (
     <>
       <LinearGradient
-        colors={["#22C55E", "#34D399", "#BEEAD5", "#F8FAFF"]}
-        locations={[0, 0.35, 0.7, 1]}
+        // colors={["#143428", "#B0E17C", "#1BAE6A"]}
+        colors={["#0F2027", "#2C7744", "#A8E063"]}
+        locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.container}

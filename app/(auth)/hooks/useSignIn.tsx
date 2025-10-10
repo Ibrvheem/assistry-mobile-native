@@ -10,7 +10,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { createPassword, getUser, signIn } from "../services";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function useSignIn() {

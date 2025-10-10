@@ -7,6 +7,7 @@ import {
 import { Image, View, Text, ActivityIndicator } from "react-native";
 import { fetchAvatar } from "./services";
 import { useGobalStoreContext } from "@/store/global-context";
+import { cloudinaryUrl } from "@/lib/helpers";
 
 const queryClient = new QueryClient();
 
@@ -40,17 +41,21 @@ export function Avatar({
 
   if (data) {
     return (
-      <View className="flex items-center flex-row gap-2">
-        <Image
-          source={{ uri: data.url }}
-          style={{
-            width: size,
-            height: size,
-            borderRadius: 0,
-            marginBottom: 10,
-          }}
-          resizeMode="cover"
-        />
+      <View className="flex items-center flex-row gap-2 ">
+       <Image
+  source={{
+    uri: userData?.profile_picture
+      ? cloudinaryUrl(userData.profile_picture)
+      : data.url,
+  }}
+  style={{
+    width: size,
+    height: size,
+    borderRadius: 60,
+    marginBottom: 10,
+  }}
+  resizeMode="cover"
+/>
         {showGreeting && (
           <Text className="font-medium">Hi, {userData?.first_name}</Text>
         )}

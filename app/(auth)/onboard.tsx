@@ -162,7 +162,7 @@ const Onboarding: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#DFF0DF",
+    backgroundColor: "#FFFF",
   },
   content: {
     flex: 1,
@@ -240,18 +240,18 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 62,
     borderWidth: 2,
-    borderColor: "#091D17",
+    borderColor: "#B0E17C",
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "transparent",
+    backgroundColor: "#B0E17C",
   },
   loginButtonText: {
     fontFamily: "ReadexPro-Medium", // Use system font as fallback
     fontSize: 16,
     fontWeight: "500",
     lineHeight: 20,
-    color: "#091D17",
+    color: "#14342B",
   },
   signUpButton: {
     flex: 1,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     lineHeight: 20,
-    color: "#FFFFFF",
+    color: "#B0E17C",
   },
 })
 

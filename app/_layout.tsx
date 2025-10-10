@@ -193,66 +193,66 @@ export const unstable_settings = {
   initialRouteName: "(dashboard)",
 };
 
-export default function RootLayout(): JSX.Element | null {
-  const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    Poppins: require("../assets/fonts/Poppins/Poppins-Regular.ttf"),
-    PoppinsBold: require("../assets/fonts/Poppins/Poppins-Bold.ttf"),
-    PoppinsMedium: require("../assets/fonts/Poppins/Poppins-Medium.ttf"),
-    ...FontAwesome.font,
-  });
+// export default function RootLayout(): JSX.Element | null {
+//   const [loaded, error] = useFonts({
+//     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+//     Poppins: require("../assets/fonts/Poppins/Poppins-Regular.ttf"),
+//     PoppinsBold: require("../assets/fonts/Poppins/Poppins-Bold.ttf"),
+//     PoppinsMedium: require("../assets/fonts/Poppins/Poppins-Medium.ttf"),
+//     ...FontAwesome.font,
+//   });
 
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
+//   const router = useRouter();
+//   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+//   useEffect(() => {
+//     if (error) throw error;
+//   }, [error]);
 
-  useEffect(() => {
-    async function decideAndHide() {
-      if (!loaded) return;
-      try {
-        const token = await AsyncStorage.getItem("token");
-        router.replace("/(auth)");
-        // if (token) {
-        //   router.replace("/(dashboard)");
-        // } else {
-        //   router.replace("/(auth)");
-        // }
-      } finally {
-        // hide the splash screen once we've made the navigation decision
-        SplashScreen.hideAsync().catch(() => {});
-      }
-    }
-    decideAndHide();
-  }, [loaded]);
+//   useEffect(() => {
+//     async function decideAndHide() {
+//       if (!loaded) return;
+//       try {
+//         const token = await AsyncStorage.getItem("token");
+//         router.replace("/(auth)");
+//         // if (token) {
+//         //   router.replace("/(dashboard)");
+//         // } else {
+//         //   router.replace("/(auth)");
+//         // }
+//       } finally {
+//         // hide the splash screen once we've made the navigation decision
+//         SplashScreen.hideAsync().catch(() => {});
+//       }
+//     }
+//     decideAndHide();
+//   }, [loaded]);
 
-  if (!loaded) return null;
+//   if (!loaded) return null;
 
-  return <ProvidersShell open={open} setOpen={setOpen} />;
-}
+//   return <ProvidersShell open={open} setOpen={setOpen} />;
+// }
 
-function ProvidersShell({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  return (
-    <TamaguiProvider config={config}>
-      <PortalProvider shouldAddRootHost>
-        <QueryClientProvider client={queryClient}>
-          <GlobalStoreProvider>
-            <AppNavigator />
-            <CreateTaskModal open={open} setOpen={setOpen} />
-          </GlobalStoreProvider>
-        </QueryClientProvider>
-      </PortalProvider>
-    </TamaguiProvider>
-  );
-}
+// function ProvidersShell({
+//   open,
+//   setOpen,
+// }: {
+//   open: boolean;
+//   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+// }) {
+//   return (
+//     <TamaguiProvider config={config}>
+//       <PortalProvider shouldAddRootHost>
+//         <QueryClientProvider client={queryClient}>
+//           <GlobalStoreProvider>
+//             <AppNavigator />
+//             <CreateTaskModal open={open} setOpen={setOpen} />
+//           </GlobalStoreProvider>
+//         </QueryClientProvider>
+//       </PortalProvider>
+//     </TamaguiProvider>
+//   );
+// }
 
 function AppNavigator() {
   const colorScheme = useColorScheme();
@@ -292,4 +292,59 @@ function AppNavigator() {
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </>
   );
+}
+
+
+// app/_layout.tsx
+export default function RootLayout(): JSX.Element | null {
+  const [loaded, error] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Poppins: require("../assets/fonts/Poppins/Poppins-Regular.ttf"),
+    PoppinsBold: require("../assets/fonts/Poppins/Poppins-Bold.ttf"),
+    PoppinsMedium: require("../assets/fonts/Poppins/Poppins-Medium.ttf"),
+    ...FontAwesome.font,
+  });
+
+  if (error) throw error;
+  if (!loaded) return null;
+
+  return (
+    <ProvidersShell>
+      <NavigationDecider />
+    </ProvidersShell>
+  );
+}
+
+function ProvidersShell({ children }: { children: React.ReactNode }) {
+  return (
+    <TamaguiProvider config={config}>
+      <PortalProvider shouldAddRootHost>
+        <QueryClientProvider client={queryClient}>
+          <GlobalStoreProvider>
+            {children}
+            <CreateTaskModal open={false} setOpen={() => {}} />
+          </GlobalStoreProvider>
+        </QueryClientProvider>
+      </PortalProvider>
+    </TamaguiProvider>
+  );
+}
+
+
+function NavigationDecider() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const decideAndHide = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        router.replace(token ? "/(dashboard)" : "/(auth)");
+      } finally {
+        SplashScreen.hideAsync().catch(() => {});
+      }
+    };
+    decideAndHide();
+  }, []);
+
+  return <AppNavigator />;
 }

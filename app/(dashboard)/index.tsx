@@ -17,7 +17,7 @@
 //   useAnimatedStyle,
 //   withTiming,
 // } from "react-native-reanimated";
-// import { PlusCircleIcon } from "react-native-heroicons/outline";
+// import { PlusCircle } from "react-native-heroicons/outline/tsx";
 // // import { useQuery } from "@tanstack/react-query";
 // import { getForYou, getWallet } from "./services";
 // import WalletCard from "@/components/dashboard/WalletCard";
@@ -119,7 +119,7 @@ import { useQuery} from "@tanstack/react-query";
 //               style={styles.filterButton}
 //               onPress={() => setOpen(true)}
 //             >
-//               <PlusCircleIcon size={20} color="#22C55E" />
+//               <PlusCircle size={20} color="#22C55E" />
 //               <Text style={styles.filterText}>Post Task</Text>
 //             </Pressable>
 //           </View>
@@ -304,7 +304,10 @@ import TaskCard from "@/components/dashboard/TaskCard";
 import EmptyTaskState from "@/components/molecules/empty-task-state";
 import WalletCardSkeleton from "@/components/dashboard/wallet-card-skeleton";
 import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
-import { PlusCircleIcon } from "react-native-heroicons/outline";
+
+// import { PlusCircle } from "react-native-heroicons/outline/tsx";
+import { PlusCircle } from 'lucide-react-native';
+
 import dayjs from "dayjs";
 import { TaskSchema } from "./types";
 import { getWallet, getForYou } from "./services";
@@ -349,14 +352,16 @@ export default function Index() {
     }
   };
 
-  if (walletLoading || tasksLoading) {
-    return (
-      <View className="h-full" style={{ backgroundColor: "white" }}>
-        <WalletCardSkeleton />
-        <TaskLoadingSkeleton />
-      </View>
-    );
-  }
+  // if (walletLoading || tasksLoading) {
+  //   return (
+  //     <View className="h-full" style={{ backgroundColor: "white" }}>
+  //       <WalletCardSkeleton />
+  //       <TaskLoadingSkeleton />
+  //     </View>
+  //   );
+  // }
+  const tasksLoading1= true; 
+  const walletLoading1= true;
 
   const balance = walletData?.data?.balance_kobo ?? 0;
   const spent = walletData?.data?.spent ?? 0;
@@ -369,9 +374,14 @@ export default function Index() {
         }
       >
         {/* Wallet */}
+{walletLoading ? (
+        <WalletCardSkeleton />
+      ) : (
         <WalletCard balance={balance} spent={spent} />
+      )}
 
         {/* Tasks Section */}
+
         <View style={{ marginTop: 24, paddingBottom: 24 }}>
           <View
             style={{
@@ -394,7 +404,7 @@ export default function Index() {
               }}
               onPress={() => setOpen(true)}
             >
-              <PlusCircleIcon size={20} color="#22C55E" />
+              <PlusCircle size={20} color="#22C55E" />
               <Text style={{ color: "#22C55E", marginLeft: 4, fontWeight: "600" }}>
                 Post Task
               </Text>
@@ -403,29 +413,34 @@ export default function Index() {
 
           <CreateTaskModal open={open} setOpen={setOpen} />
 
-          {tasksData?.length > 0 ? (
-            tasksData.map((each: TaskSchema) => (
-              console.log('EACH Asset', each?.assets),
-              <TaskCard
-                key={each._id}
-                title={each.task}
-                description={each?.description ?? ""}
-                incentive={each.incentive}
-                location={each.location ?? "Coke Village"}
-                postedBy={each?.user ? `${each.user.first_name}` : "You"}
-                postedAt={dayjs(each.created_at).format("MMMM D, h:mm A")}
-                imageUrl={
-                  each?.assets[0]?.url ??
-                  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
-                }
-                onPress={() =>
-                  router.push({ pathname: "/tasks/[id]", params: { id: each._id } })
-                }
-              />
-            ))
-          ) : (
-            <EmptyTaskState />
-          )}
+        {tasksLoading ? (
+  <TaskLoadingSkeleton />
+) : tasksData && tasksData.length > 0 ? (
+  tasksData.map((each: TaskSchema) => {
+    // console.log("EACH Asset", each?.assets);
+    return (
+      <TaskCard
+        key={each._id}
+        title={each.task}
+        description={each?.description ?? ""}
+        incentive={each.incentive}
+        location={each.location ?? "Coke Village"}
+        postedBy={each?.user ? `${each.user.first_name}` : "You"}
+        postedAt={dayjs(each.created_at).format("MMMM D, h:mm A")}
+        imageUrl={
+          each?.assets?.[0]?.url ??
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
+        }
+        onPress={() =>
+          router.push({ pathname: "/tasks/[id]", params: { id: each._id } })
+        }
+      />
+    );
+  })
+) : (
+  <EmptyTaskState />
+)}
+
         </View>
       </ScrollView>
     </View>

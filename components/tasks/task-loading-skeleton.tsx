@@ -9,7 +9,7 @@ const SkeletonPlaceholder = () => {
         <View style={styles.skeletonIncentive} />
       </View>
       <View style={styles.skeletonDescription} />
-      <View style={styles.skeletonImage} />
+      {/* <View style={styles.skeletonImage} /> */}
       <View style={styles.skeletonFooter}>
         <View style={styles.skeletonLocation} />
         <View style={styles.skeletonButton} />
@@ -21,9 +21,9 @@ const SkeletonPlaceholder = () => {
 export default function TaskLoadingSkeleton() {
   return (
     <View>
-      <View style={styles.skeletonCard}>
+      {/* <View style={styles.skeletonCard}>
         <View style={styles.skeletonTitle} />
-      </View>
+      </View> */}
 
       {[...Array(3)].map((_, index) => (
         <SkeletonPlaceholder key={index} />
