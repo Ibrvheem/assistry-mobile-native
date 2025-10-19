@@ -4,12 +4,9 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import FundModal from "@/components/organism/fund-wallet-modal";
-import { formatCurrency } from "@/lib/helpers";
+import { formatCurrency, formatCurrency1 } from "@/lib/helpers";
 import { router } from "expo-router";
 
-
-// This implementation uses react-native-reanimated v2 for smooth native animations.
-// If you don't have reanimated installed/configured, tell me and I'll provide a plain Animated API version.
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -82,7 +79,7 @@ export default function WalletCard({
             {/* <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text> */}
           </View>
 
-          <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
+          <Text style={styles.balanceAmount}>{formatCurrency1(balance)}</Text>
           
 
           <View style={styles.rightColumn}>

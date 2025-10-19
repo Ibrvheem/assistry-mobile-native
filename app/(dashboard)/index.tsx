@@ -1,328 +1,49 @@
-// // app/(dashboard)/index.tsx
-// import {
-//   View,
-//   Text,
-//   useWindowDimensions,
-//   ScrollView,
-//   Pressable,
-//   AppState,
-//   AppStateStatus,
-//   LogBox,
-//   StyleSheet,
-// } from "react-native";
-// import dayjs from "dayjs";
-// import React, { useEffect, useState } from "react";
-// import {
-//   useSharedValue,
-//   useAnimatedStyle,
-//   withTiming,
-// } from "react-native-reanimated";
-// import { PlusCircle } from "react-native-heroicons/outline/tsx";
-// // import { useQuery } from "@tanstack/react-query";
-// import { getForYou, getWallet } from "./services";
-// import WalletCard from "@/components/dashboard/WalletCard";
-// import { router } from "expo-router";
-// import EmptyTaskState from "@/components/molecules/empty-task-state";
-// import CreateTaskModal from "@/components/organism/create-task-modal";
-// import { TaskSchema } from "./types";
-// import WalletCardSkeleton from "@/components/dashboard/wallet-card-skeleton";
-// import TaskCard from "@/components/dashboard/TaskCard";
-// import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
 
-
-
-import { useQuery} from "@tanstack/react-query";
-// // import { getWallet } from "@/services/wallet"; // 👈 import
-
-// export default function Index() {
-//   const [tabs, setTabs] = useState("for-you");
-//   const [open, setOpen] = useState(false);
-//   const [appActive, setAppActive] = useState(true);
-//   const queryClient = useQueryClient();
-
-//    useEffect(() => {
-//     const sub = AppState.addEventListener("change", (next: AppStateStatus) => {
-//       setAppActive(next === "active");
-//     });
-//     return () => sub.remove();
-//   }, []);
-
-//   const {
-//     data: walletData,
-//     isLoading: walletLoading,
-//     error: walletError,
-//     refetch: refetchWallet,
-//   } = useQuery({
-//   queryKey: ["wallet"],
-//   queryFn: getWallet,
-//   refetchInterval: appActive ? 300000 : false,
-//   refetchIntervalInBackground: false,
-//   staleTime: 5000,
-//   retry: 1,
-// });
-
-//   // fetch wallet
-//   // const {
-//   //   data: walletData,
-//   //   isLoading: walletLoading,
-//   //   error: walletError,
-//   // } = useQuery({
-//   //   queryKey: ["wallet"],
-//   //   queryFn: getWallet,
-//   // });
-
-//   // fetch tasks
-//   // const {
-//   //   data: tasksData,
-//   //   isLoading: tasksLoading,
-//   //   error: tasksError,
-//   // } = useQuery({
-//   //   queryKey: ["for-you"],
-//   //   queryFn: getForYou,
-//   // });
-
-//   const {
-//     data: tasksData,
-//     isLoading: tasksLoading,
-//     error: tasksError,
-//   } = useQuery({
-//     queryKey: ["for-you"],
-//     queryFn: getForYou,
-//     staleTime: 1000 * 60,
-//     retry: 1,
-//   });
-
-//   useEffect(() => {
-//     if (appActive) {
-//       refetchWallet();
-//     }
-//   }, [appActive, refetchWallet]);
-
-//   const balance = walletData?.data?.balance_kobo;
-//   const spent = walletData?.data?.spent ?? 0;
-
-//   return walletLoading || tasksLoading ? (
-//     <View className="h-full" style={{ backgroundColor: "white" }}>
-//       <WalletCardSkeleton />
-//       <TaskLoadingSkeleton />
-//     </View>
-//   ) : (
-//     <View className="h-full" style={{ backgroundColor: "white" }}>
-//       <ScrollView>
-//         {/* 👇 now balance comes from backend */}
-//         <WalletCard balance={balance} spent={spent} />
-
-//         <View style={styles.section}>
-//           <View style={styles.taskheader}>
-//             <Text style={styles.sectionTitle}>Campus Tasks</Text>
-//             <Pressable
-//               style={styles.filterButton}
-//               onPress={() => setOpen(true)}
-//             >
-//               <PlusCircle size={20} color="#22C55E" />
-//               <Text style={styles.filterText}>Post Task</Text>
-//             </Pressable>
-//           </View>
-
-//           <CreateTaskModal open={open} setOpen={setOpen} />
-
-//           {tasksData?.length > 0 ? (
-//             tasksData.map((each: TaskSchema) => (
-//               <TaskCard
-//                 key={each._id}
-//                 title={each.task}
-//                 description={each?.description ?? ""}
-//                 incentive={each.incentive}
-//                 location={each.location ?? "Coke Village"}
-//                 postedBy={
-//                   each?.user
-//                     ? `${each.user.first_name}`
-//                     : "You"
-//                 }
-//                 postedAt={dayjs(each.created_at).format("MMMM D, h:mm A")}
-//                 imageUrl={
-//                   each?.assets[0]?.url ??
-//                   "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
-//                 }
-//                 onPress={() =>
-//                   router.push({
-//                     pathname: "/tasks/[id]",
-//                     params: { id: each._id },
-//                   })
-//                 }
-//               />
-//             ))
-//           ) : (
-//             <EmptyTaskState />
-//           )}
-//         </View>
-//       </ScrollView>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#f8f9fa",
-//   },
-//   header: {
-//     padding: 16,
-//     paddingTop: 8,
-//     backgroundColor: "#ffffff",
-//     borderBottomWidth: 1,
-//     borderBottomColor: "#f0f0f0",
-//   },
-//   taskheader: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     padding: 16,
-//   },
-//   headerTop: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "flex-start",
-//   },
-//   userInfo: {
-//     flex: 1,
-//     marginRight: 16,
-//   },
-//   nameSection: {
-//     marginBottom: 4,
-//   },
-//   greeting: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "#000",
-//   },
-//   studentInfo: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginTop: 2,
-//   },
-//   majorText: {
-//     fontSize: 15,
-//     color: "#666",
-//     fontWeight: "500",
-//   },
-//   bulletPoint: {
-//     fontSize: 15,
-//     color: "#666",
-//     marginHorizontal: 6,
-//   },
-//   yearText: {
-//     fontSize: 15,
-//     color: "#666",
-//   },
-//   statsContainer: {
-//     flexDirection: "row",
-//     marginTop: 8,
-//     gap: 12,
-//   },
-//   stat: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#f8f9fa",
-//     paddingHorizontal: 8,
-//     paddingVertical: 4,
-//     borderRadius: 12,
-//   },
-//   statText: {
-//     marginLeft: 4,
-//     fontSize: 13,
-//     color: "#666",
-//     fontWeight: "500",
-//   },
-//   profileImageContainer: {
-//     position: "relative",
-//   },
-//   profileImage: {
-//     width: 56,
-//     height: 56,
-//     borderRadius: 28,
-//     backgroundColor: "#f0f0f0",
-//   },
-//   onlineIndicator: {
-//     position: "absolute",
-//     bottom: 0,
-//     right: 0,
-//     width: 14,
-//     height: 14,
-//     borderRadius: 7,
-//     backgroundColor: "#4CAF50",
-//     borderWidth: 2,
-//     borderColor: "#ffffff",
-//   },
-//   universityContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginTop: 12,
-//     paddingTop: 12,
-//     borderTopWidth: 1,
-//     borderTopColor: "#f0f0f0",
-//   },
-//   universityText: {
-//     fontSize: 13,
-//     color: "#666",
-//     marginLeft: 6,
-//   },
-//   studentIdText: {
-//     fontSize: 13,
-//     color: "#666",
-//   },
-//   section: {
-//     marginTop: 24,
-//     paddingBottom: 24,
-//   },
-//   sectionTitle: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     color: "#000",
-//     marginLeft: 16,
-//     marginBottom: 8,
-//   },
-//     filterButton: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#dcfce7",
-//     padding: 8,
-//     borderRadius: 20,
-//   },
-//   filterText: { color: "#22C55E", marginLeft: 4, fontWeight: "600" },
-// });
-
-
-
-import { RefreshControl, ScrollView, View, Text, Pressable } from "react-native";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { router } from "expo-router";
-import WalletCard from "@/components/dashboard/WalletCard";
-import CreateTaskModal from "@/components/organism/create-task-modal";
-import TaskCard from "@/components/dashboard/TaskCard";
-import EmptyTaskState from "@/components/molecules/empty-task-state";
-import WalletCardSkeleton from "@/components/dashboard/wallet-card-skeleton";
-import TaskLoadingSkeleton from "@/components/tasks/task-loading-skeleton";
-
-// import { PlusCircle } from "react-native-heroicons/outline/tsx";
+// app/(dashboard)/index.tsx
+import React, { useCallback, useState, useEffect } from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { PlusCircle } from 'lucide-react-native';
+import dayjs from 'dayjs';
 
-import dayjs from "dayjs";
-import { TaskSchema } from "./types";
-import { getWallet, getForYou } from "./services";
+import WalletCard from '@/components/dashboard/WalletCard';
+import WalletCardSkeleton from '@/components/dashboard/wallet-card-skeleton';
+import CreateTaskModal from '@/components/organism/create-task-modal';
+import TaskCard from '@/components/dashboard/TaskCard';
+import TaskLoadingSkeleton from '@/components/tasks/task-loading-skeleton';
+import EmptyTaskState from '@/components/molecules/empty-task-state';
 
-export default function Index() {
-  const [open, setOpen] = useState(false);
+import { getWallet, getForYou } from './services';
+import { TaskSchema } from './types';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MyAvatar } from '../myavatar';
+import { BellDot } from 'lucide-react-native';
+
+// ----------------------------------------
+// Component
+// ----------------------------------------
+export default function Index(): JSX.Element {
   const queryClient = useQueryClient();
+  const [isModalOpen, setModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  // ----------------------------------------
+  // Queries
+  // ----------------------------------------
   const {
     data: walletData,
-    isLoading: walletLoading,
+    isLoading: isWalletLoading,
     refetch: refetchWallet,
   } = useQuery({
-    queryKey: ["wallet"],
+    queryKey: ['wallet'],
     queryFn: getWallet,
     staleTime: 5000,
     retry: 1,
@@ -330,119 +51,163 @@ export default function Index() {
 
   const {
     data: tasksData,
-    isLoading: tasksLoading,
+    isLoading: isTasksLoading,
   } = useQuery({
-    queryKey: ["for-you"],
+    queryKey: ['for-you'],
     queryFn: getForYou,
-    staleTime: 1000 * 60,
+    staleTime: 60 * 1000,
     retry: 1,
   });
 
-  const onRefresh = async () => {
+  // ----------------------------------------
+  // Refresh Handler
+  // ----------------------------------------
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await Promise.all([
         refetchWallet(),
-        queryClient.invalidateQueries({ queryKey: ["for-you"] }),
+        queryClient.invalidateQueries({ queryKey: ['for-you'] }),
       ]);
     } catch (error) {
-      console.log("Refresh error:", error);
+      console.error('Refresh error:', error);
     } finally {
       setRefreshing(false);
     }
-  };
+  }, [queryClient, refetchWallet]);
 
-  // if (walletLoading || tasksLoading) {
-  //   return (
-  //     <View className="h-full" style={{ backgroundColor: "white" }}>
-  //       <WalletCardSkeleton />
-  //       <TaskLoadingSkeleton />
-  //     </View>
-  //   );
-  // }
-  const tasksLoading1= true; 
-  const walletLoading1= true;
-
+  // ----------------------------------------
+  // Computed Values
+  // ----------------------------------------
   const balance = walletData?.data?.balance_kobo ?? 0;
   const spent = walletData?.data?.spent ?? 0;
 
+useEffect(() => {
+  console.log("Dashboard mounted");
+  return () => console.log("Dashboard unmounted");
+}, []);
+
+
+  // ----------------------------------------
+  // Render
+  // ----------------------------------------
   return (
-    <View className="h-full" style={{ backgroundColor: "white" }}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Wallet */}
-{walletLoading ? (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <MyAvatar showGreeting={true} />
+        <BellDot />
+      </View>
+      {/* Wallet Section */}
+      {isWalletLoading ? (
         <WalletCardSkeleton />
       ) : (
         <WalletCard balance={balance} spent={spent} />
       )}
 
-        {/* Tasks Section */}
-
-        <View style={{ marginTop: 24, paddingBottom: 24 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingHorizontal: 16,
-            }}
-          >
-            <Text style={{ fontSize: 20, fontWeight: "bold", color: "#000" }}>
-              Campus Tasks
-            </Text>
-            <Pressable
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: "#dcfce7",
-                padding: 8,
-                borderRadius: 20,
-              }}
-              onPress={() => setOpen(true)}
-            >
-              <PlusCircle size={20} color="#22C55E" />
-              <Text style={{ color: "#22C55E", marginLeft: 4, fontWeight: "600" }}>
-                Post Task
-              </Text>
-            </Pressable>
-          </View>
-
-          <CreateTaskModal open={open} setOpen={setOpen} />
-
-        {tasksLoading ? (
-  <TaskLoadingSkeleton />
-) : tasksData && tasksData.length > 0 ? (
-  tasksData.map((each: TaskSchema) => {
-    // console.log("EACH Asset", each?.assets);
-    return (
-      <TaskCard
-        key={each._id}
-        title={each.task}
-        description={each?.description ?? ""}
-        incentive={each.incentive}
-        location={each.location ?? "Coke Village"}
-        postedBy={each?.user ? `${each.user.first_name}` : "You"}
-        postedAt={dayjs(each.created_at).format("MMMM D, h:mm A")}
-        imageUrl={
-          each?.assets?.[0]?.url ??
-          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?"
-        }
-        onPress={() =>
-          router.push({ pathname: "/tasks/[id]", params: { id: each._id } })
-        }
-      />
-    );
-  })
-) : (
-  <EmptyTaskState />
-)}
-
+      {/* Task Section */}
+      <View style={styles.sectionContainer}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Campus Tasks</Text>
+          <Pressable style={styles.postButton} onPress={() => setModalOpen(true)}>
+            <PlusCircle size={20} color="#22C55E" />
+            <Text style={styles.postButtonText}>Post Task</Text>
+          </Pressable>
         </View>
-      </ScrollView>
-    </View>
+
+        {/* Modal */}
+        <CreateTaskModal open={isModalOpen} setOpen={setModalOpen} />
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          {isTasksLoading ? (
+            <TaskLoadingSkeleton />
+          ) : tasksData?.length ? (
+            tasksData.map((task: TaskSchema) => (
+              <TaskCard
+                key={task._id}
+                title={task.task}
+                description={task.description ?? ''}
+                incentive={task.incentive}
+                location={task.location ?? 'Coke Village'}
+                postedBy={task.user?.first_name ?? 'You'}
+                postedAt={dayjs(task.created_at).format('MMMM D, h:mm A')}
+                views={String(task.views ?? 0)}
+                imageUrl={
+                  task.assets?.[0]?.url ??
+                  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750'
+                }
+                onPress={() =>
+                  router.push({ pathname: '/tasks/[id]', params: { id: task._id } })
+                }
+              />
+            ))
+          ) : (
+            <EmptyTaskState />
+          )}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
+
+// ----------------------------------------
+// Styles
+// ----------------------------------------
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    // borderBottomWidth: 1,          // 👈 Adds the underline
+    // borderBottomColor: '#e0e0e0',  // 👈 Divider color (light gray)
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    // backgroundColor: 'red'
+  },
+  sectionContainer: {
+    // flex: 1,
+    marginTop: 24,
+    paddingBottom: 180,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  postButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#DCFCE7',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+  },
+  postButtonText: {
+    color: '#22C55E',
+    marginLeft: 4,
+    fontWeight: '600',
+  },
+  scrollContainer: {
+    // flexGrow: 1,
+    paddingBottom: 50,
+    
+    
+  },
+});

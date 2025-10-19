@@ -13,7 +13,7 @@ import { BellDot } from "lucide-react-native";
 
 const queryClient = new QueryClient();
 
-export function Avatar({
+export function MyAvatar({
   size = 40,
   showGreeting = false,
 }: {
@@ -47,7 +47,9 @@ export function Avatar({
     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
       <Image
         source={{
-          uri: data.url,
+          uri: userData?.profile_picture
+            ? cloudinaryUrl(userData.profile_picture)
+            : data.url,
         }}
         style={{
           width: size,

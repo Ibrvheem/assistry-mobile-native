@@ -1,7 +1,8 @@
+// components/CustomTabBar.tsx
 import React from "react";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import { useRouter, useSegments } from "expo-router";
-import { Home, User, List } from "lucide-react-native";
+import { Home, User, List, MessageCircleMore } from "lucide-react-native";
 
 export default function CustomTabBar() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function CustomTabBar() {
   const tabs = [
     { label: "Home", icon: Home, route: "/(dashboard)" },
     { label: "Tasks", icon: List, route: "/(dashboard)/tasks" },
+    { label: "chats", icon: MessageCircleMore, route: "/(dashboard)/messages" },
     { label: "Profile", icon: User, route: "/(dashboard)/profile/profile" },
   ];
 
@@ -36,22 +38,56 @@ export default function CustomTabBar() {
   );
 }
 
+// const styles = StyleSheet.create({
+//   tabContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-around",
+//     alignItems: "center",
+//     height: 100,
+//     backgroundColor: "#fff",
+//     borderTopWidth: StyleSheet.hairlineWidth,
+//     borderTopColor: "#E5E7EB",
+//   },
+//   tab: {
+//     alignItems: "center",
+//   },
+//   activeTab: {
+//     // borderTopWidth: 2,
+//     // borderTopColor: "#22C55E",
+//   },
+//   label: {
+//     fontSize: 12,
+//     color: "#6B7280",
+//     marginTop: 2,
+//   },
+//   activeLabel: {
+//     color: "#22C55E",
+//     fontWeight: "600",
+//   },
+// });
+
+// components/CustomTabBar.tsx
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    height: 100,
+    height: 80,
     backgroundColor: "#fff",
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: "#E5E7EB",
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+  },
+    activeTab: {
+    // borderTopWidth: 2,
+    // borderTopColor: "#22C55E",
   },
   tab: {
     alignItems: "center",
-  },
-  activeTab: {
-    // borderTopWidth: 2,
-    // borderTopColor: "#22C55E",
   },
   label: {
     fontSize: 12,

@@ -19,7 +19,7 @@ export default function ByYou({ byYou }: { byYou: TaskSchema[] }) {
           {byYou?.map((each) => {
             return (
               <TouchableOpacity
-                key={each.id}
+                key={each._id}
                 className="h-auto border border-slate-200 rounded-md mt-2 p-3"
               >
                 <View className="flex flex-row justify-between">

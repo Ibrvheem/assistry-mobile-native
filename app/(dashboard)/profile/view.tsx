@@ -31,7 +31,7 @@ const fallbackUser = {
 export default function ViewProfileScreen(): JSX.Element {
   const { id } = useLocalSearchParams() as { id?: string };
 
-  console.log("Profile ID:", id);
+  // console.log("Profile ID:", id);
 
   
 
@@ -48,7 +48,7 @@ export default function ViewProfileScreen(): JSX.Element {
     enabled: !!id,
   });
 
-  console.log("User V Data:", user);
+  // console.log("User V Data:", user);
 
   if (isLoading) {
     return (
@@ -87,16 +87,21 @@ export default function ViewProfileScreen(): JSX.Element {
         <View style={{ width: 40 }} /> {/* alignment placeholder */}
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      
         <Animated.View entering={FadeIn.duration(300)}>
           {/* Header Section */}
-          <LinearGradient
+          {/* <LinearGradient
             colors={["#22C55E", "#16A34A"]}
             style={styles.gradientHeader}
-          >
+          > */}
+             <LinearGradient
+                    // colors={["#143428", "#B0E17C", "#1BAE6A"]}
+                    colors={["#0F2027", "#2C7744", "#A8E063"]}
+                    locations={[0, 0.5, 1]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                     style={styles.gradientHeader}
+                  >
             <Image
               source={{
                 uri: user?.profile_picture || fallbackUser.profileImage,
@@ -113,6 +118,10 @@ export default function ViewProfileScreen(): JSX.Element {
               {fallbackUser.department} • {fallbackUser.year}
             </Text>
           </LinearGradient>
+          <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
 
           {/* Bio */}
           <ProfileSection title="About">
@@ -162,8 +171,9 @@ export default function ViewProfileScreen(): JSX.Element {
               {fallbackUser.availability}
             </Text>
           </ProfileSection>
+          </ScrollView>
         </Animated.View>
-      </ScrollView>
+      
     </SafeAreaView>
   );
 }

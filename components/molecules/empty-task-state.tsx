@@ -17,11 +17,11 @@ import { Button } from "tamagui";
 
 function EmptyTaskState() {
   return (
-    <View className="flex items-center justify-center my-8 space-y-4">
+    <View className="flex items-center justify-center my-8 space-y-4 mt-10">
       <View className="bg-green-300/30 h-60 w-60 rounded-full flex items-center justify-center">
         <FolderOpen color="#4ADE80" size={80} />
       </View>
-      <Text className="font-bold">There's no available task right now!</Text>
+      <Text className="font-bold mt-8">There's no available task right now!</Text>
     </View>
   );
 }

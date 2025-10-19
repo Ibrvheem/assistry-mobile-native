@@ -4,6 +4,7 @@
     "slug": "assistry-mobile",
     "jsEngine": "jsc",
     "version": "1.0.0",
+    "reactStrictMode": false,
     "orientation": "portrait",
     "icon": "./assets/logos/image.png",
     "scheme": "myapp",
@@ -18,6 +19,10 @@
       "supportsTablet": true,
       "runtimeVersion": {
         "policy": "appVersion"
+      },
+      "bundleIdentifier": "y",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -26,7 +31,6 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.anonymous.assistrymobile",

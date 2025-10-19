@@ -42,8 +42,8 @@ const ControlledInput = ({
             // paddingVertical: 8,
             marginBottom: 4,
             fontFamily: "ReadexPro-Medium", // must match the font you load in Expo
-  fontWeight: "500",              // optional if you already have the Medium variant
-  fontSize: 15,                   // no "px"
+  fontWeight: "600",              // optional if you already have the Medium variant
+  fontSize: 16,                   // no "px"
   lineHeight: 15,                 // 100% of font size → same as fontSize
   letterSpacing: 0, 
           }}

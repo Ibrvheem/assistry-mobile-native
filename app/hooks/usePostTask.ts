@@ -37,7 +37,7 @@
 
 //   const onSubmit = handleSubmit(async (values) => {
 //     // if (images.length === 0) {
-//     //   console.log("Error: No images added");
+//     //   // console.log("Error: No images added");
 //     //   return;
 //     // }
 //     try {
@@ -89,7 +89,7 @@
 //         payload.assets = assets; // only include if exists
 //       }
 
-//       console.log(payload);
+//       // console.log(payload);
 //       mutation.mutate(payload);
 //     } catch (error) {
 //       console.error("Submit Failed:", error);
@@ -112,7 +112,7 @@
 //     //       } as any);
 
 //     //       const response = await api.formData(formData);
-//     //       console.log(response);
+//     //       // console.log(response);
 //     //       return {
 //     //         kind: mime.getType(image),
 //     //         assetStorageKey: response.key,
@@ -129,7 +129,7 @@
 //     //     incentive: Number(values.incentive),
 //     //   };
 
-//     //   console.log(payload);
+//     //   // console.log(payload);
 //     //   mutation.mutate(payload);
 //     // } catch (error) {
 //     //   console.error("Submit Failed:", error);
@@ -156,6 +156,7 @@ import { router } from "expo-router";
 import { Dispatch, SetStateAction, useState } from "react";
 import { getMimeType } from "@/utils/mime";
 import api from "@/lib/api";
+import { optimizeImageBeforeUpload } from "@/lib/helpers";
 
 export function usePostTask({
   setOpen,
@@ -177,12 +178,23 @@ export function usePostTask({
       if (images.length > 0) {
         assets = await Promise.all(
           images.map(async (image) => {
-            const formData = new FormData();
-            const type = getMimeType(image);
+            // const formData = new FormData();
+            // const type = getMimeType(image);
 
+            // formData.append("file", {
+            //   uri: image,
+            //   name: image.split("/").pop(),
+            //   type,
+            // } as any);
+
+            const optimizedUri = await optimizeImageBeforeUpload(image);
+            
+            const formData = new FormData();
+            const type = getMimeType(optimizedUri);
+            
             formData.append("file", {
-              uri: image,
-              name: image.split("/").pop(),
+              uri: optimizedUri,
+              name: optimizedUri.split("/").pop(),
               type,
             } as any);
 

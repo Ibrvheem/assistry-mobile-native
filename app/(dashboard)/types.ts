@@ -6,6 +6,9 @@ export enum TaskStatus {
   PENDING = "pending",
   COMPLETED = "completed",
   CANCELED = "canceled",
+  EXPIRED = "expired",
+  ONGOING = 'ongoing',
+  FINISHED='finished',
 }
 export enum TransactionType {
   CREDIT = 'credit',
@@ -33,11 +36,14 @@ export const taskSchema = z.object({
   expires: z.number(),
   visual_context: z.string().optional(),
   created_at: z.string(),
+  views: z.string().optional(),
   updated_at: z.string(),
+  acceptedBy:z.string(),
   user: z.object({
     _id: z.string(),
     first_name: z.string(),
     last_name: z.string(),
+    email: z.string(),
     profile_picture: z.string().nullable(),
 
   }),
@@ -46,7 +52,7 @@ export const taskSchema = z.object({
     z.object({
       url: z.string(),
       kind: z.string(),
-      assetStorageKet: z.string(),
+      assetStorageKey: z.string(),
     })
   ),
 });

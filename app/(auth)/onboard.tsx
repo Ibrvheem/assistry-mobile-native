@@ -17,32 +17,34 @@ interface OnboardingSlide {
   image: any // You'll replace this with your actual images
 }
 
+
+
 const onboardingData: OnboardingSlide[] = [
   {
     id: 1,
-    title: "Your Journey, Simplified",
+    title: "Welcome to Assistry\nTurn Your Time Into Value!",
     description:
-      "Whether you're a passenger looking for a smooth ride, a driver ready to earn, or a stop chief managing operations — We bring you all together. Let's get you started.",
+      "Where Students Help Students Thrive \n Join a community where every student’s skill, time, and effort matter. Earn rewards, get help, and grow smarter — together",
     image: require("@/assets/images/onboarding1.png"), // Replace with your actual image path
   },
   {
     id: 2,
-    title: "Safe & Reliable",
+    title: "Get Help When You Need It\nNo Task Too Big, No Problem Too Small!",
     description:
-      "Experience secure and dependable transportation with verified drivers and real-time tracking for your peace of mind.",
-    image: require("@/assets/images/onboarding2.png"), // Replace with your actual image path
+      "Need notes, help with an assignment, or someone to run a campus errand?\n Post your task someone’s always ready to assist.",
+    image: require("@/assets/images/onboarding1.png"), // Replace with your actual image path
   },
   {
     id: 3,
-    title: "Earn While You Drive",
+    title: "Earn While You Assist",
     description:
-      "Join our community of drivers and start earning on your schedule. Flexible hours, competitive rates, and instant payments.",
+      "Complete tasks for others, gain experience, build your reputation, and earn incentives you can actually use.",
     image: require("@/assets/images/onboarding3.png"), // Replace with your actual image path
   },
   {
     id: 4,
-    title: "Ready to Start?",
-    description: "Get started today and become part of the transportation revolution. Your journey begins here.",
+    title: "Built for Students, Powered by You\nYour Campus, Your Network, Your Future",
+    description: "From study groups to daily errands, Assistry makes student life easier, smarter, and more connected.",
     image: require("@/assets/images/onboarding4.png"), // Replace with your actual image path
   },
 ]
@@ -190,12 +192,13 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 0.3, // Controlled space for text
     alignItems: "center",
+    marginTop: 20,
     paddingHorizontal: 20,
     justifyContent: "center", // Center text vertically in its space
   },
   title: {
     fontFamily: "System", // Use system font as fallback
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
     lineHeight: 24,
     textAlign: "center",

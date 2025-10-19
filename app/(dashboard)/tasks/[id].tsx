@@ -48,6 +48,8 @@ export default function TaskDetailsScreen() {
     queryFn: () => getTask(id),
   }) as { data: TaskSchema; isLoading: boolean; error: unknown };
 
+  // console.log("Task Data:", data);
+
   const assets = useMemo(() => (data?.assets ? [...data.assets] : []), [data]);
 
   const queryClient = useQueryClient();
@@ -107,7 +109,10 @@ export default function TaskDetailsScreen() {
 
           {/* Task Details */}
           <View style={styles.content}>
+            
             <Text style={styles.title}>{data?.task}</Text>
+
+            
 
             {/* User Info */}
             <Pressable style={styles.posterContainer}>
@@ -141,6 +146,10 @@ export default function TaskDetailsScreen() {
             </Pressable>
 
             {/* Location */}
+            <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+          
+           
+                   
             <View style={styles.locationContainer}>
               <Ionicons
                 name="location"
@@ -149,6 +158,11 @@ export default function TaskDetailsScreen() {
               />
               <Text style={styles.location}>{data?.location}</Text>
             </View>
+             <View style={{flexDirection:'row',alignItems:'center',gap:4,marginBottom:8}}>
+                        <Ionicons name="eye" size={24} color="#18AE6A" />
+                        <Text style={styles.views}>{data?.views}</Text>
+                    </View>
+             </View>
 
             {/* Description */}
             <Text style={styles.sectionTitle}>Description</Text>
@@ -180,18 +194,20 @@ export default function TaskDetailsScreen() {
 
       {/* Accept Task Button */}
       <View style={styles.bottomBar}>
-        <LinearGradient
-          colors={
-            [...categoryColors.events.gradient] as [string, string, ...string[]]
-          }
-          style={styles.acceptButton}
-        >
+
+        {data.status === TaskStatus.PENDING ? (
+              <>
+           <LinearGradient
+        colors={["#0F2027", "#2C7744", "#A8E063"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.acceptButton}
+      >
           <Pressable
             onPress={() => setShowAcceptConfirm(true)}
             style={styles.acceptButtonContent}
           >
-            {data.status === TaskStatus.PENDING ? (
-              <>
                 <Text style={styles.acceptButtonText}>
                   {acceptanceState === "accepting"
                     ? "Accepting..."
@@ -202,19 +218,35 @@ export default function TaskDetailsScreen() {
                     {formatCurrency(data?.incentive)}
                   </Text>
                 </View>
-              </>
-            ) : (
-              <>
-                <Text style={styles.acceptButtonText}>Accepted</Text>
+          </Pressable>
+        </LinearGradient>
+        </>
+        ) : (
+          <>
+               <LinearGradient
+  colors={['#0c2339', '#113355', '#5973a9']} // black -> very dark ash -> ash
+  locations={[0, 0.45, 1]}
+  start={{ x: 0, y: 0 }}
+  end={{ x: 1, y: 1 }}
+  style={styles.acceptButton}
+>
+          <Pressable
+            onPress={() => setShowAcceptConfirm(true)}
+            style={styles.acceptButtonContent}
+            disabled={true}
+          >
+                <Text style={styles.acceptButtonText}>
+                  Ongong ...
+                </Text>
                 <View style={styles.acceptButtonAmount}>
                   <Text style={styles.acceptButtonAmountText}>
                     {formatCurrency(data?.incentive)}
                   </Text>
                 </View>
-              </>
-            )}
           </Pressable>
         </LinearGradient>
+              </> 
+            )}
       </View>
 
       {/* Confirmation Modal */}
@@ -441,6 +473,12 @@ const styles = StyleSheet.create({
   requirementsList: {
     marginBottom: 24,
   },
+  views:{
+    color:'#18AE6A',
+    fontWeight:'600',
+    fontSize:16
+
+  },
   requirementItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -551,11 +589,13 @@ const styles = StyleSheet.create({
   confirmButtons: {
     flexDirection: "row",
     gap: 12,
+   
   },
   confirmButton: {
     flex: 1,
     borderRadius: 12,
     overflow: "hidden",
+     
   },
   cancelButton: {
     backgroundColor: "#f0f0f0",

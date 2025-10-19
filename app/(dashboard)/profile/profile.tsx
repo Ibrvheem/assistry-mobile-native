@@ -232,6 +232,7 @@ import { useGobalStoreContext } from "@/store/global-context";
 import { useFocusEffect } from "@react-navigation/native";
 import { Avatar } from "../../avatar";
 import { cloudinaryUrl } from "@/lib/helpers";
+import { MyAvatar } from "@/app/myavatar";
 
 export default function ProfilePage(): JSX.Element {
    const router = useRouter();
@@ -263,21 +264,11 @@ export default function ProfilePage(): JSX.Element {
   // };
 
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView style={styles.container}>
+    
+      <View style={styles.container}>
         {/* ===== Profile Header ===== */}
         <View style={styles.profileHeader}>
-          {userData?.profile_picture ? (
-            <Image
-              source={{ uri: cloudinaryUrl(userData.profile_picture) }}
-              style={styles.profileImage}
-              contentFit="cover"
-              transition={200}
-            />
-          ) : (
-            <Avatar size={100} />
-          )}
-
+          <MyAvatar size={100} />
           <Text style={styles.name}>{userData?.first_name}</Text>
           <Text style={styles.email}>{userData?.email}</Text>
 
@@ -289,6 +280,7 @@ export default function ProfilePage(): JSX.Element {
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </Button>
         </View>
+        <ScrollView >
 
         {/* ===== Task + Transaction Section ===== */}
         <View style={styles.section}>
@@ -370,8 +362,9 @@ export default function ProfilePage(): JSX.Element {
             </TouchableOpacity>
           </View>
         </View>
-      </SafeAreaView>
-    </ScrollView>
+        </ScrollView>
+      </View>
+    // </ScrollView>
   );
 }
 
@@ -379,6 +372,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    marginTop: 24,
   },
   profileHeader: {
     alignItems: "center",

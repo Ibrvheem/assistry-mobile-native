@@ -47,6 +47,7 @@ export const createPasswordPayload = z
   });
 
 export const userDataSchema = z.object({
+  _id: z.string(),
   first_name: z.string(),
   last_name: z.string(),
   email: z.string(),

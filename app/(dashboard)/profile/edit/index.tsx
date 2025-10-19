@@ -54,6 +54,30 @@ export default function EditProfileScreen(): JSX.Element {
   const [isSaving, setIsSaving] = useState(false);
   const { saveUserData, refreshUser } = useGobalStoreContext();
 
+  
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => {
+      return getMe();
+    },
+  });
+
+    useEffect(() => {
+  if (user) {
+    setFirstName(user.first_name || '');
+    setLastName(user.last_name || '');
+    setEmail(user.email || '');
+    setPhone(user.phone_no || '');
+    setDepartment(user.department || '');
+    setYear(user.level || '');
+    setBio(user.bio || '');
+  }
+}, [user]);
+
   const pickImage = async (): Promise<void> => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -116,7 +140,7 @@ const handleSave = async (): Promise<void> => {
     // 🔹 Fetch latest user data from backend
     const me = await getMe();
 
-    console.log("Updated User Data Level:", me);
+    // console.log("Updated User Data Level:", me);
 
     // 🔹 Save and refresh global store
     await saveUserData(me);
@@ -155,18 +179,8 @@ const handleSave = async (): Promise<void> => {
   };
 
 
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["me"],
-    queryFn: async () => {
-      return getMe();
-    },
-  });
 
-  console.log("User Edit Data:", user);
+  // console.log("User Edit Data:", user);
 
   if (isLoading) {
     return (
@@ -177,17 +191,7 @@ const handleSave = async (): Promise<void> => {
     );
   }
 
-  useEffect(() => {
-  if (user) {
-    setFirstName(user.first_name || '');
-    setLastName(user.last_name || '');
-    setEmail(user.email || '');
-    setPhone(user.phone_no || '');
-    setDepartment(user.department || '');
-    setYear(user.level || '');
-    setBio(user.bio || '');
-  }
-}, [user]);
+
 
  
   return (
@@ -405,7 +409,7 @@ const styles = StyleSheet.create({
   backButton: { padding: 8 },
   headerTitle: { fontSize: 18, fontWeight: "bold", color: "#000" },
   saveButton: {
-    backgroundColor: "#22C55E",
+    backgroundColor: "#14342b",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
