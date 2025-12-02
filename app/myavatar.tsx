@@ -25,7 +25,8 @@ export function MyAvatar({
     queryFn: fetchAvatar,
   });
   const { userData } = useGobalStoreContext();
-  // // console.log(userData);
+ 
+  // // // console.log(userData);
 
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;

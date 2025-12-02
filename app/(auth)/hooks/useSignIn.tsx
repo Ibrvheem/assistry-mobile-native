@@ -28,7 +28,7 @@ export function useSignIn() {
       await AsyncStorage.setItem("token", data.access_token);
 
       await AsyncStorage.setItem("userData", JSON.stringify(data.user));
-      // console.log(data.user);
+      // // console.log(data.user);
 
 
       // const token = await AsyncStorage.getItem("token");
@@ -37,6 +37,7 @@ export function useSignIn() {
       // setUserData(user);
 
       router.push("/(dashboard)");
+      // console.log("MY USER",data.user)
       setUserData(data.user);
     },
     onError: (error) => {

@@ -237,6 +237,7 @@ import { MyAvatar } from "@/app/myavatar";
 export default function ProfilePage(): JSX.Element {
    const router = useRouter();
   const { userData, refreshUser } = useGobalStoreContext();
+  const { setUserData, setStudentData } = useGobalStoreContext();
 
   useFocusEffect(
     useCallback(() => {
@@ -250,6 +251,9 @@ export default function ProfilePage(): JSX.Element {
   const handleLogout = useCallback(async (): Promise<void> => {
     try {
       await AsyncStorage.removeItem("token");
+       // Clear in-memory context state
+    setUserData(undefined);
+    setStudentData(undefined);
       replace("/(auth)/signin");
     } catch (error) {
       console.error("Error removing token:", error);

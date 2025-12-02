@@ -193,7 +193,7 @@ export default function TasksPage() {
     queryFn: getYourOngoingTasks,
   });
 
-  // console.log('Ongoing Loading:', ongoingTasks.length);
+  // // console.log('Ongoing Loading:', ongoingTasks.length);
 
  
 
@@ -236,7 +236,7 @@ const queryKeyMap: Record<TabType, string> = {
   const handleTaskAction = useCallback((task: TaskSchema, action: string) => {
   setSelectedTask(task);
   setCurrentAction(action);
-  // if (action === "chat") console.log('CATTTTT');
+  // if (action === "chat") // console.log('CATTTTT');
   // if (action === "chat") return setChatConfirmVisible(true);
   setConfirmVisible(true);
 }, []);
@@ -257,19 +257,27 @@ const handleEdit = useCallback((task: TaskSchema) => {
 
       // server might return different shapes: response.data, { _id }, { id }, { key }, etc.
       const chatObj = chat?.data ?? chat;
+
       const chatId =
         chatObj?._id ?? chatObj?.id ?? chatObj?.key ?? chatObj?.roomId ?? chatObj;
 
       if (!chatId) {
         throw new Error('Chat created but no id was returned from server.');
       }
+      console.log('data',chatObj)
 
       // Navigate to the messages screen. For expo-router use params `id`.
       // router.push({ pathname: '/messages/[id]', params: { room: chatObj } });
       router.push({
   pathname: '/messages/[id]',
   params: { id: chatId, data: JSON.stringify(chatObj) },
-});
+})
+
+//   router.push({
+//   pathname: '/messages'
+// })
+
+;
 
       return;
     }
@@ -356,14 +364,14 @@ const isLoading =
           </View>
 
           <View style={styles.taskActions}>
-            {activeTab !== "myPosts"  && (
-              <Pressable
-                // style={[styles.actionButton, styles.chatButton]}
-                style={styles.chatButton}
-                onPress={() => handleTaskAction(item, "chat")}>
-                <MessageCircleMore size={32} color="#fff" fill="#b0e17c" />
-              </Pressable>
-            )}
+            {item?.user?._id !== userData?._id &&  activeTab !== 'myPosts' && (
+                <Pressable
+                  style={styles.chatButton}
+                  onPress={() => handleTaskAction(item, "chat")}
+                >
+                  <MessageCircleMore size={32} color="#fff" fill="#b0e17c" />
+                </Pressable>
+              )}
 
             {activeTab === "available" && item.status === TaskStatus.PENDING && (
               <Pressable

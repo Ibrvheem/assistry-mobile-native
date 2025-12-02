@@ -1,8 +1,8 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const url = "https://9cbee0fd7663.ngrok-free.app";
-// const url = "https://assistry-backend.onrender.com";
+// export const url = "https://e310cb56e4e5.ngrok-free.app";
+export const url = "https://assistry-backend.onrender.com";
 
 const getAuthHeader = async () => {
   const token = await AsyncStorage.getItem("token");
@@ -29,7 +29,7 @@ const handleResponse = async (response: Response) => {
 export const api = {
   // get: async (endpoint: string, params?: any) => {
   //   const authHeader = await getAuthHeader();
-  //   // // console.log("PAYLOAD:", params);
+  //   // // // console.log("PAYLOAD:", params);
   //   const response = await fetch(`${url}/${endpoint}`, {
   //     headers: {
   //       ...authHeader,
@@ -60,9 +60,9 @@ export const api = {
 
     const fullUrl = `${url}/${endpoint}${qs.toString() ? `?${qs.toString()}` : ''}`;
 
-    // // console.log('GET URL:', fullUrl);
+    // // // console.log('GET URL:', fullUrl);
 
-    // console.log(qs.toString());
+    // // console.log(qs.toString());
 
     const response = await fetch(fullUrl, {
       method: 'GET',
@@ -75,12 +75,12 @@ export const api = {
 
 //     try {
 //   const urlObj = new URL(fullUrl);
-//   // console.log('QUERY PARAMS:', Array.from(urlObj.searchParams.entries()));
+//   // // console.log('QUERY PARAMS:', Array.from(urlObj.searchParams.entries()));
 // } catch (e) {
-//   // console.log('cannot parse URL', fullUrl);
+//   // // console.log('cannot parse URL', fullUrl);
 // }
 
-// // console.log('STATUS', response.status, response.statusText);
+// // // console.log('STATUS', response.status, response.statusText);
 //   // Try parse JSON first, otherwise text
 //   let body;
 //   try {
@@ -88,14 +88,14 @@ export const api = {
 //   } catch {
 //     body = await response.text();
 //   }
-//   // console.log('RESPONSE BODY', body);
+//   // // console.log('RESPONSE BODY', body);
 
     return handleResponse(response);
   },
 
   post: async (endpoint: string, payload: any) => {
     const authHeader = await getAuthHeader();
-    // console.log("PAYLOAD:", payload);
+    // // console.log("PAYLOAD:", payload);
     const response = await fetch(`${url}/${endpoint}`, {
       method: "POST",
       headers: {
@@ -104,7 +104,7 @@ export const api = {
       },
       body: JSON.stringify(payload),
     });
-    // console.log("REPONSE:", response);
+    // // console.log("REPONSE:", response);
     return handleResponse(response);
   },
 
@@ -148,7 +148,7 @@ export const api = {
 
   formData: async (formData: FormData) => {
     const authHeader = await getAuthHeader();
-    // console.log(formData);
+    // // console.log(formData);
     const response = await fetch(`${url}/upload`, {
       method: "POST",
       headers: {

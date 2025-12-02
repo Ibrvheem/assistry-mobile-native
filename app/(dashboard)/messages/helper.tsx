@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Image } from "expo-image";
+import { cloudinaryUrl } from "@/lib/helpers";
 
 interface DualAvatarProps {
   leftImage?: string;

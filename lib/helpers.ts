@@ -39,7 +39,7 @@ export function formatCurrency(
  // 🖼️ Helper for Cloudinary URLs
 export function cloudinaryUrl (path?: string): string | undefined {
     if (!path) return undefined;
-    if (path.startsWith("http")) return path;
+    if (path.startsWith("http")) return path.replace("auto/upload", "image/upload");
     return `https://res.cloudinary.com/<your-cloud-name>/image/upload/${path}`;
   };
 
@@ -57,7 +57,7 @@ export async function optimizeImageBeforeUpload(uri: string): Promise<string> {
     const response2 = await fetch(uri);
     const blob2 = await response2.blob();
     const sizeInKB2 = blob2.size / 1024;
-    // console.log(`image size: ${sizeInKB2.toFixed(2)} KB`);
+    // // console.log(`image size: ${sizeInKB2.toFixed(2)} KB`);
     // Step 1: Start with moderate resize to reduce resolution
     const resized = await ImageManipulator.manipulateAsync(
       uri,
@@ -69,7 +69,7 @@ export async function optimizeImageBeforeUpload(uri: string): Promise<string> {
     const response = await fetch(resized.uri);
     const blob = await response.blob();
     const sizeInKB = blob.size / 1024;
-    // console.log(`Optimized image size: ${sizeInKB.toFixed(2)} KB`);
+    // // console.log(`Optimized image size: ${sizeInKB.toFixed(2)} KB`);
 
     // Step 3: If still too big, compress more aggressively
     if (sizeInKB > 100) {

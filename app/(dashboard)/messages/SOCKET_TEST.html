@@ -1,0 +1,402 @@
+<!-- <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ChatGateway DTO Tester</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin: 0; padding: 16px; background:#f9fafb; color:#111827; }
+    .container { max-width: 950px; margin: auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.05); }
+    h1 { margin-top:0; display:flex; align-items:center; gap:8px; }
+    input, textarea, select { width:100%; padding:8px; border:1px solid #d1d5db; border-radius:6px; margin-bottom:8px; font-size:14px; }
+    button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer; background:#2563eb; color:#fff; }
+    button.secondary { background:#6b7280; }
+    button.danger { background:#ef4444; }
+    #log { height:300px; overflow:auto; background:#111827; color:#f9fafb; padding:8px; font-family:monospace; border-radius:6px; white-space:pre-wrap; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .half { width:50%; }
+    .attachment-item { background:#f3f4f6; padding:8px; border-radius:6px; margin-bottom:6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💬 ChatGateway Tester (SendMessageDto)</h1>
+
+    <div class="row">
+      <input id="serverUrl" type="url" value="https://5d10290524fa.ngrok-free.app" placeholder="Server URL (e.g. http://localhost:3000)" />
+      <input id="namespace" type="text" value="/chat" placeholder="Namespace" />
+    </div>
+
+    <textarea id="jwtToken" rows="2" placeholder="Paste JWT here..."></textarea>
+
+    <div class="row">
+      <button id="connectBtn">Connect</button>
+      <button id="disconnectBtn" class="secondary" disabled>Disconnect</button>
+    </div>
+
+    <hr/>
+
+    <h3>SendMessageDto</h3>
+
+    <div class="row">
+      <div class="half">
+        <label>roomId (MongoId)</label>
+        <input id="roomId" type="text" placeholder="e.g. 67147fcb1acbed07ff823caa" />
+      </div>
+      <div class="half">
+        <label>type (MessageType)</label>
+        <select id="type">
+          <option value="text">text</option>
+          <option value="image">image</option>
+          <option value="system">system</option>
+        </select>
+      </div>
+    </div>
+
+    <label>text (optional)</label>
+    <textarea id="text" rows="2" placeholder="Message text..."></textarea>
+
+    <label>replyTo (optional - MongoId of another message)</label>
+    <input id="replyTo" type="text" placeholder="e.g. 6714807a2acbed07ff823d11" />
+
+    <h4>Attachments (optional)</h4>
+    <div id="attachments"></div>
+    <button id="addAttachmentBtn" class="secondary">+ Add Attachment</button>
+
+    <div style="margin-top:12px;">
+      <button id="joinBtn" class="secondary" disabled>Join Room</button>
+      <button id="leaveBtn" class="secondary" disabled>Leave Room</button>
+      <button id="sendBtn" disabled>Send Message</button>
+      <button id="getOnlineBtn" class="secondary" disabled>Get Online Users</button>
+    </div>
+
+    <hr/>
+
+    <h3>Logs</h3>
+    <button id="clearLog" class="secondary">Clear Log</button>
+    <div id="log"></div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    const logBox = document.getElementById('log');
+    const appendLog = (...args) => {
+      const now = new Date().toLocaleTimeString();
+      logBox.textContent += `[${now}] ` + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '\\n';
+      logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    const serverUrl = document.getElementById('serverUrl');
+    const namespace = document.getElementById('namespace');
+    const jwtToken = document.getElementById('jwtToken');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const joinBtn = document.getElementById('joinBtn');
+    const leaveBtn = document.getElementById('leaveBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const getOnlineBtn = document.getElementById('getOnlineBtn');
+    const addAttachmentBtn = document.getElementById('addAttachmentBtn');
+    const clearLog = document.getElementById('clearLog');
+
+    const roomIdInput = document.getElementById('roomId');
+    const typeInput = document.getElementById('type');
+    const textInput = document.getElementById('text');
+    const replyToInput = document.getElementById('replyTo');
+    const attachmentsDiv = document.getElementById('attachments');
+
+    let socket;
+
+    const updateButtons = (connected) => {
+      connectBtn.disabled = connected;
+      disconnectBtn.disabled = !connected;
+      joinBtn.disabled = !connected;
+      leaveBtn.disabled = !connected;
+      sendBtn.disabled = !connected;
+      getOnlineBtn.disabled = !connected;
+    };
+
+    connectBtn.onclick = () => {
+      const url = serverUrl.value + (namespace.value || '');
+      const token = jwtToken.value.trim();
+      appendLog('Connecting to', url);
+      socket = io(url, { auth: { token }, transports: ['websocket'] });
+
+      socket.on('connect', () => { appendLog('✅ Connected:', socket.id); updateButtons(true); });
+      socket.on('disconnect', (r) => { appendLog('❌ Disconnected:', r); updateButtons(false); });
+      socket.on('connect_error', (e) => appendLog('⚠️ Connect error:', e.message));
+      socket.on('message', (m) => appendLog('📩 Message:', m));
+      socket.on('joinedRoom', (p) => appendLog('🟢 joinedRoom', p));
+      socket.on('leftRoom', (p) => appendLog('🔴 leftRoom', p));
+      socket.on('onlineUsers', (list) => appendLog('👥 onlineUsers', list));
+      socket.on('userOnline', (p) => appendLog('🟩 userOnline', p));
+      socket.on('userOffline', (p) => appendLog('⬜ userOffline', p));
+    };
+
+    disconnectBtn.onclick = () => { if (socket) socket.disconnect(); updateButtons(false); appendLog('Manual disconnect'); };
+
+    joinBtn.onclick = () => {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert('Enter roomId');
+      socket.emit('joinRoom', { roomId });
+      appendLog('➡️ joinRoom', roomId);
+    };
+
+    leaveBtn.onclick = () => {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert('Enter roomId');
+      socket.emit('leaveRoom', { roomId });
+      appendLog('⬅️ leaveRoom', roomId);
+    };
+
+    sendBtn.onclick = () => {
+      const payload = collectDto();
+      appendLog('🚀 sendMessage', payload);
+      socket.emit('sendMessage', payload, (ack) => appendLog('ACK:', ack));
+    };
+
+    getOnlineBtn.onclick = () => { socket.emit('getOnlineUsers'); appendLog('📡 getOnlineUsers'); };
+    clearLog.onclick = () => logBox.textContent = '';
+
+    addAttachmentBtn.onclick = () => addAttachmentInput();
+
+    function addAttachmentInput() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'attachment-item';
+      wrapper.innerHTML = `
+        <input placeholder="URL" class="url"/>
+        <input placeholder="Key (optional)" class="key"/>
+        <input placeholder="Kind (optional)" class="kind"/>
+        <button class="danger removeBtn">Remove</button>
+      `;
+      wrapper.querySelector('.removeBtn').onclick = () => wrapper.remove();
+      attachmentsDiv.appendChild(wrapper);
+    }
+
+    function collectDto() {
+      const roomId = roomIdInput.value.trim();
+      const type = typeInput.value;
+      const text = textInput.value.trim();
+      const replyTo = replyToInput.value.trim();
+      const attachments = Array.from(attachmentsDiv.querySelectorAll('.attachment-item')).map(div => ({
+        url: div.querySelector('.url').value.trim(),
+        key: div.querySelector('.key').value.trim() || undefined,
+        kind: div.querySelector('.kind').value.trim() || undefined
+      })).filter(a => a.url);
+
+      const dto = { roomId, type };
+      if (text) dto.text = text;
+      if (replyTo) dto.replyTo = replyTo;
+      if (attachments.length) dto.attachments = attachments;
+      return dto;
+    }
+  </script>
+</body>
+</html> -->
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ChatGateway DTO Tester</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin: 0; padding: 16px; background:#f9fafb; color:#111827; }
+    .container { max-width: 950px; margin: auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.05); }
+    h1 { margin-top:0; display:flex; align-items:center; gap:8px; }
+    input, textarea, select { width:100%; padding:8px; border:1px solid #d1d5db; border-radius:6px; margin-bottom:8px; font-size:14px; }
+    button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer; background:#2563eb; color:#fff; }
+    button.secondary { background:#6b7280; }
+    button.danger { background:#ef4444; }
+    #log { height:300px; overflow:auto; background:#111827; color:#f9fafb; padding:8px; font-family:monospace; border-radius:6px; white-space:pre-wrap; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .half { width:50%; }
+    .attachment-item { background:#f3f4f6; padding:8px; border-radius:6px; margin-bottom:6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💬 ChatGateway Tester (SendMessageDto)</h1>
+
+    <div class="row">
+      <input id="serverUrl" type="url" value="http://localhost:3000" placeholder="Server URL (e.g. http://localhost:3000)" />
+      <input id="namespace" type="text" value="/chat" placeholder="Namespace" />
+    </div>
+
+    <textarea id="jwtToken" rows="2" placeholder="Paste JWT here..."></textarea>
+
+    <div class="row">
+      <button id="connectBtn">Connect</button>
+      <button id="disconnectBtn" class="secondary" disabled>Disconnect</button>
+    </div>
+
+    <hr/>
+
+    <h3>SendMessageDto</h3>
+
+    <div class="row">
+      <div class="half">
+        <label>roomId (MongoId)</label>
+        <input id="roomId" type="text" placeholder="e.g. 67147fcb1acbed07ff823caa" />
+      </div>
+      <div class="half">
+        <label>type (MessageType)</label>
+        <select id="type">
+          <option value="text">text</option>
+          <option value="image">image</option>
+          <option value="system">system</option>
+        </select>
+      </div>
+    </div>
+
+    <label>text (optional)</label>
+    <textarea id="text" rows="2" placeholder="Message text..."></textarea>
+
+    <label>replyTo (optional - MongoId of another message)</label>
+    <input id="replyTo" type="text" placeholder="e.g. 6714807a2acbed07ff823d11" />
+
+    <h4>Attachments (optional)</h4>
+    <div id="attachments"></div>
+    <button id="addAttachmentBtn" class="secondary">+ Add Attachment</button>
+
+    <div style="margin-top:12px;">
+      <button id="joinBtn" class="secondary" disabled>Join Room</button>
+      <button id="leaveBtn" class="secondary" disabled>Leave Room</button>
+      <button id="sendBtn" disabled>Send Message</button>
+      <button id="getOnlineBtn" class="secondary" disabled>Get Online Users</button>
+    </div>
+
+    <hr/>
+
+    <h3>Logs</h3>
+    <button id="clearLog" class="secondary">Clear Log</button>
+    <div id="log"></div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    const logBox = document.getElementById('log');
+    const appendLog = (...args) => {
+      const now = new Date().toLocaleTimeString();
+      logBox.textContent += `[${now}] ` + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '\\n';
+      logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    const serverUrl = document.getElementById('serverUrl');
+    const namespace = document.getElementById('namespace');
+    const jwtToken = document.getElementById('jwtToken');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const joinBtn = document.getElementById('joinBtn');
+    const leaveBtn = document.getElementById('leaveBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const getOnlineBtn = document.getElementById('getOnlineBtn');
+    const addAttachmentBtn = document.getElementById('addAttachmentBtn');
+    const clearLog = document.getElementById('clearLog');
+
+    const roomIdInput = document.getElementById('roomId');
+    const typeInput = document.getElementById('type');
+    const textInput = document.getElementById('text');
+    const replyToInput = document.getElementById('replyTo');
+    const attachmentsDiv = document.getElementById('attachments');
+
+    let socket;
+
+    const updateButtons = (connected) => {
+      connectBtn.disabled = connected;
+      disconnectBtn.disabled = !connected;
+      joinBtn.disabled = !connected;
+      leaveBtn.disabled = !connected;
+      sendBtn.disabled = !connected;
+      getOnlineBtn.disabled = !connected;
+    };
+
+    connectBtn.onclick = () => {
+      const url = serverUrl.value + (namespace.value || '');
+      const token = jwtToken.value.trim();
+      appendLog('Connecting to', url);
+
+      socket = io(url, { auth: { token }, transports: ['websocket'], reconnection: true, reconnectionAttempts: 5 });
+
+      socket.on('connect', () => {
+        appendLog('✅ Connected:', socket.id);
+        updateButtons(true);
+      });
+
+      socket.on('disconnect', (reason) => {
+        appendLog('❌ Disconnected:', reason);
+        updateButtons(false);
+      });
+
+      socket.on('connect_error', (error) => appendLog('⚠️ Connect error:', error.message));
+
+      // Log all events
+      socket.onAny((event, ...args) => appendLog('Event:', event, args));
+
+      socket.on('message', (m) => appendLog('📩 Message:', m));
+      socket.on('joinedRoom', (p) => appendLog('🟢 joinedRoom', p));
+      socket.on('leftRoom', (p) => appendLog('🔴 leftRoom', p));
+      socket.on('onlineUsers', (list) => appendLog('👥 onlineUsers', list));
+      socket.on('userOnline', (p) => appendLog('🟩 userOnline', p));
+      socket.on('userOffline', (p) => appendLog('⬜ userOffline', p));
+    };
+
+    disconnectBtn.onclick = () => { if (socket) socket.disconnect(); updateButtons(false); appendLog('Manual disconnect'); };
+
+    joinBtn.onclick = () => {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert('Enter roomId');
+      socket.emit('joinRoom', { roomId });
+      appendLog('➡️ joinRoom', roomId);
+    };
+
+    leaveBtn.onclick = () => {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert('Enter roomId');
+      socket.emit('leaveRoom', { roomId });
+      appendLog('⬅️ leaveRoom', roomId);
+    };
+
+    sendBtn.onclick = () => {
+      const payload = collectDto();
+      appendLog('🚀 sendMessage', payload);
+      socket.emit('sendMessage', payload, (ack) => appendLog('ACK:', ack));
+    };
+
+    getOnlineBtn.onclick = () => { socket.emit('getOnlineUsers'); appendLog('📡 getOnlineUsers'); };
+    clearLog.onclick = () => logBox.textContent = '';
+    addAttachmentBtn.onclick = () => addAttachmentInput();
+
+    function addAttachmentInput() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'attachment-item';
+      wrapper.innerHTML = `
+        <input placeholder="URL" class="url"/>
+        <input placeholder="Key (optional)" class="key"/>
+        <input placeholder="Kind (optional)" class="kind"/>
+        <button class="danger removeBtn">Remove</button>
+      `;
+      wrapper.querySelector('.removeBtn').onclick = () => wrapper.remove();
+      attachmentsDiv.appendChild(wrapper);
+    }
+
+    function collectDto() {
+      const roomId = roomIdInput.value.trim();
+      const type = typeInput.value;
+      const text = textInput.value.trim();
+      const replyTo = replyToInput.value.trim();
+      const attachments = Array.from(attachmentsDiv.querySelectorAll('.attachment-item')).map(div => ({
+        url: div.querySelector('.url').value.trim(),
+        key: div.querySelector('.key').value.trim() || undefined,
+        kind: div.querySelector('.kind').value.trim() || undefined
+      })).filter(a => a.url);
+
+      const dto = { roomId, type };
+      if (text) dto.text = text;
+      if (replyTo) dto.replyTo = replyTo;
+      if (attachments.length) dto.attachments = attachments;
+      return dto;
+    }
+  </script>
+</body>
+</html>

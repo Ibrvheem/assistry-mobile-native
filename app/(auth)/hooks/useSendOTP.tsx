@@ -16,7 +16,7 @@ export function useSendOTP(email: string, phone_no:string) {
       // const emailContent = ReactDOMServer.renderToStaticMarkup(
       //   <PlaidVerifyIdentityEmail validationCode={data.otp} />
       // );
-      // console.log(data);
+      // // console.log(data);
       const pinid = data.pin_id;
       router.push({
   pathname: "/(auth)/otp",

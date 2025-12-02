@@ -3,8 +3,8 @@ import {Deposit,} from "./types";
 
 export async function getByYou() {
   const response = await api.get("tasks/by-you");
-  // // console.log("BY YOU RAW RESPONSE", response.data);
-  // console.log('BY YOU RESPONSE', response);
+  // // // console.log("BY YOU RAW RESPONSE", response.data);
+  // // console.log('BY YOU RESPONSE', response);
   return response;
 }
 export async function getForYou() {
@@ -27,13 +27,13 @@ export async function getAvailable() {
 export async function getYourOngoingTasks() {
   const response = await api.get("tasks/ongoing");
 
-  // console.log('ONGOING RESPONSE', response);
+  // // console.log('ONGOING RESPONSE', response);
   return response;
 }
 export async function getWallet() {
-  // console.log('GETTING WALLET');
+  // // console.log('GETTING WALLET');
   const response = await api.get("wallet");
-  // console.log('WALLET RESPONSE', response);
+  // // console.log('WALLET RESPONSE', response);
   return response;
 }
 

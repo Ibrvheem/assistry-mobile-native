@@ -31,7 +31,7 @@ const fallbackUser = {
 export default function ViewProfileScreen(): JSX.Element {
   const { id } = useLocalSearchParams() as { id?: string };
 
-  // console.log("Profile ID:", id);
+  // // console.log("Profile ID:", id);
 
   
 
@@ -48,7 +48,7 @@ export default function ViewProfileScreen(): JSX.Element {
     enabled: !!id,
   });
 
-  // console.log("User V Data:", user);
+  // // console.log("User V Data:", user);
 
   if (isLoading) {
     return (

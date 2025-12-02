@@ -265,13 +265,14 @@ import {
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
+import { Ionicons } from '@expo/vector-icons'
 import {
   formatDistanceToNowStrict,
   isToday,
   isYesterday,
   format,
 } from "date-fns";
-import { Avatar } from "@/app/avatar";
+import { Avatar, SingleAvatar } from "@/app/avatar";
 import { useGobalStoreContext } from "@/store/global-context";
 import { getMyChats } from "./services";
 import { DualAvatar } from "./helper";
@@ -305,6 +306,7 @@ interface Chat {
     sender: string;
     text: string;
     createdAt: string;
+    type:string;
   };
 }
 
@@ -317,6 +319,8 @@ export default function Messages() {
     queryFn: getMyChats,
   });
 
+  // console.log("CHATS",chats)
+
   const formatMessageTime = (dateStr: string): string => {
     const date = new Date(dateStr);
     if (isToday(date)) return format(date, "h:mm a");
@@ -327,13 +331,15 @@ export default function Messages() {
   const renderChatItem = ({ item }: { item: Chat }) => {
     const otherUser = item.users.find((u) => u._id !== userData?._id);
     const taskPicture= item.task_picture?.replace("auto/upload", "image/upload");
-    console.log('piccc', taskPicture)
+    // console.log('piccc', taskPicture)
     const fullName = otherUser
       ? `${otherUser.first_name.trim()} ${otherUser.last_name.trim()}`
       : "Unknown User";
     const name= `${item.name} -- ${otherUser?.first_name.trim()} `
 
     const lastMsg = item.lastMessage?.text || "Start a conversation...";
+    const LASTMESSAGE=item.lastMessage;
+
     const lastMsgTime = item.lastMessage?.createdAt || item.lastMessageAt;
     const unreadCount = item.unreadCount || 0;
 
@@ -357,8 +363,9 @@ export default function Messages() {
             )}
           </View> */}
 
-          <View style={styles.avatarContainer}>
+          {/* <View style={styles.avatarContainer}>
   {item.users.length === 2 ? (
+    
     <DualAvatar
   leftImage={taskPicture ?? ""}
   rightImage={otherUser?.profile_picture ?? ""}
@@ -367,7 +374,25 @@ export default function Messages() {
   ) : (
     <Avatar size={55} />
   )}
+</View> */}
+
+<View style={styles.avatarContainer}>
+  {item.users.length === 2 ? (
+    !taskPicture && !otherUser?.profile_picture ? (
+      // <Avatar size={100} />
+      <SingleAvatar size={55} Imageurl="https://res.cloudinary.com/dvihh0qu2/image/upload/v1761258439/logo_bnxhkm.png"/>
+    ) : (
+      <DualAvatar
+        leftImage={taskPicture ?? ""}
+        rightImage={otherUser?.profile_picture ?? ""}
+        size={55}
+      />
+    )
+  ) : (
+    <Avatar size={55} />
+  )}
 </View>
+
 
           {/* Chat Info */}
           <View style={styles.chatInfo}>
@@ -379,16 +404,63 @@ export default function Messages() {
             </View>
 
             <View style={styles.messageRow}>
-              <Text
-                style={[
-                  styles.lastMessage,
-                  unreadCount > 0 && styles.unreadMessage,
-                ]}
-                numberOfLines={1}
-              >
-                {lastMsg}
-              </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+  {LASTMESSAGE?.type === "image" ? (
+    <>
+      <Ionicons name="image" size={20} color="#6B7280" />
+      <Text
+        style={[
+          styles.lastMessage,
+          unreadCount > 0 && styles.unreadMessage,
+          { fontStyle: "italic", marginLeft: 7 },
+        ]}
+        numberOfLines={1}
+      >
+        Image
+      </Text>
+    </>
+  ) : LASTMESSAGE?.type === "voice" ? (
+    <>
+      <Ionicons name="mic" size={20} color="#6B7280" />
+      <Text
+        style={[
+          styles.lastMessage,
+          unreadCount > 0 && styles.unreadMessage,
+          { fontStyle: "italic", marginLeft: 7 },
+        ]}
+        numberOfLines={1}
+      >
+        Voice message
+      </Text>
+    </>
+  ) : LASTMESSAGE?.type === "file" ? (
+    <>
+      <Ionicons name="document-text" size={20} color="#6B7280" />
+      <Text
+        style={[
+          styles.lastMessage,
+          unreadCount > 0 && styles.unreadMessage,
+          { fontStyle: "italic", marginLeft: 7 },
+        ]}
+        numberOfLines={1}
+      >
+        File
+      </Text>
+    </>
+  ) : (
+    <Text
+      style={[
+        styles.lastMessage,
+        unreadCount > 0 && styles.unreadMessage,
+      ]}
+      numberOfLines={1}
+    >
+      {lastMsg}
+    </Text>
+  )}
+</View>
 
+             
               {unreadCount > 0 && (
                 <View style={styles.unreadBadge}>
                   <Text style={styles.unreadText}>

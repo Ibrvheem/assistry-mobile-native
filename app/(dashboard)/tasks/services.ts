@@ -31,7 +31,7 @@ export async function declineTask({ taskId }: { taskId: string }) {
 }
 
 export async function approveTask({ taskId }: { taskId: string }) {
-  const response = await api.post("tasks/acknowledge", { taskId });
+  const response = await api.post("tasks/acknowledged", { taskId });
   return response;
 }
 
@@ -62,7 +62,7 @@ export async function chatTaskUser(participants: string[], taskId: string) {
 }
 
 export async function performTaskAction(taskId: string, action: string) {
-  if (!["accept", "complete","start", "cancel", "decline", "acknowledge"].includes(action)) {
+  if (!["accept", "complete","start", "approve","cancel", "decline", "acknowledge"].includes(action)) {
     throw new Error("Invalid action");
   }
 

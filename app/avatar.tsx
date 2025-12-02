@@ -25,7 +25,7 @@ export function Avatar({
     queryFn: fetchAvatar,
   });
   const { userData } = useGobalStoreContext();
-  // // console.log(userData);
+  // // // console.log(userData);
 
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -68,4 +68,28 @@ export function Avatar({
   }
 
   return null;
+}
+
+
+export function SingleAvatar({
+  Imageurl,
+  size = 55,
+}: {
+  size?: number;
+  Imageurl?: string;
+}) {
+  return (
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <Image
+        source={{ uri: Imageurl }}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: "#e5e7eb",
+        }}
+        resizeMode="cover"
+      />
+    </View>
+  );
 }

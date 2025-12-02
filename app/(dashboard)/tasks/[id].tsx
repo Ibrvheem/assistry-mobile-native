@@ -48,7 +48,7 @@ export default function TaskDetailsScreen() {
     queryFn: () => getTask(id),
   }) as { data: TaskSchema; isLoading: boolean; error: unknown };
 
-  // console.log("Task Data:", data);
+  // // console.log("Task Data:", data);
 
   const assets = useMemo(() => (data?.assets ? [...data.assets] : []), [data]);
 

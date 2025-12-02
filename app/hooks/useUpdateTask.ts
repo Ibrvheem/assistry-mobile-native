@@ -64,9 +64,9 @@
 //         }
 //       }
 
-//       // console.log("images length:", images.length);
+//       // // console.log("images length:", images.length);
 
-//       // console.log("Assets to update:", assets);
+//       // // console.log("Assets to update:", assets);
 
 //       const payload: UpdateTaskPayload = {
 //         ...values,
@@ -109,7 +109,7 @@
 // //       currentImageUrls.has(normalizeUrl(asset.url))
 // //     );
 
-// //     // console.log("🧠 Retained assets:", retainedAssets);
+// //     // // console.log("🧠 Retained assets:", retainedAssets);
 
 // //     // --- 5️⃣ Upload any new (local) images ---
 // //     const newUploads =
@@ -129,7 +129,7 @@
 
 // //                 const response = await api.formData(formData);
 
-// //                 // console.log("✅ Uploaded new image:", response.key);
+// //                 // // console.log("✅ Uploaded new image:", response.key);
 
 // //                 return {
 // //                   kind: type,
@@ -148,7 +148,7 @@
 // //       ...newUploads,
 // //     ];
 
-// //     // console.log("📦 Final assets being sent:", assets);
+// //     // // console.log("📦 Final assets being sent:", assets);
 
 // //     // --- 7️⃣ Prepare payload ---
 // //     const payload: UpdateTaskPayload = {
@@ -158,7 +158,7 @@
 // //       ...(assets.length ? { assets } : {}),
 // //     };
 
-// //     // console.log("🚀 Updating task with payload:", payload);
+// //     // // console.log("🚀 Updating task with payload:", payload);
 
 // //     // --- 8️⃣ Send PATCH request ---
 // //     const response = await api.patch(`/tasks/${taskId}`, payload);
@@ -299,7 +299,7 @@
 //         ...(assets.length ? { assets } : {}),
 //       };
 
-//       // console.log("🚀 Final update payload:", payload);
+//       // // console.log("🚀 Final update payload:", payload);
 
 //       // --- 7️⃣ PATCH to backend ---
 //       const response = await api.patch(`/tasks/${taskId}`, payload);
@@ -448,7 +448,7 @@ formData.append("file", {
         ...(assets.length ? { assets } : {}),
       };
 
-      // console.log("🚀 Final update payload:", payload);
+      // // console.log("🚀 Final update payload:", payload);
 
       // --- 7️⃣ PATCH request
       const response = await api.patch(`tasks/${taskId}`, payload);

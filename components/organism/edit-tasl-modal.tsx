@@ -88,7 +88,7 @@ export default function EditTaskModal({
   // preload existing images
   useEffect(() => {
     if (task?.assets?.length) {
-      // console.log("Preloading images:", task.assets.map((a) => a.url));
+      // // console.log("Preloading images:", task.assets.map((a) => a.url));
       setImages(task.assets.map((a) => a.url.replace("auto/upload", "image/upload")));
     }
   }, [task, setImages]);

@@ -15,9 +15,9 @@ export function getContact(id: string) {
   return response;
 }
 export function getStudentData(payload: VerifyStudentRegNo) {
-  // // console.log("Sending request to:", payload);
+  // // // console.log("Sending request to:", payload);
   const response = api.post("udus", payload);
-  // // console.log("Sending request to:", response);
+  // // // console.log("Sending request to:", response);
   return response;
 }
 
@@ -32,9 +32,9 @@ export function getStudentData(payload: VerifyStudentRegNo) {
 // }
 
 export function requestOTP(payload: RequestOTPPayload) {
-  // // console.log('PAYLOAD', payload);
+  // // // console.log('PAYLOAD', payload);
   const response = api.post("otp/send", payload);
-  // // console.log('response', response);
+  // // // console.log('response', response);
 
   return response;
 }

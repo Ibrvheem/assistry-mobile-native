@@ -1,19 +1,44 @@
-// lib/socket.ts
 import { io, Socket } from "socket.io-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const token = await AsyncStorage.getItem("token");
+import { url as Baseurl } from "./api";
+
 let socket: Socket | null = null;
 
-export const getSocket = () => {
-  
+const url=`${Baseurl}/chat`
+// const url = "https://assistry-backend.onrender.com/chat";
+
+export const getSocket = async (): Promise<Socket> => {
   if (!socket) {
-    socket = io("https://9cbee0fd7663.ngrok-free.app", {
+    const token = await AsyncStorage.getItem("token");
+
+    socket = io(url, {
       transports: ["websocket"],
-      autoConnect: false,
-      auth: {
-        token: token, // pass your auth token if required
-      },
+      autoConnect: true, // 👈 disable autoConnect to control manually
+      auth: { token },
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
   }
+
+  // 👇 Ensure it's connected before returning
+  if (!socket.connected) {
+    socket.connect();
+
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        socket?.off("connect", onConnect);
+        reject(new Error("Socket connection timed out"));
+      }, 10000); // 10s timeout guard
+
+      const onConnect = () => {
+        clearTimeout(timeout);
+        socket?.off("connect", onConnect);
+        resolve();
+      };
+
+      socket?.on("connect", onConnect);
+    });
+  }
+
   return socket;
 };

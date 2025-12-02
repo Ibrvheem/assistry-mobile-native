@@ -82,10 +82,6 @@ export default function Index(): JSX.Element {
   const balance = walletData?.data?.balance_kobo ?? 0;
   const spent = walletData?.data?.spent ?? 0;
 
-useEffect(() => {
-  console.log("Dashboard mounted");
-  return () => console.log("Dashboard unmounted");
-}, []);
 
 
   // ----------------------------------------

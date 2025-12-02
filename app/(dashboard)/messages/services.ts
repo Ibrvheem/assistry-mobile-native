@@ -10,16 +10,16 @@ export async function getMessages(chatId: string, pageParam?: string | null, lim
   const response = await api.get(`chat/rooms/${chatId}/messages`, {
     params: {
       limit: limit ?? 50, // Default limit, adjust as needed
-      before: pageParam, // Pass the pageParam as the "before" cursor
+      before: pageParam, 
     },
   });
-  return response.data; // Return the data directly
+  return response; // Return the data directly
 }
 
 
 export async function sendMessage(payload:any) {
   const response = await api.post(`chat/messages`, payload);
-  return response.data; // Return the data directly
+  return response.data; 
 }
 
 /**
@@ -44,4 +44,4 @@ formData.append("file", {
               const response = await api.formData(formData);
               return { kind: type, assetStorageKey: response.key as string, url:response.url };
 
-};
+}
