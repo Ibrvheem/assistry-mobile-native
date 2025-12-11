@@ -1,5 +1,4 @@
-import { Message, Attachment } from "./[id]";
-// ImageGrid.tsx
+import { Message } from "@/database/models";
 import React, { useMemo, useState } from 'react';
 import {
   View,
@@ -14,21 +13,16 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 
-
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const GAP = 6;
 
-function normalizeAttachments(input: Message['attachments']): string[] {
+function normalizeAttachments(input: any[]): string[] {
   if (!input) return [];
-  if (typeof input === 'string') return [input];
   if (Array.isArray(input)) {
-    // could be array of strings or array of Attachment
+    // could be array of strings or array of Attachment objects
     if (input.length === 0) return [];
-    // if (typeof input[0] === 'string') return input as string[];
-    return (input as Attachment[]).map((a) => a.url).filter(Boolean);
+    return input.map((a) => (typeof a === 'string' ? a : a.url)).filter(Boolean);
   }
-  // single Attachment object
-  if ((input as Attachment).url) return [(input as Attachment).url];
   return [];
 }
 
@@ -39,7 +33,7 @@ export default function ImageGrid({
   message: Message;
   cloudinaryUrl?: (p: any) => string | undefined; // optional helper
 }) {
-  const rawUrls = normalizeAttachments(message.attachments);
+  const rawUrls = normalizeAttachments(message.attachmentsArray);
   // If your attachments sometimes hold paths that need cloudinaryUrl conversion, try converting:
   const urls = useMemo(() => {
     if (!cloudinaryUrl) return rawUrls;
@@ -70,7 +64,7 @@ export default function ImageGrid({
   return (
     <View>
       <View style={[styles.grid, { padding: GAP / 2 }]}>
-        {/* {count === 1 ? (
+        {count === 1 ? (
           <TouchableOpacity onPress={() => openViewer(0)} activeOpacity={0.9}>
             <Image
               source={{ uri: urls[0] }}
@@ -78,7 +72,37 @@ export default function ImageGrid({
               contentFit="cover"
             />
           </TouchableOpacity>
+        ) : count === 3 ? (
+          <View style={{ flexDirection: 'row', gap: GAP }}>
+            {/* Column 1 */}
+            <TouchableOpacity onPress={() => openViewer(0)} activeOpacity={0.9} style={{ flex: 1 }}>
+              <Image
+                source={{ uri: urls[0] }}
+                style={{ width: '100%', height: 300, borderRadius: 8 }}
+                contentFit="cover"
+              />
+            </TouchableOpacity>
+
+            {/* Column 2 */}
+            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+              <TouchableOpacity onPress={() => openViewer(1)} activeOpacity={0.9}>
+                <Image
+                  source={{ uri: urls[1] }}
+                  style={{ width: '100%', height: 147, borderRadius: 8 }}
+                  contentFit="cover"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => openViewer(2)} activeOpacity={0.9}>
+                <Image
+                  source={{ uri: urls[2] }}
+                  style={{ width: '100%', height: 147, borderRadius: 8 }}
+                  contentFit="cover"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
         ) : (
+          // existing 2+ columns logic for other counts
           <View style={styles.gridRow}>
             {displayUrls.map((u, idx) => {
               const showOverlay = idx === displayUrls.length - 1 && extraCount > 0;
@@ -103,72 +127,7 @@ export default function ImageGrid({
               );
             })}
           </View>
-        )} */}
-        {count === 1 ? (
-  <TouchableOpacity onPress={() => openViewer(0)} activeOpacity={0.9}>
-    <Image
-      source={{ uri: urls[0] }}
-      style={[styles.singleImage, { width: WINDOW_WIDTH - GAP, height: 300 }]}
-      contentFit="cover"
-    />
-  </TouchableOpacity>
-) : count === 3 ? (
-  <View style={{ flexDirection: 'row', gap: GAP }}>
-    {/* Column 1 */}
-    <TouchableOpacity onPress={() => openViewer(0)} activeOpacity={0.9} style={{ flex: 1 }}>
-      <Image
-        source={{ uri: urls[0] }}
-        style={{ width: '100%', height: 300, borderRadius: 8 }}
-        contentFit="cover"
-      />
-    </TouchableOpacity>
-
-    {/* Column 2 */}
-    <View style={{ flex: 1, justifyContent: 'space-between' }}>
-      <TouchableOpacity onPress={() => openViewer(1)} activeOpacity={0.9}>
-        <Image
-          source={{ uri: urls[1] }}
-          style={{ width: '100%', height: 147, borderRadius: 8 }}
-          contentFit="cover"
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => openViewer(2)} activeOpacity={0.9}>
-        <Image
-          source={{ uri: urls[2] }}
-          style={{ width: '100%', height: 147, borderRadius: 8 }}
-          contentFit="cover"
-        />
-      </TouchableOpacity>
-    </View>
-  </View>
-) : (
-  // existing 2+ columns logic for other counts
-  <View style={styles.gridRow}>
-    {displayUrls.map((u, idx) => {
-      const showOverlay = idx === displayUrls.length - 1 && extraCount > 0;
-      return (
-        <TouchableOpacity
-          key={u + idx}
-          onPress={() => openViewer(idx)}
-          activeOpacity={0.9}
-          style={{ margin: GAP / 2 }}
-        >
-          <Image
-            source={{ uri: u }}
-            style={{ width: tileSize, height: tileSize, borderRadius: 8 }}
-            contentFit="cover"
-          />
-          {showOverlay && (
-            <View style={[styles.overlay, { width: tileSize, height: tileSize, borderRadius: 8 }]}>
-              <Text style={styles.overlayText}>+{extraCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-)}
-
+        )}
       </View>
 
       {/* Fullscreen modal viewer */}
@@ -203,45 +162,38 @@ export default function ImageGrid({
   );
 }
 
-
-
 const styles = StyleSheet.create({
   grid: {
-
-  width: '100%',           // take full width of parent
-  borderRadius: 12,
-  overflow: 'hidden',
-  flexDirection: 'row',    // for multiple columns
-  flexWrap: 'wrap',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
-},
-singleImage: {
-  width: '100%',
-  height: 200,             // or any dynamic height you prefer
-  borderRadius: 12,
-  overflow: 'hidden',
-},
-gridItem: {
-  flex: 1,
-  margin: GAP / 2,
-  borderRadius: 12,
-  overflow: 'hidden',
-},
-image: {
-  width: '100%',
-  height: '100%',
-  borderRadius: 12,
-},
+    width: '100%',           // take full width of parent
+    borderRadius: 12,
+    overflow: 'hidden',
+    flexDirection: 'row',    // for multiple columns
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  singleImage: {
+    width: '100%',
+    height: 200,             // or any dynamic height you prefer
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  gridItem: {
+    flex: 1,
+    margin: GAP / 2,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+  },
   gridRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
   },
-//   singleImage: {
-//     borderRadius: 10,
-//     overflow: 'hidden',
-//   },
   overlay: {
     position: 'absolute',
     left: 0,

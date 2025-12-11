@@ -104,10 +104,15 @@ export default function Index(): JSX.Element {
       <View style={styles.sectionContainer}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Campus Tasks</Text>
-          <Pressable style={styles.postButton} onPress={() => setModalOpen(true)}>
-            <PlusCircle size={20} color="#22C55E" />
-            <Text style={styles.postButtonText}>Post Task</Text>
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <Pressable style={styles.transferButton} onPress={() => router.push('/(transfer)/TransferStart')}>
+              <Text style={styles.transferButtonText}>Transfer</Text>
+            </Pressable>
+            <Pressable style={styles.postButton} onPress={() => setModalOpen(true)}>
+              <PlusCircle size={20} color="#22C55E" />
+              <Text style={styles.postButtonText}>Post Task</Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* Modal */}
@@ -198,6 +203,17 @@ const styles = StyleSheet.create({
   postButtonText: {
     color: '#22C55E',
     marginLeft: 4,
+    fontWeight: '600',
+  },
+  transferButton: {
+    backgroundColor: '#22C55E',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    justifyContent: 'center',
+  },
+  transferButtonText: {
+    color: '#fff',
     fontWeight: '600',
   },
   scrollContainer: {

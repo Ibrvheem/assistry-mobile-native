@@ -2,6 +2,8 @@
   "extends": "expo/tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "jsx": "react-jsx", // 👈 important for RN + Expo SDK 49+
     "types": [
       "react",

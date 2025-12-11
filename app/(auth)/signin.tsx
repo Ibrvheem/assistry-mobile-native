@@ -1,126 +1,393 @@
-import { View, Text, SafeAreaView, Image, StyleSheet } from "react-native";
-import React from "react";
-import { Button, Input } from "tamagui";
-import { useNavigation } from "@react-navigation/native";
-import { router } from "expo-router";
-import { useGobalStoreContext } from "@/store/global-context";
-import { useCreatePasswordHook } from "./hooks/useCreatePasswordHook";
-import { FormProvider } from "react-hook-form";
-import ControlledInput from "@/components/molecules/controlled-input";
-import LoadingChildren from "@/components/molecules/loading-children";
-import { useSignIn } from "./hooks/useSignIn";
-import '@/global.css'
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Eye, EyeOff, AlertCircle, XCircle } from 'lucide-react-native';
+import { useSignIn } from './hooks/useSignIn';
+import { Controller } from 'react-hook-form';
+import { router } from 'expo-router';
+import Animated, { FadeInDown, FadeInUp, SlideInDown, SlideOutUp } from 'react-native-reanimated';
+import { registerForPushNotificationsAsync } from '@/lib/notifications';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { width, height } = Dimensions.get('window');
 
 export default function SignIn() {
-  const navigation = useNavigation(); // Get the navigation object
   const { methods, onSubmit, loading, error } = useSignIn();
+  const { control, handleSubmit } = methods;
+  const [showPassword, setShowPassword] = useState(false);
+  const [showError, setShowError] = useState(false);
 
-  const { studentData } = useGobalStoreContext();
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+      // Auto hide error after 5 seconds
+      const timer = setTimeout(() => setShowError(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
-  const handlePress = () => {
-    router.push("/(dashboard)");
-  };
+  // const handleLogin = async (data: any) => {
+  //   // We wrap the original onSubmit to handle the promise if possible, 
+  //   // but since useSignIn uses mutate, we just trigger it.
+  //   // The navigation happens in useSignIn's onSuccess.
+  //   await onSubmit(); 
+    
+  //   // Attempt to register for push notifications (fire and forget)
+  //   registerForPushNotificationsAsync().then(token => {
+  //       if (token) console.log("Push Token:", token);
+  //   }).catch(err => console.error("Push registration failed", err));
+  // };
+
+  const handleLogin = handleSubmit(async (data) => {
+  try {
+    // get Expo push token BEFORE login
+    const pushToken = await registerForPushNotificationsAsync();
+
+    // attach token to body
+    const payload = {
+      ...data,
+      push_token: pushToken || null,
+    };
+
+    // send to your mutation
+    onSubmit(payload);
+
+  } catch (err) {
+    console.error("Login failed:", err);
+  }
+});
+
 
   return (
-    <View className="bg-[#FFFF] bg-opacity-0 h-full">
-      <SafeAreaView>
-        <View className="p-4">
-          <View className="space-y-4 ">
-            <View className="flex flex-row items-center gap-2 w-full">
-              <Image
-                source={require("../../assets/logos/image.png")}
-                style={{ width: 50, height: 50 }}
-                className="rounded-md"
-              />
-            </View>
-            <View className="space-y-2 pt-12">
-              <Text
-                // className="text-3xl mt-2 text-[#1C332B]"
-                // style={{ fontFamily: "PoppinsBold" }}
-                style={styles.loginText}
-              >
-                LOGIN
-              </Text>
-              <Text
-              style={styles.loginTextDesc}
-              >
-                Welcome back! Login to access your acccount
-              </Text>
-            </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
+        locations={[0, 0.2, 0.5, 0.8, 1]}
+        style={styles.background}
+      />
+
+      {/* Unique Error Handling UI - Top Dropdown Toast */}
+      {showError && (
+        <Animated.View 
+          entering={SlideInDown.springify().damping(15)} 
+          exiting={SlideOutUp}
+          style={styles.errorToast}
+        >
+          <XCircle color="#FF6B6B" size={24} />
+          <View style={styles.errorContent}>
+            <Text style={styles.errorTitle}>Authentication Failed</Text>
+            <Text style={styles.errorMessage}>
+              {error?.message || error?.toString() || "Invalid credentials. Please try again."}
+            </Text>
           </View>
-          <FormProvider {...methods}>
-            <View className="w-full mt-10">
-              {error && (
-                <Text
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-sm  text-[#D5A247]  bg-[#EEDD97]  p-2 rounded-md"
-                >
-                  {error.toString()}
-                </Text>
-              )}
-              <ControlledInput
-                name={"reg_no"}
-                label="Registration Number"
-                placeholder="Enter Registration No"
-              />
-            </View>
-            <View className="w-full mt-7">
-              <ControlledInput
-                name={"password"}
-                label="Password"
-                placeholder="Enter password"
-                secureTextEntry={true}
-              />
-              <Button
-                style={styles.btn}
-                className={"h-14 bg-green-500 w-full mt-4"}
-                onPress={() => onSubmit()} // Add onPress handler
-              >
-                <LoadingChildren loading={loading}>Login</LoadingChildren>
-              </Button>
-              <Text className="mt-2">
-                <Text
-                  onPress={() => {
-                    router.push("/(auth)/signup");
-                  }}
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-green-500 underline mt-4"
-                >
-                  create an account
-                </Text>
+          <TouchableOpacity onPress={() => setShowError(false)}>
+            <Text style={styles.dismissText}>Dismiss</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.contentContainer}
+        >
+          <View style={styles.innerContent}>
+            
+            {/* Top Section - Logo/Brand */}
+            <Animated.View entering={FadeInDown.delay(200).duration(1000)} style={styles.logoSection}>
+              <View style={styles.logoContainer}>
+                <View style={styles.logoInner} />
+              </View>
+              <Text style={styles.welcomeText}>
+                Welcome to <Text style={styles.brandText}>Assistry</Text>
               </Text>
-            </View>
-          </FormProvider>
-        </View>
+              <Text style={styles.subtitleText}>
+                Sign in to continue to your account
+              </Text>
+            </Animated.View>
+
+            {/* Middle Section - Login Form */}
+            <Animated.View entering={FadeInDown.delay(400).duration(1000)} style={styles.formSection}>
+              
+              {/* Registration Number Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Registration Number</Text>
+                <Controller
+                  control={control}
+                  name="reg_no"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter Registration No"
+                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      autoCapitalize="none"
+                    />
+                  )}
+                />
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Password</Text>
+                <View style={styles.passwordContainer}>
+                  <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        style={[styles.input, { paddingRight: 50 }]}
+                        placeholder="Enter your password"
+                        placeholderTextColor="rgba(255,255,255,0.4)"
+                        secureTextEntry={!showPassword}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    )}
+                  />
+                  <TouchableOpacity 
+                    style={styles.eyeIcon} 
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff color="rgba(255,255,255,0.6)" size={20} /> : <Eye color="rgba(255,255,255,0.6)" size={20} />}
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Forgot Password */}
+              <TouchableOpacity style={styles.forgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+
+              {/* Login Button */}
+              <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleLogin}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#1A3E2A" />
+                ) : (
+                  <Text style={styles.loginButtonText}>Sign In</Text>
+                )}
+              </TouchableOpacity>
+
+            </Animated.View>
+
+            {/* Bottom Section */}
+            <Animated.View entering={FadeInDown.delay(600).duration(1000)} style={styles.bottomSection}>
+              <View style={styles.dividerContainer}>
+                <View style={styles.divider} />
+                <Text style={styles.orText}>or</Text>
+                <View style={styles.divider} />
+              </View>
+
+              <View style={styles.signupContainer}>
+                <Text style={styles.signupLabel}>Don't have an account? </Text>
+                <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+                  <Text style={styles.signupLink}>Sign Up</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  btn: {
-    fontFamily: "PoppinsBold",
-    color: "white",
-    backgroundColor: "#091D17",
-    marginTop: 16,
-    width: "40%",
-    alignSelf: "flex-end"
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
   },
-  loginText: {
-  fontFamily: "Fellix-SemiBold", // If you have a specific font file for SemiBold
-  fontWeight: "800",             // Or use numeric weights (100–900)
-  fontSize: 30,                  // No "px" in React Native
-  textAlign: "center",
-},
-
-loginTextDesc: {
-  fontFamily: "Fellix-Medium", // use the actual font file name if you imported Fellix
-  fontWeight: "500",   
-  color: '#333333',
-  fontSize: 14,                // unitless (no "px")
-  lineHeight: 14,              // 100% of fontSize → so same as 12
-  letterSpacing: 0,            // numeric value in RN
-  textAlign: "center",
-  marginTop: 10,               // numeric 
-},
-
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  innerContent: {
+    flex: 1,
+    paddingHorizontal: 32,
+    justifyContent: 'space-between',
+    paddingVertical: 40,
+  },
+  logoSection: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  logoContainer: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#B0E17C',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  logoInner: {
+    width: 40,
+    height: 40,
+    borderWidth: 4,
+    borderColor: '#1A3E2A',
+    borderRadius: 8,
+  },
+  welcomeText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  brandText: {
+    color: '#B0E17C',
+  },
+  subtitleText: {
+    color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center',
+    marginTop: 8,
+    fontSize: 16,
+  },
+  formSection: {
+    width: '100%',
+    gap: 20,
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  label: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  input: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 16,
+    padding: 16,
+    color: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    fontSize: 16,
+  },
+  passwordContainer: {
+    position: 'relative',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+  },
+  forgotPassword: {
+    alignItems: 'flex-end',
+  },
+  forgotPasswordText: {
+    color: '#B0E17C',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  loginButton: {
+    width: '100%',
+    backgroundColor: '#B0E17C',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#B0E17C',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    marginTop: 8,
+  },
+  loginButtonText: {
+    color: '#1A3E2A',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  bottomSection: {
+    gap: 16,
+    marginBottom: 20,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  orText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signupLabel: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 14,
+  },
+  signupLink: {
+    color: '#B0E17C',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  errorToast: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
+    backgroundColor: '#2D1A1A',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF6B6B',
+    zIndex: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  errorContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  errorTitle: {
+    color: '#FF6B6B',
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  errorMessage: {
+    color: '#FFFFFF',
+    fontSize: 12,
+  },
+  dismissText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 12,
+    marginLeft: 8,
+  },
 });

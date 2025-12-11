@@ -1,7 +1,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// export const url = "https://e310cb56e4e5.ngrok-free.app";
+// export const url = "https://1952788381da.ngrok-free.app";
 export const url = "https://assistry-backend.onrender.com";
 
 const getAuthHeader = async () => {
@@ -45,7 +45,6 @@ export const api = {
     const authHeader = await getAuthHeader();
 
     // support either api.get('x', { params: {...} }) or api.get('x', {...})
-    // const paramObj = params?.params ?? params ?? {};
     const raw = params?.params ?? params ?? {};
     const { _: _, ...withoutUnderscore } = raw; // drop "_" if present
     const paramObj = Object.fromEntries(
@@ -60,10 +59,6 @@ export const api = {
 
     const fullUrl = `${url}/${endpoint}${qs.toString() ? `?${qs.toString()}` : ''}`;
 
-    // // // console.log('GET URL:', fullUrl);
-
-    // // console.log(qs.toString());
-
     const response = await fetch(fullUrl, {
       method: 'GET',
       headers: {
@@ -72,23 +67,6 @@ export const api = {
       },
       cache: 'no-store',
     });
-
-//     try {
-//   const urlObj = new URL(fullUrl);
-//   // // console.log('QUERY PARAMS:', Array.from(urlObj.searchParams.entries()));
-// } catch (e) {
-//   // // console.log('cannot parse URL', fullUrl);
-// }
-
-// // // console.log('STATUS', response.status, response.statusText);
-//   // Try parse JSON first, otherwise text
-//   let body;
-//   try {
-//     body = await response.json();
-//   } catch {
-//     body = await response.text();
-//   }
-//   // // console.log('RESPONSE BODY', body);
 
     return handleResponse(response);
   },

@@ -21,6 +21,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { GlobalStoreProvider } from "@/store/global-context";
+import { Provider as DatabaseProvider } from "@/database/provider";
 import { Avatar } from "./avatar";
 import { MyAvatar } from "./myavatar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -84,6 +85,10 @@ function AppNavigator() {
 
 
 
+import { useNotificationObserver } from "@/lib/notifications";
+
+// ... imports
+
 export default function RootLayout(): JSX.Element | null {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -92,6 +97,9 @@ export default function RootLayout(): JSX.Element | null {
     PoppinsMedium: require("../assets/fonts/Poppins/Poppins-Medium.ttf"),
     ...FontAwesome.font,
   });
+
+  // Initialize Notification Listeners
+  useNotificationObserver();
 
   if (error) throw error;
   if (!loaded) return null;
@@ -102,22 +110,43 @@ export default function RootLayout(): JSX.Element | null {
     </ProvidersShell>
   );
 }
+// ... rest of file
 
 function ProvidersShell({ children }: { children: React.ReactNode }) {
   return (
     <TamaguiProvider config={config}>
       <PortalProvider shouldAddRootHost>
         <QueryClientProvider client={queryClient}>
-          <GlobalStoreProvider>
-            {children}
-            <CreateTaskModal open={false} setOpen={() => {}} />
-          </GlobalStoreProvider>
+          <DatabaseProvider>
+            <GlobalStoreProvider>
+              {children}
+              <CreateTaskModal open={false} setOpen={() => {}} />
+            </GlobalStoreProvider>
+          </DatabaseProvider>
         </QueryClientProvider>
       </PortalProvider>
     </TamaguiProvider>
   );
 }
 
+
+// function NavigationDecider() {
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const decideAndHide = async () => {
+//       try {
+//         const token = await AsyncStorage.getItem("token");
+//         router.replace("/(auth)");
+//       } finally {
+//         SplashScreen.hideAsync().catch(() => {});
+//       }
+//     };
+//     decideAndHide();
+//   }, []);
+
+//   return <AppNavigator />;
+// }
 
 function NavigationDecider() {
   const router = useRouter();
@@ -126,7 +155,12 @@ function NavigationDecider() {
     const decideAndHide = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        router.replace("/(auth)");
+
+        if (token) {
+          router.replace("/(dashboard)");
+        } else {
+          router.replace("/(auth)");
+        }
       } finally {
         SplashScreen.hideAsync().catch(() => {});
       }

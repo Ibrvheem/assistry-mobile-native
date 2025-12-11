@@ -25,6 +25,9 @@ export const verifyOTP = z.object({
 export const signInPayload = z.object({
   reg_no: z.string(),
   password: z.string(),
+  // push_token: z.string().nullish(),
+  push_token: z.string().nullable().optional()
+
 });
 
 export const createPasswordPayload = z
@@ -40,6 +43,7 @@ export const createPasswordPayload = z
     // ),
     confirm_password: z.string().optional(),
     reg_no: z.string().optional(),
+    push_token: z.string().nullish(),
   })
   .refine((data) => data.password === data.confirm_password, {
     path: ["confirm_password"], // Error will be shown for the confirm_password field

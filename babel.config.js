@@ -45,18 +45,50 @@
 
 
 
+// module.exports = function (api) {
+//   api.cache(true);
+
+//   return {
+//     presets: [
+//       // keep expo preset and pass jsxImportSource for nativewind
+//       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+//       // ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+//       "nativewind/babel",
+//     ],
+//     plugins: [
+//       // tamagui plugin (keep if you need tamagui)
+//       [
+//         "@tamagui/babel-plugin",
+//         {
+//           components: ["tamagui"],
+//           config: "./tamagui.config.ts",
+//         },
+//       ],
+
+//       // nativewind should be a plugin (not a preset)
+//       // "nativewind/babel",
+
+//       ["@babel/plugin-proposal-decorators", { "legacy": true }],
+
+//       // --- put the worklets/reanimated plugin LAST ---
+//       // use react-native-worklets/plugin for newer reanimated versions:
+//       // "react-native-worklets/plugin"
+//       // If you're using an older Reanimated that requires it, switch to:
+//       "react-native-reanimated/plugin"
+//     ],
+//   };
+// };
+
+
 module.exports = function (api) {
   api.cache(true);
 
   return {
     presets: [
-      // keep expo preset and pass jsxImportSource for nativewind
       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
-      // ["babel-preset-expo", { jsxImportSource: "nativewind" }],
       "nativewind/babel",
     ],
     plugins: [
-      // tamagui plugin (keep if you need tamagui)
       [
         "@tamagui/babel-plugin",
         {
@@ -65,14 +97,10 @@ module.exports = function (api) {
         },
       ],
 
-      // nativewind should be a plugin (not a preset)
-      // "nativewind/babel",
+      ["@babel/plugin-proposal-decorators", { legacy: true }],
 
-      // --- put the worklets/reanimated plugin LAST ---
-      // use react-native-worklets/plugin for newer reanimated versions:
-      "react-native-worklets/plugin"
-      // If you're using an older Reanimated that requires it, switch to:
-      // "react-native-reanimated/plugin"
+      // MUST be last, and ONLY this:
+      "react-native-reanimated/plugin",
     ],
   };
 };
