@@ -97,8 +97,6 @@ module.exports = function (api) {
         },
       ],
 
-      ["@babel/plugin-proposal-decorators", { legacy: true }],
-
       // MUST be last, and ONLY this:
       "react-native-reanimated/plugin",
     ],

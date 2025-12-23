@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, SafeAreaView, ActivityIndicator, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { database } from '@/database';
-import { Conversation } from '@/database/models';
+import { useChatStore, Conversation } from '@/store/chat-store';
 import MessageList from './MessageList';
 import { sendMessage } from '@/lib/sockets';
 import { useGobalStoreContext } from '@/store/global-context';
@@ -37,29 +36,26 @@ const Composer = ({ onSend }: { onSend: (text: string) => void }) => {
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams();
-  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const { conversations, addMessage, fetchConversations } = useChatStore();
+  const [conversation, setConversation] = useState<Conversation | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const { userData } = useGobalStoreContext();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchConversation = async () => {
-      try {
-        const chat = await database.get<Conversation>('conversations').find(id as string);
+    const chat = conversations.find(c => c.id === id);
+    if (chat) {
         setConversation(chat);
-      } catch (error) {
-        console.log('Conversation not found locally', error);
-        // Fallback: If passed via params, maybe create it? 
-        // For now, just show error or go back
-      } finally {
         setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchConversation();
+    } else {
+        // Try fetching if not found (maybe reload all)
+        fetchConversations().then(() => {
+             const found = conversations.find(c => c.id === id);
+             setConversation(found);
+             setLoading(false);
+        });
     }
-  }, [id]);
+  }, [id, conversations, fetchConversations]);
 
   const handleSendMessage = useCallback(async (text: string) => {
     if (!conversation || !userData) return;
@@ -74,12 +70,36 @@ export default function ChatScreen() {
       createdAt: new Date().toISOString(),
     };
 
+    // Optimistic update
+    const optimisticMessage = {
+        id: tempId,
+        conversationId: conversation.id,
+        senderId: userData._id || '',
+        content: text,
+        type: 'text',
+        status: 'sending',
+        createdAt: Date.now()
+    };
+    addMessage(optimisticMessage);
+
     try {
-      await sendMessage(payload);
+      const result: any = await sendMessage(payload);
+      // Update with real ID and status
+      const confirmedMessage = {
+          ...optimisticMessage,
+          id: result.id || tempId,
+          status: 'sent'
+      };
+      addMessage(confirmedMessage);
     } catch (error) {
       console.error('Failed to send message:', error);
+      const failedMessage = {
+          ...optimisticMessage,
+          status: 'failed'
+      };
+      addMessage(failedMessage);
     }
-  }, [conversation, userData]);
+  }, [conversation, userData, addMessage]);
 
   if (loading) {
     return (
@@ -110,7 +130,8 @@ export default function ChatScreen() {
       </View>
       
       <View style={styles.listContainer}>
-        <MessageList conversation={conversation} currentUserId={userData?._id || ''} />
+        {/* Pass messages directly from conversation object */}
+        <MessageList messages={conversation.messages || []} currentUserId={userData?._id || ''} />
       </View>
 
       <Composer onSend={handleSendMessage} />

@@ -1,7 +1,6 @@
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { withObservables } from '@nozbe/watermelondb/react';
-import { Conversation, Message } from '@/database/models';
+import { Message } from '@/store/chat-store';
 import MessageBubble from '@/components/molecules/MessageBubble';
 
 interface MessageListProps {
@@ -41,8 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const enhance = withObservables(['conversation'], ({ conversation }: { conversation: Conversation }) => ({
-  messages: conversation.messages.observe().map((messages: Message[]) => messages.sort((a: Message, b: Message) => b.createdAt - a.createdAt)),
-}));
-
-export default enhance(MessageList);
+export default MessageList;

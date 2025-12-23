@@ -21,7 +21,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { GlobalStoreProvider } from "@/store/global-context";
-import { Provider as DatabaseProvider } from "@/database/provider";
+import { ChatProvider } from "@/store/chat-store";
 import { Avatar } from "./avatar";
 import { MyAvatar } from "./myavatar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -117,12 +117,12 @@ function ProvidersShell({ children }: { children: React.ReactNode }) {
     <TamaguiProvider config={config}>
       <PortalProvider shouldAddRootHost>
         <QueryClientProvider client={queryClient}>
-          <DatabaseProvider>
+          <ChatProvider>
             <GlobalStoreProvider>
               {children}
               <CreateTaskModal open={false} setOpen={() => {}} />
             </GlobalStoreProvider>
-          </DatabaseProvider>
+          </ChatProvider>
         </QueryClientProvider>
       </PortalProvider>
     </TamaguiProvider>

@@ -1,4 +1,4 @@
-import { Message } from "@/database/models";
+import { Message } from "@/store/chat-store";
 import React, { useMemo, useState } from 'react';
 import {
   View,
@@ -33,7 +33,15 @@ export default function ImageGrid({
   message: Message;
   cloudinaryUrl?: (p: any) => string | undefined; // optional helper
 }) {
-  const rawUrls = normalizeAttachments(message.attachmentsArray);
+  const rawUrls = useMemo(() => {
+      try {
+          const parsed = message.attachments ? JSON.parse(message.attachments) : [];
+          return normalizeAttachments(parsed);
+      } catch (e) {
+          return [];
+      }
+  }, [message.attachments]);
+
   // If your attachments sometimes hold paths that need cloudinaryUrl conversion, try converting:
   const urls = useMemo(() => {
     if (!cloudinaryUrl) return rawUrls;

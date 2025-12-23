@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { withObservables } from '@nozbe/watermelondb/react';
-import { Conversation } from '@/database/models';
-import { database } from '@/database';
+import { useChatStore, Conversation } from '@/store/chat-store';
 import { Link } from 'expo-router';
 import { Image } from 'expo-image';
 import { formatDistanceToNowStrict, isToday, isYesterday, format } from 'date-fns';
@@ -56,16 +54,18 @@ const ConversationItem = ({ conversation }: { conversation: Conversation }) => {
   );
 };
 
-const EnhancedConversationItem = withObservables(['conversation'], ({ conversation }) => ({
-  conversation,
-}))(ConversationItem);
+const ConversationList = () => {
+    const { conversations, fetchConversations } = useChatStore();
 
-const ConversationList = ({ conversations }: { conversations: Conversation[] }) => {
+    useEffect(() => {
+        fetchConversations();
+    }, [fetchConversations]);
+
   return (
     <FlatList
       data={conversations}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <EnhancedConversationItem conversation={item} />}
+      renderItem={({ item }) => <ConversationItem conversation={item} />}
       ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
       ListEmptyComponent={<Text style={styles.emptyText}>No chats yet</Text>}
     />
@@ -146,8 +146,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const enhance = withObservables([], () => ({
-  conversations: database.get<Conversation>('conversations').query().observe(),
-}));
-
-export default enhance(ConversationList);
+export default ConversationList;

@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable, GestureResponderEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Message } from '@/database/models';
+import { Message } from '@/store/chat-store';
 import { cloudinaryUrl } from '@/lib/helpers';
 import ImageGrid from '@/app/(dashboard)/messages/imagegrid'; // Adjust path if needed
 
@@ -48,8 +48,21 @@ const MessageBubble = React.memo(({ message, isMine, onSwipeReply, highlighted }
     }
   };
 
-  const attachments = message.attachmentsArray;
-  const replyTo = message.replyToObject;
+  const attachments = useMemo(() => {
+      try {
+          return message.attachments ? JSON.parse(message.attachments) : [];
+      } catch {
+          return [];
+      }
+  }, [message.attachments]);
+
+  const replyTo = useMemo(() => {
+      try {
+          return message.replyTo ? JSON.parse(message.replyTo) : null;
+      } catch {
+          return null;
+      }
+  }, [message.replyTo]);
 
   return (
     <Pressable
@@ -89,10 +102,10 @@ const MessageBubble = React.memo(({ message, isMine, onSwipeReply, highlighted }
           <Text style={styles.timeText}>{formatTime(message.createdAt)}</Text>
           {isMine && (
             <View style={{ marginLeft: 4 }}>
-              {message.status === 'sending' && <Ionicons name="time-outline" size={14} color="#6B7280" />}
-              {message.status === 'sent' && <Ionicons name="checkmark-done" size={14} color="#3B82F6" />}
-              {message.status === 'delivered' && <Ionicons name="checkmark-done-circle" size={14} color="#3B82F6" />}
-              {message.status === 'failed' && <Ionicons name="alert-circle" size={14} color="#EF4444" />}
+              {message.status === 'sending' ? <Ionicons name="time-outline" size={14} color="#6B7280" /> :
+               message.status === 'sent' ? <Ionicons name="checkmark-done" size={14} color="#3B82F6" /> :
+               message.status === 'delivered' ? <Ionicons name="checkmark-done-circle" size={14} color="#3B82F6" /> :
+               message.status === 'failed' ? <Ionicons name="alert-circle" size={14} color="#EF4444" /> : null}
             </View>
           )}
         </View>
@@ -154,6 +167,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     borderLeftWidth: 3,
     borderLeftColor: '#888',
+    paddingHorizontal: 16,
+    paddingLeft: 8,
   },
   replyPreviewText: {
     fontSize: 12,
