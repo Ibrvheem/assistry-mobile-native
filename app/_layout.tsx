@@ -11,7 +11,7 @@ import { useFonts } from "expo-font";
 import { useRouter, Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import "react-native-reanimated";
+
 import { useColorScheme } from "@/components/useColorScheme";
 export { ErrorBoundary } from "expo-router";
 import { TamaguiProvider } from "tamagui";

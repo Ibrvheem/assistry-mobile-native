@@ -1,28 +1,34 @@
-import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  interpolateColor,
-} from "react-native-reanimated";
-import LinearGradient from "react-native-linear-gradient";
+
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, ScrollView, Animated } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 const ShimmerPlaceholder = ({ style }: { style: any }) => {
-  const shimmerValue = useSharedValue(0);
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
 
-  shimmerValue.value = withRepeat(withTiming(1, { duration: 1000 }), -1, true);
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(shimmerAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+  }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      shimmerValue.value,
-      [0, 1],
-      ["#E0E0E0", "#F5F5F5"]
-    ),
-  }));
+  const backgroundColor = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#E0E0E0", "#F5F5F5"],
+  });
 
-  return <Animated.View style={[style, animatedStyle]} />;
+  return <Animated.View style={[style, { backgroundColor }]} />;
 };
 
 const TaskDetailsSkeleton = () => {

@@ -1,8 +1,6 @@
 
-
-
 // components/organism/edit-task-modal.tsx
-import React, { useEffect, Dispatch, SetStateAction } from "react";
+import React, { useEffect, Dispatch, SetStateAction, useRef } from "react";
 import {
   View,
   Text,
@@ -12,12 +10,12 @@ import {
   Pressable,
   StyleSheet,
   Modal,
+  Animated,
 } from "react-native";
 import { Button, YStack } from "tamagui";
 import * as ImagePicker from "expo-image-picker";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { FormProvider } from "react-hook-form";
-import Animated, { FadeInUp } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import ControlledInput from "@/components/molecules/controlled-input";
@@ -45,44 +43,36 @@ export default function EditTaskModal({
       task
     });
 
-  // Preload existing values
-  // useEffect(() => {
-  //   methods.reset({
-  //     task: task?.task ?? "",
-  //     description: task?.description ?? "",
-  //     location: task?.location ?? "",
-  //     incentive: (task?.incentive?/100).toString() ?? "",
-  //     expires: task?.expires?.toString() ?? "",
-  //   });
-  // }, [task, methods]);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
-  // if no task, reset to empty values
-  if (!task) {
+    // if no task, reset to empty values
+    if (!task) {
+      methods.reset({
+        task: "",
+        description: "",
+        location: "",
+        incentive: "",
+        expires: "",
+      });
+      return;
+    }
+
+    const incentive =
+      typeof task.incentive === "number" ? String(task.incentive / 100) : "";
+
+    const expires = task.expires != null ? String(task.expires) : "";
+
     methods.reset({
-      task: "",
-      description: "",
-      location: "",
-      incentive: "",
-      expires: "",
+      task: task.task ?? "",
+      description: task.description ?? "",
+      location: task.location ?? "",
+      incentive,
+      expires,
     });
-    return;
-  }
-
-  const incentive =
-    typeof task.incentive === "number" ? String(task.incentive / 100) : "";
-
-  const expires = task.expires != null ? String(task.expires) : "";
-
-  methods.reset({
-    task: task.task ?? "",
-    description: task.description ?? "",
-    location: task.location ?? "",
-    incentive,
-    expires,
-  });
-  // include methods.reset to satisfy hooks linting; methods object itself can cause reruns
-}, [task, methods.reset]);
+    // include methods.reset to satisfy hooks linting; methods object itself can cause reruns
+  }, [task, methods.reset]);
 
 
   // preload existing images
@@ -92,6 +82,29 @@ export default function EditTaskModal({
       setImages(task.assets.map((a) => a.url.replace("auto/upload", "image/upload")));
     }
   }, [task, setImages]);
+
+  useEffect(() => {
+    if (open) {
+      Animated.parallel([
+         Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          delay: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 600,
+          delay: 600,
+          useNativeDriver: true,
+        })
+      ]).start();
+    } else {
+      fadeAnim.setValue(0);
+      slideAnim.setValue(20);
+    }
+  }, [open]);
+
 
   const pickImage = async (): Promise<void> => {
     if (images.length >= 3) return;
@@ -197,7 +210,7 @@ export default function EditTaskModal({
                   </View>
                 </View>
 
-                <Animated.View entering={FadeInUp.delay(600).springify()}>
+                <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
                   <View style={styles.lastSection}>
                     <Text style={styles.label}>Task Photos</Text>
                     <Text style={styles.imageUploadSubtext}>
@@ -383,4 +396,3 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 });
-

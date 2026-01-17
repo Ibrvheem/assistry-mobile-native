@@ -1,22 +1,37 @@
-import { View, StyleSheet } from "react-native";
+
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 export default function WalletCardSkeleton() {
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacityAnim, {
+          toValue: 0.5,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
   return (
     <LinearGradient
-      // colors={["#22C55E", "#4ADE80"]}
-      // style={styles.container}
-      // start={{ x: 0, y: 0 }}
-      // end={{ x: 1, y: 1 }}
-
       colors={["#0F2027", "#2C7744", "#A8E063"]}
       style={styles.container}
         locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
     >
-      <Animated.View entering={FadeIn} exiting={FadeOut}>
+      <Animated.View style={{ opacity: opacityAnim }}>
         <View style={styles.topSection}>
           <View style={styles.skeletonBalance} />
           <View style={styles.skeletonButton} />

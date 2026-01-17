@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar, Animated, Easing, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff, AlertCircle, XCircle } from 'lucide-react-native';
 import { useSignIn } from './hooks/useSignIn';
 import { Controller } from 'react-hook-form';
 import { router } from 'expo-router';
-import Animated, { FadeInDown, FadeInUp, SlideInDown, SlideOutUp } from 'react-native-reanimated';
+
 import { registerForPushNotificationsAsync } from '@/lib/notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,6 +17,26 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [showError, setShowError] = useState(false);
 
+  // Animation Refs
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        easing: Easing.out(Easing.exp),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   useEffect(() => {
     if (error) {
       setShowError(true);
@@ -25,18 +45,6 @@ export default function SignIn() {
       return () => clearTimeout(timer);
     }
   }, [error]);
-
-  // const handleLogin = async (data: any) => {
-  //   // We wrap the original onSubmit to handle the promise if possible, 
-  //   // but since useSignIn uses mutate, we just trigger it.
-  //   // The navigation happens in useSignIn's onSuccess.
-  //   await onSubmit(); 
-    
-  //   // Attempt to register for push notifications (fire and forget)
-  //   registerForPushNotificationsAsync().then(token => {
-  //       if (token) console.log("Push Token:", token);
-  //   }).catch(err => console.error("Push registration failed", err));
-  // };
 
   const handleLogin = handleSubmit(async (data) => {
   try {
@@ -72,9 +80,7 @@ export default function SignIn() {
       {/* Unique Error Handling UI - Top Dropdown Toast */}
       {showError && (
         <Animated.View 
-          entering={SlideInDown.springify().damping(15)} 
-          exiting={SlideOutUp}
-          style={styles.errorToast}
+          style={[styles.errorToast, { opacity: fadeAnim }]}
         >
           <XCircle color="#FF6B6B" size={24} />
           <View style={styles.errorContent}>
@@ -97,9 +103,10 @@ export default function SignIn() {
           <View style={styles.innerContent}>
             
             {/* Top Section - Logo/Brand */}
-            <Animated.View entering={FadeInDown.delay(200).duration(1000)} style={styles.logoSection}>
+            <Animated.View style={[styles.logoSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               <View style={styles.logoContainer}>
-                <View style={styles.logoInner} />
+                {/* <View style={styles.logoInner} /> */}
+                <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
               </View>
               <Text style={styles.welcomeText}>
                 Welcome to <Text style={styles.brandText}>Assistry</Text>
@@ -110,7 +117,7 @@ export default function SignIn() {
             </Animated.View>
 
             {/* Middle Section - Login Form */}
-            <Animated.View entering={FadeInDown.delay(400).duration(1000)} style={styles.formSection}>
+            <Animated.View style={[styles.formSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
               
               {/* Registration Number Input */}
               <View style={styles.inputGroup}>
@@ -181,7 +188,7 @@ export default function SignIn() {
             </Animated.View>
 
             {/* Bottom Section */}
-            <Animated.View entering={FadeInDown.delay(600).duration(1000)} style={styles.bottomSection}>
+            <Animated.View style={[styles.bottomSection, { opacity: fadeAnim }]}>
               <View style={styles.dividerContainer}>
                 <View style={styles.divider} />
                 <Text style={styles.orText}>or</Text>
@@ -204,6 +211,10 @@ export default function SignIn() {
 }
 
 const styles = StyleSheet.create({
+  logo: {
+    width: 64,
+    height: 64,
+  },
   container: {
     flex: 1,
     backgroundColor: '#000',

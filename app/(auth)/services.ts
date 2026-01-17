@@ -44,7 +44,9 @@ export function verifyOTP(payload: VerifyOTP) {
 }
 
 export function signIn(payload: CreatePasswordPayload) {
+  console.log("payload", payload);
   const response = api.post("auth/signin", payload);
+  console.log(" SignIn response", response);
   return response;
 }
 

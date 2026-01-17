@@ -1,11 +1,6 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
+
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 const SkeletonLoader = ({
@@ -17,19 +12,28 @@ const SkeletonLoader = ({
   height: number;
   style?: any;
 }) => {
-  const shimmerAnim = useSharedValue(0);
+  const opacityAnim = useRef(new Animated.Value(0.3)).current;
 
-  React.useEffect(() => {
-    shimmerAnim.value = withRepeat(withTiming(1, { duration: 1000 }), -1, true);
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 0.3,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
   }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: shimmerAnim.value,
-  }));
 
   return (
     <Animated.View
-      style={[styles.skeleton, { width, height }, animatedStyle, style]}
+      style={[styles.skeleton, { width, height, opacity: opacityAnim }, style]}
     >
       <LinearGradient
         colors={["#e0e0e0", "#f5f5f5", "#e0e0e0"]}

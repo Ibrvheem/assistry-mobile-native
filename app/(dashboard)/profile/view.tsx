@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import Animated, { FadeIn } from "react-native-reanimated";
+
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "./services";
 import { UserSchema } from "../types";
@@ -88,7 +88,7 @@ export default function ViewProfileScreen(): JSX.Element {
       </View>
 
       
-        <Animated.View entering={FadeIn.duration(300)}>
+        <View>
           {/* Header Section */}
           {/* <LinearGradient
             colors={["#22C55E", "#16A34A"]}
@@ -172,7 +172,7 @@ export default function ViewProfileScreen(): JSX.Element {
             </Text>
           </ProfileSection>
           </ScrollView>
-        </Animated.View>
+        </View>
       
     </SafeAreaView>
   );

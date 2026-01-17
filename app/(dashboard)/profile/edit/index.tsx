@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeIn } from "react-native-reanimated";
+
 import * as ImagePicker from "expo-image-picker";
 import { Avatar } from "../../../avatar";
 import { uploadImage, updateUser, getMe } from "../services";
@@ -218,7 +218,7 @@ const handleSave = async (): Promise<void> => {
       </View>
 
       <ScrollView style={styles.scrollView}>
-        <Animated.View entering={FadeIn.duration(300)}>
+        <View>
           <View style={styles.imageSection}>
             {image || user.profile_picture ? (
               <Image
@@ -384,7 +384,7 @@ const handleSave = async (): Promise<void> => {
               placeholder="When are you available?"
             />
           </View>
-        </Animated.View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

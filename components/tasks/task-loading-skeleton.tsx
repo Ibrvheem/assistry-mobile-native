@@ -1,9 +1,20 @@
-import { View, StyleSheet } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
+
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, Animated } from "react-native";
 
 const SkeletonPlaceholder = () => {
+   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+   useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+   }, []);
+
   return (
-    <Animated.View entering={FadeIn.duration(300)} style={styles.skeletonCard}>
+    <Animated.View style={[styles.skeletonCard, { opacity: fadeAnim }]}>
       <View style={styles.skeletonHeader}>
         <View style={styles.skeletonTitle} />
         <View style={styles.skeletonIncentive} />

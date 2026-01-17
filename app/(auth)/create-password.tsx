@@ -1,78 +1,102 @@
-import { View, Text, SafeAreaView, Image,StyleSheet } from "react-native";
-import React from "react";
-import { Button, Input } from "tamagui";
-import { useNavigation } from "@react-navigation/native";
-import { router } from "expo-router";
+
+import React, { useState } from "react";
+import { View, Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, StatusBar, Image } from "react-native";
+import { useNavigation, router } from "expo-router";
 import { useGobalStoreContext } from "@/store/global-context";
 import { useCreatePasswordHook } from "./hooks/useCreatePasswordHook";
-import { FormProvider } from "react-hook-form";
-import ControlledInput from "@/components/molecules/controlled-input";
+import { FormProvider, Controller } from "react-hook-form";
 import LoadingChildren from "@/components/molecules/loading-children";
+import { LinearGradient } from "expo-linear-gradient";
+import { Eye, EyeOff } from "lucide-react-native";
 
 export default function CreatePassword() {
-  const navigation = useNavigation(); // Get the navigation object
   const { methods, onSubmit, loading } = useCreatePasswordHook();
-
-  const { studentData } = useGobalStoreContext();
-
-  const handlePress = () => {
-    router.push("/(dashboard)");
-  };
+  const { control } = methods;
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <View className="bg-[#DFF0DF] bg-opacity-0 h-full">
-      <SafeAreaView>
-        <View className="p-4">
-          <View className="space-y-4 ">
-            <View className="flex flex-row items-center gap-2 w-full">
-              <Image
-                source={require("../../assets/logos/image.png")}
-                style={{ width: 50, height: 50 }}
-                className="rounded-md"
-              />
-            </View>
-            <View className="space-y-2 pt-12">
-              <Text
-                className="text-3xl mt-2 text-[#1C332B]"
-                style={{ fontFamily: "PoppinsBold" }}
-              >
-                Create Password 
-              </Text>
-              <Text
-                style={{ fontFamily: "PoppinsMedium" }}
-                className="text-lg font-bold text-[#1C332B] my-4"
-              >
-                Final Step, we promise. Choose a secure and unique password
-              </Text>
-            </View>
-          </View>
-          <FormProvider {...methods}>
-            <View className="w-full  mt-7">
-              <ControlledInput
-                name={"password"}
-                label="Password"
-                placeholder="Choose a strong password"
-                secureTextEntry={true}
-              />
-            </View>
-            <View className="w-full mt-7">
-              <ControlledInput
-                name={"confirm_password"}
-                label="Confirm Password"
-                placeholder="Confirm password"
-                secureTextEntry={true}
-              />
-              <Button
-                style={styles.btn}
-                className={"h-14 bg-green-500 w-full mt-4"}
-                onPress={() => onSubmit()} // Add onPress handler
-              >
-                <LoadingChildren loading={loading}>
-                  Get Started 
-                </LoadingChildren>
-              </Button>
-            </View>
-          </FormProvider>
+    <View style={styles.container}>
+       <StatusBar barStyle="light-content" />
+      <LinearGradient
+        colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
+        locations={[0, 0.2, 0.5, 0.8, 1]}
+        style={styles.background}
+      />
+      
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.content}>
+             <View style={styles.header}>
+                 <View style={styles.logoContainer}>
+                      {/* Logo is optional here, maybe just the text */}
+                      <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
+                 </View>
+                 <Text style={styles.title}>Secure Your Account</Text>
+                 <Text style={styles.subtitle}>
+                    Create a strong and unique password to protect your data.
+                 </Text>
+             </View>
+
+             <View style={styles.form}>
+                 {/* Password */}
+                 <View style={styles.inputGroup}>
+                     <Text style={styles.label}>Password</Text>
+                     <View style={styles.inputContainer}>
+                        <Controller
+                            control={control}
+                            name="password"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Enter password"
+                                    placeholderTextColor="rgba(255,255,255,0.4)"
+                                    secureTextEntry={!showPassword}
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                />
+                            )}
+                        />
+                        <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
+                             {showPassword ? <EyeOff color="rgba(255,255,255,0.6)" size={20} /> : <Eye color="rgba(255,255,255,0.6)" size={20} />}
+                        </TouchableOpacity>
+                     </View>
+                 </View>
+
+                 {/* Confirm Password */}
+                 <View style={styles.inputGroup}>
+                     <Text style={styles.label}>Confirm Password</Text>
+                     <View style={styles.inputContainer}>
+                        <Controller
+                            control={control}
+                            name="confirm_password"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Confirm password"
+                                    placeholderTextColor="rgba(255,255,255,0.4)"
+                                    secureTextEntry={!showConfirmPassword}
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                />
+                            )}
+                        />
+                         <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                             {showConfirmPassword ? <EyeOff color="rgba(255,255,255,0.6)" size={20} /> : <Eye color="rgba(255,255,255,0.6)" size={20} />}
+                        </TouchableOpacity>
+                     </View>
+                 </View>
+
+                 <TouchableOpacity 
+                    style={styles.submitButton}
+                    onPress={() => onSubmit()}
+                 >
+                     <LoadingChildren loading={loading}>
+                        <Text style={styles.submitButtonText}>Create Account</Text>
+                     </LoadingChildren>
+                 </TouchableOpacity>
+             </View>
         </View>
       </SafeAreaView>
     </View>
@@ -80,15 +104,98 @@ export default function CreatePassword() {
 }
 
 const styles = StyleSheet.create({
-  started: {
-    fontFamily: "PoppinsBold", color: "white" 
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
   },
-   btn: {
-    fontFamily: "PoppinsBold",
-    color: "white",
-    backgroundColor: "green",
-    marginTop: 16,
-    width: "40%",
-    alignSelf: "flex-end"
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 32,
+    justifyContent: 'center',
+  },
+  header: {
+      alignItems: 'center',
+      marginBottom: 40,
+  },
+  logoContainer: {
+    marginBottom: 20,
+    backgroundColor: '#B0E17C',
+    padding: 10,
+    borderRadius: 16,
+  },
+  logo: {
+      width: 40,
+      height: 40,
+  },
+  title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      marginBottom: 12,
+  },
+  subtitle: {
+      fontSize: 16,
+      color: 'rgba(255,255,255,0.8)',
+      textAlign: 'center',
+      lineHeight: 24,
+  },
+  form: {
+      width: '100%',
+      gap: 20,
+  },
+  inputGroup: {
+      gap: 8,
+  },
+  label: {
+      color: 'rgba(255,255,255,0.9)',
+      fontSize: 14,
+      fontWeight: '500',
+  },
+  inputContainer: {
+      position: 'relative',
+  },
+  input: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 16,
+    padding: 16,
+    paddingRight: 50,
+    color: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    fontSize: 16,
+  },
+  eyeIcon: {
+      position: 'absolute',
+      right: 16,
+      top: 18,
+  },
+  submitButton: {
+    backgroundColor: '#B0E17C',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#B0E17C',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: '#1A3E2A',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

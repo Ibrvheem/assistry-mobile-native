@@ -1,6 +1,6 @@
 
 // components/organism/create-task-modal.tsx
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Pressable,
   StyleSheet,
   Modal,
+  Animated,
 } from "react-native";
 import { Button, YStack } from "tamagui";
 import * as ImagePicker from "expo-image-picker";
@@ -19,7 +20,6 @@ import ControlledInput from "@/components/molecules/controlled-input";
 import ControlledTextArea from "@/components/molecules/controlled-textarea";
 import LoadingChildren from "@/components/molecules/loading-children";
 import { usePostTask } from "@/app/hooks/usePostTask";
-import Animated, { FadeInUp } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -32,6 +32,31 @@ export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps)
   const { methods, onSubmit, loading, error, images, setImages } = usePostTask({
     setOpen,
   });
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    if (open) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          delay: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 600,
+          delay: 600,
+          useNativeDriver: true,
+        })
+      ]).start();
+    } else {
+      fadeAnim.setValue(0);
+      slideAnim.setValue(20);
+    }
+  }, [open]);
 
   const pickImage = async () => {
     if (images.length >= 3) return;
@@ -130,7 +155,7 @@ export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps)
                       </View>
                     </View>
 
-                    <Animated.View entering={FadeInUp.delay(600).springify()}>
+                    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
                       <View style={styles.lastSection}>
                         <Text style={styles.label}>Add Photos</Text>
                         <Text style={styles.imageUploadSubtext}>
@@ -177,12 +202,6 @@ export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps)
                                 size={28}
                                 color="#fff"
                               />
-                              {/* <Text style={styles.imageUploadText}>
-                                {images.length >= 3
-                                  ? "Max 3 Images Reached"
-                                  : "Upload Images"}
-                              </Text> */}
-                              
                             </View>
                           </LinearGradient>
                         </Pressable>

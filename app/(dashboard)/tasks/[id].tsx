@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Pressable,
   Dimensions,
   FlatList,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -14,12 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { cloudinaryUrl } from "@/lib/helpers";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  SlideInDown,
-  FadeOut,
-} from "react-native-reanimated";
+
 import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { acceptTask, getTask } from "./services";
@@ -48,7 +44,20 @@ export default function TaskDetailsScreen() {
     queryFn: () => getTask(id),
   }) as { data: TaskSchema; isLoading: boolean; error: unknown };
 
-  // // console.log("Task Data:", data);
+  // Animation logic for modal
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  
+  useEffect(() => {
+    if (showAcceptConfirm) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      fadeAnim.setValue(0);
+    }
+  }, [showAcceptConfirm]);
 
   const assets = useMemo(() => (data?.assets ? [...data.assets] : []), [data]);
 
@@ -112,8 +121,6 @@ export default function TaskDetailsScreen() {
             
             <Text style={styles.title}>{data?.task}</Text>
 
-            
-
             {/* User Info */}
             <Pressable style={styles.posterContainer}>
               <Image
@@ -138,7 +145,6 @@ export default function TaskDetailsScreen() {
               </View>
               <Pressable style={styles.viewProfile} 
               onPress={() => {
-                            // router.push("/(dashboard)/profile/view");
                              router.push({ pathname: "/profile/view", params: {id:data?.user?._id  } })
                           }}>
                 <Text style={styles.viewProfileText}>View Profile</Text>
@@ -147,22 +153,20 @@ export default function TaskDetailsScreen() {
 
             {/* Location */}
             <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-          
-           
                    
-            <View style={styles.locationContainer}>
-              <Ionicons
-                name="location"
-                size={20}
-                color={categoryColors.delivery.primary}
-              />
-              <Text style={styles.location}>{data?.location}</Text>
-            </View>
-             <View style={{flexDirection:'row',alignItems:'center',gap:4,marginBottom:8}}>
-                        <Ionicons name="eye" size={24} color="#18AE6A" />
-                        <Text style={styles.views}>{data?.views}</Text>
-                    </View>
+             <View style={styles.locationContainer}>
+               <Ionicons
+                 name="location"
+                 size={20}
+                 color={categoryColors.delivery.primary}
+               />
+               <Text style={styles.location}>{data?.location}</Text>
              </View>
+              <View style={{flexDirection:'row',alignItems:'center',gap:4,marginBottom:8}}>
+                         <Ionicons name="eye" size={24} color="#18AE6A" />
+                         <Text style={styles.views}>{data?.views}</Text>
+                     </View>
+              </View>
 
             {/* Description */}
             <Text style={styles.sectionTitle}>Description</Text>
@@ -175,9 +179,7 @@ export default function TaskDetailsScreen() {
               horizontal
               keyExtractor={(item, index) => index.toString()}
               showsHorizontalScrollIndicator={false}
-
               renderItem={({ item }) => (
-                
                 <Image
                   source={{
                     uri:
@@ -224,7 +226,7 @@ export default function TaskDetailsScreen() {
         ) : (
           <>
                <LinearGradient
-  colors={['#0c2339', '#113355', '#5973a9']} // black -> very dark ash -> ash
+  colors={['#0c2339', '#113355', '#5973a9']}
   locations={[0, 0.45, 1]}
   start={{ x: 0, y: 0 }}
   end={{ x: 1, y: 1 }}
@@ -236,7 +238,7 @@ export default function TaskDetailsScreen() {
             disabled={true}
           >
                 <Text style={styles.acceptButtonText}>
-                  Ongong ...
+                  On going ...
                 </Text>
                 <View style={styles.acceptButtonAmount}>
                   <Text style={styles.acceptButtonAmountText}>
@@ -252,9 +254,7 @@ export default function TaskDetailsScreen() {
       {/* Confirmation Modal */}
       {showAcceptConfirm && (
         <Animated.View
-          style={styles.confirmModal}
-          entering={FadeInDown.springify()}
-          exiting={FadeOut}
+          style={[styles.confirmModal, { opacity: fadeAnim }]}
         >
           <View style={styles.confirmContent}>
             <Text style={styles.confirmTitle}>Accept this task?</Text>

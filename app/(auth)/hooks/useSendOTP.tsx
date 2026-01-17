@@ -8,7 +8,7 @@ import { router } from "expo-router";
 
 // const resend = new Resend("re_CWgXYEW4_AeMvnU5vhCDXeF5L7AUaW2FQ");
 
-export function useSendOTP(email: string, phone_no:string) {
+export function useSendOTP(email?: string, phone_no?: string) {
   const mutation = useMutation({
     mutationFn: (payload: RequestOTPPayload) => requestOTP(payload),
 

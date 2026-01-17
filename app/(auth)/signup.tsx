@@ -1,315 +1,339 @@
-import { View, Text, SafeAreaView, Image, ImageBackground, LogBox, TextInputProps,
-  StyleProp, TextStyle, ViewStyle, TextInput, StyleSheet, Pressable,
-  KeyboardAvoidingView, Platform, Keyboard,Animated // <-- add import
-} from "react-native";
-import React from "react";
-import { Button, Input, Spinner } from "tamagui";
-import { useNavigation } from "@react-navigation/native";
-import { router } from "expo-router";
-// import ControlledInput from "@/components/molecules/controlled-input";
-import { FormProvider, useForm ,Controller, useFormContext} from "react-hook-form";
-import { getStudentData } from "./services";
-import { useMutation } from "@tanstack/react-query";
-import { useGobalStoreContext } from "@/store/global-context";
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar, Animated, Easing, Image, TextInputProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Eye, EyeOff, AlertCircle, XCircle } from 'lucide-react-native';
+import { Controller, useFormContext, FormProvider } from 'react-hook-form';
+import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useConfirmRegistrationNo } from "./hooks/useConfirmRegistrationNo";
 import LoadingChildren from "@/components/molecules/loading-children";
 
-import { useState, useEffect, useRef } from 'react';
+// Reusing ControlledInput pattern if preferred, or using Controller directly as in SignIn.
+// Since we want to match SignIn code structure/aesthetics, using Controller directly is cleaner, 
+// but since this file used ControlledInput locally, let's just inline the Controller logic or keep a minimal wrapper styled correctly.
 
-type FormValues = { reg_no: string };
+const { width } = Dimensions.get('window');
 
-type ControlledInputProps = TextInputProps & {
-  name: keyof FormValues | string;
-  containerStyle?: StyleProp<ViewStyle>;
-  style?: StyleProp<TextStyle>;
-};
-
-
-const ControlledInput: React.FC<ControlledInputProps> = ({
-  name,
-  containerStyle,
-  style,
-  ...props
-}) => {
-  const { control } = useFormContext<FormValues>();
-
-  return (
-    <Controller
-      control={control}
-      name={name as keyof FormValues}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-        <View style={containerStyle}>
-          <TextInput
-            value={(value as string) ?? ""}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            placeholderTextColor="#9CA3AF"
-            style={[styles.input, error && styles.inputError, style]} // ✅ styles works here
-            {...props}
-          />
-          {error?.message ? <Text style={styles.errorText}>{error.message}</Text> : null}
-        </View>
-      )}
-    />
-  );
-};
-
-export default function SignInPage() {
-  const navigation = useNavigation();
-  const { studentData, setStudentData } = useGobalStoreContext();
-
-  const handlePress = () => {
-    router.push("/(auth)/confirm-number");
-  };
+export default function SignUp() {
   const { methods, onSubmit, error, loading } = useConfirmRegistrationNo();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const { control, handleSubmit } = methods;
+  const [showError, setShowError] = useState(false);
+
+  // Animation Refs
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        easing: Easing.out(Easing.exp),
+        useNativeDriver: true,
+      }),
+    ]).start();
   }, []);
 
-  const bgHeight = useRef(new Animated.Value(0.6)).current;
-
   useEffect(() => {
-    Animated.timing(bgHeight, {
-      toValue: keyboardVisible ? 0.4 : 0.6,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-  }, [keyboardVisible]);
+    if (error) {
+      setShowError(true);
+      const timer = setTimeout(() => setShowError(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={keyboardVisible ? (Platform.OS === "ios" ? "padding" : "height") : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-    >
-      <View className="bg-[#FFFF] bg-opacity-0 h-full">
-        {/* <SafeAreaView> */}
-         {/* Background photo */}
-        <Animated.View
-      style={{
-        width: "100%",
-        height: bgHeight.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["0%", "100%"],
-        }),
-        borderRadius: 12,
-        overflow: "hidden",
-        // marginTop: 24,
-      }}
-    >
-        <ImageBackground
-          source={require("../../assets/logos/bck.png")} // your photo
-          // className="w-full h-3/5 rounded-md overflow-hidden mt-6"
-          // resizeMode="cover"
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
+        locations={[0, 0.2, 0.5, 0.8, 1]}
+        style={styles.background}
+      />
 
-          style={{ flex: 1, paddingTop:-300}}
-          resizeMode="contain"
+      {/* Error Toast */}
+      {showError && (
+        <Animated.View 
+          style={[styles.errorToast, { opacity: fadeAnim }]}
         >
-
-          <View style={{marginTop:70, marginLeft:16}}>
-                                <Image
-                                  source={require("../../assets/logos/image.png")}
-                                  style={{ width: 50, height: 50}}
-                                  className="rounded-md"
-                                />
-                   </View>
-
-          <View className="absolute right-4 flex-row items-center"
-          style={{marginTop:50}}>
-            <View className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
-              <Image
-                source={require("../../assets/logos/udus.png")}
-                style={{ width: 25, height: 25 }}
-                resizeMode="contain"
-              />
-            </View>
-
-            <View style={{ marginLeft: -10 }} className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
-              <Image
-                source={require("../../assets/logos/abu.png")}
-                style={{ width: 25, height: 25 }}
-                resizeMode="contain"
-              />
-            </View>
-
-            <View style={{ marginLeft: -10 }} className="bg-[#DFF0DF] bg-opacity-0 rounded-full p-1 mt-3">
-              <Image
-                source={require("../../assets/logos/buk.jpg")}
-                style={{ width: 25, height: 25 }}
-                resizeMode="contain"
-              />
-            </View>
+          <XCircle color="#FF6B6B" size={24} />
+          <View style={styles.errorContent}>
+            <Text style={styles.errorTitle}>Verification Failed</Text>
+            <Text style={styles.errorMessage}>
+              {error?.toString() || "An error occurred. Please try again."}
+            </Text>
           </View>
-        </ImageBackground>
+          <TouchableOpacity onPress={() => setShowError(false)}>
+            <Text style={styles.dismissText}>Dismiss</Text>
+          </TouchableOpacity>
         </Animated.View>
-        {/* <View className="mt-6">
-          <Image
-                source={require("../../assets/logos/Frame 4.png")}
-                // style={{ width: 300, height: 400 }}
-                className="rounded-md"
-              />
-        </View> */}
-        <View className="p-4">
-          <View className="space-y-4">
-            {/* <View className="flex flex-row items-center gap-2 w-full">
-              <Image
-                source={require("../../assets/logos/image.png")}
-                style={{ width: 50, height: 50 }}
-                className="rounded-md"
-              />
-            </View> */}
-            <View className="space-y-0" style={{marginTop:-60}}>
-              <View style={{ alignItems: "center" }}>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontFamily: "Lato",
-                    fontWeight: "700",
-                    fontSize: 26,
-                    lineHeight: 26,
-                    color: "#091D17",
-                  }}
-                >
-                  Welcome To{" "}
-                </Text>
+      )}
 
-                <View
-                  style={{
-                    backgroundColor: "#B0E17C",
-                    borderRadius: 12,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#091D17",
-                      fontSize: 28,
-                      fontFamily: "Lato",
-                      fontWeight: "700",
-                    }}
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.contentContainer}
+        >
+          <View style={styles.innerContent}>
+            
+            {/* Top Section - Logo/Brand */}
+            <Animated.View style={[styles.logoSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+              <View style={styles.logoContainer}>
+                 <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
+              </View>
+              <Text style={styles.welcomeText}>
+                Join <Text style={styles.brandText}>Assistry</Text>
+              </Text>
+              <Text style={styles.subtitleText}>
+                Your all-in-one campus solution
+              </Text>
+            </Animated.View>
+
+            {/* Middle Section - Form */}
+            <Animated.View style={[styles.formSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+              
+              <FormProvider {...methods}>
+                <View style={styles.inputGroup}>
+                   <Text 
+                    style={styles.instructionText}
                   >
-                    Assistry !
+                    Kindly input Your REG NO to get verified..
                   </Text>
+                  
+                  <Controller
+                    control={control}
+                    name="reg_no"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        style={styles.input}
+                        placeholder="CST/18/IFT/00111"
+                        placeholderTextColor="rgba(255,255,255,0.4)"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value as string}
+                        autoCapitalize="none"
+                      />
+                    )}
+                  />
                 </View>
-              </View>
-              </View>
-              <Text
-                className="text-[#036924]"
-                style={{
-                    fontFamily: "Lato",
-                    fontWeight: "600",
-                    fontSize: 16,
-                    lineHeight: 16,
-                    marginTop: 10,
-                    color: "#1C332B",
-                    textAlign:'center',
-                    fontStyle:'italic'
-                  }}
-              >
-                Your all in one campus solutions
-              </Text>
-              
 
-            </View>
-          </View>
-          <FormProvider {...methods}>
-            {" "}
-            {/* Provide the form context */}
-            <View className="mt-5 w-full">
-              
-              <Text 
-                className="mt-0 mb-2 text-[#1C332B]"
-                style={{
-                  fontFamily: "Lato",
-                  fontWeight: "600",
-                  fontSize: 16,
-                  lineHeight: 20,
-                  fontStyle: "italic",         // centers text horizontally
-                  letterSpacing: 0.5,           // slight spacing for readability
-                  color: "#1C332B",             // keeps brand color
-                  opacity: 0.8,              // softer look
-                }}
-              >
-                Kindly input Your REG NO to get verified..
-              </Text>
-              <ControlledInput
-                name="reg_no"
-                placeholder="CST/18/IFT/00111"
-                placeholderTextColor="#9CA3AF"  
-              />
-              {error && (
-                <Text
-                  style={{ fontFamily: "PoppinsBold" }}
-                  className="text-sm  text-[#f85959]"
+                {/* Verify Button */}
+                <TouchableOpacity 
+                  style={styles.actionButton} 
+                  onPress={() => onSubmit()}
+                  disabled={loading}
                 >
-                  {error.toString()}
-                </Text>
-              )}
-              <View className="flex-row justify-end mt-2">
-              <Button
-                style={styles.veify}
-                className={"mt-2 h-10 w-1/4"}
-                onPress={() => onSubmit()}
-              >
-                <LoadingChildren loading={loading}>
-                  Verify
-                </LoadingChildren>
-              </Button>
+                  {loading ? (
+                    <ActivityIndicator color="#1A3E2A" />
+                  ) : (
+                    <Text style={styles.actionButtonText}>Verify</Text>
+                  )}
+                </TouchableOpacity>
+              </FormProvider>
+
+            </Animated.View>
+
+            {/* Bottom Section */}
+            <Animated.View style={[styles.bottomSection, { opacity: fadeAnim }]}>
+              <View style={styles.dividerContainer}>
+                <View style={styles.divider} />
+                <Text style={styles.orText}>or</Text>
+                <View style={styles.divider} />
               </View>
-              <Text className="mt-2">
-                Have an account?{" "}
-                <Text
-                  onPress={() => {
-                    router.push("/(auth)/signin");
-                  }}
-                  style={{ fontFamily: "PoppinsBold", color:'#B0E17C' }}
-                  className="text-500 underline"
-                >
-                  Sign In
-                </Text>
-              </Text>
-            </View>
-          </FormProvider>
-        </View>
-      {/* </SafeAreaView> */}
+
+              <View style={styles.authSwitchContainer}>
+                <Text style={styles.authLabel}>Have an account? </Text>
+                <TouchableOpacity onPress={() => router.push("/(auth)/signin")}>
+                  <Text style={styles.authLink}>Sign In</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </View>
-    </KeyboardAvoidingView>
   );
 }
 
-
 const styles = StyleSheet.create({
-  input: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  innerContent: {
+    flex: 1,
+    paddingHorizontal: 32,
+    justifyContent: 'space-between',
+    paddingVertical: 40,
+  },
+  logoSection: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  logoContainer: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#B0E17C',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  logo: {
+    width: 64,
+    height: 64,
+  },
+  welcomeText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  brandText: {
+    color: '#B0E17C',
+  },
+  subtitleText: {
+    color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center',
+    marginTop: 8,
     fontSize: 16,
-    color: "#1C332B",
   },
-  inputError: {
-    borderColor: "#EF4444",
+  formSection: {
+    width: '100%',
+    gap: 20,
+    marginTop: 20, 
   },
-  errorText: {
-    color: "#EF4444",
-    marginTop: 4,
+  inputGroup: {
+    gap: 12,
+  },
+  instructionText: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontStyle: 'italic',
+    opacity: 0.9,
+  },
+  input: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 16,
+    padding: 16,
+    color: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    fontSize: 16,
+  },
+  actionButton: {
+    width: '100%',
+    backgroundColor: '#B0E17C',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#B0E17C',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    marginTop: 16,
+  },
+  actionButtonText: {
+    color: '#1A3E2A',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  bottomSection: {
+    gap: 16,
+    marginBottom: 20,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  orText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+  },
+  authSwitchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  authLabel: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 14,
+  },
+  authLink: {
+    color: '#B0E17C',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  errorToast: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
+    backgroundColor: '#2D1A1A',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF6B6B',
+    zIndex: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  errorContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  errorTitle: {
+    color: '#FF6B6B',
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  errorMessage: {
+    color: '#FFFFFF',
     fontSize: 12,
   },
-  veify:{
-    fontFamily: "PoppinsBold", color: "white", backgroundColor:'#091D17'
-  }
+  dismissText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 12,
+    marginLeft: 8,
+  },
 });
-
-
