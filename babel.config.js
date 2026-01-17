@@ -6,7 +6,6 @@
 // //   };
 // // };
 
-
 // // babel.config.js
 // // module.exports = function (api) {
 // //   api.cache(true);
@@ -28,7 +27,7 @@
 //       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
 //       "nativewind/babel",
 //     ],
-//     plugins: [    
+//     plugins: [
 //       [
 //         '@tamagui/babel-plugin',
 //         {
@@ -41,9 +40,6 @@
 //     ]
 //   };
 // };
-
-
-
 
 // module.exports = function (api) {
 //   api.cache(true);
@@ -79,13 +75,15 @@
 //   };
 // };
 
-
 module.exports = function (api) {
   api.cache(true);
 
   return {
     presets: [
-      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+      [
+        "babel-preset-expo",
+        { jsxImportSource: "nativewind", reanimated: false },
+      ],
       "nativewind/babel",
     ],
     plugins: [
@@ -98,7 +96,7 @@ module.exports = function (api) {
       ],
 
       // MUST be last, and ONLY this:
-      "react-native-reanimated/plugin",
+      "react-native-worklets-core/plugin",
     ],
   };
 };
