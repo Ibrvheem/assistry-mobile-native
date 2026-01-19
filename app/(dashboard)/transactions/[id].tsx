@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
+import Colors from "@/constants/Colors";
 import {
   View,
   Text,
@@ -84,10 +85,10 @@ export default function TaskDetailsScreen() {
         <View>
           <SafeAreaView style={styles.header}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#000" />
+              <Ionicons name="arrow-back" size={24} color="#fff" />
             </Pressable>
             <Pressable style={styles.shareButton}>
-              <Ionicons name="share-outline" size={24} color="#000" />
+              <Ionicons name="share-outline" size={24} color="#fff" />
             </Pressable>
           </SafeAreaView>
 
@@ -237,11 +238,7 @@ export default function TaskDetailsScreen() {
               </Pressable>
               <LinearGradient
                 colors={
-                  categoryColors.events.gradient as [
-                    string,
-                    string,
-                    ...string[],
-                  ]
+                  Colors.brand.gradient as any
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -267,7 +264,7 @@ export default function TaskDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
   },
   scrollView: {
     flex: 1,
@@ -287,27 +284,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(0,0,0,0.5)",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   shareButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(0,0,0,0.5)",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   imageContainer: {
     width: "100%",
@@ -356,16 +343,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#000",
+    color: Colors.brand.text,
     marginBottom: 16,
   },
   posterContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
+    backgroundColor: Colors.brand.surface,
     padding: 12,
     borderRadius: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   posterImage: {
     width: 50,
@@ -379,7 +368,7 @@ const styles = StyleSheet.create({
   posterName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#000",
+    color: Colors.brand.text,
   },
   posterStats: {
     flexDirection: "row",
@@ -393,46 +382,48 @@ const styles = StyleSheet.create({
   statText: {
     marginLeft: 4,
     fontSize: 14,
-    color: "#666",
+    color: Colors.brand.textMuted,
   },
   viewProfile: {
-    backgroundColor: "#fff",
+    backgroundColor: "transparent",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.brand.primary,
   },
   viewProfileText: {
-    color: "#666",
+    color: Colors.brand.primary,
     fontSize: 14,
     fontWeight: "500",
   },
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
+    backgroundColor: Colors.brand.surface,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
     marginBottom: 24,
     alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   location: {
     marginLeft: 8,
     fontSize: 16,
-    color: "#000",
+    color: Colors.brand.text,
     fontWeight: "500",
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#000",
+    color: Colors.brand.text,
     marginBottom: 12,
   },
   description: {
     fontSize: 16,
-    color: "#333",
+    color: Colors.brand.textDim,
     lineHeight: 24,
     marginBottom: 24,
   },
@@ -447,7 +438,7 @@ const styles = StyleSheet.create({
   requirementText: {
     marginLeft: 12,
     fontSize: 16,
-    color: "#333",
+    color: Colors.brand.text,
   },
   additionalImages: {
     marginHorizontal: -16,
@@ -460,9 +451,9 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
     borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
+    borderTopColor: "rgba(255,255,255,0.1)",
   },
   acceptButton: {
     borderRadius: 16,
@@ -476,7 +467,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   acceptButtonText: {
-    color: "#fff",
+    color: Colors.brand.darkGreen,
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -487,7 +478,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   acceptButtonAmountText: {
-    color: "#fff",
+    color: Colors.brand.darkGreen,
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -520,28 +511,30 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.8)",
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
   },
   confirmContent: {
-    backgroundColor: "#fff",
+    backgroundColor: "#1A1A1A",
     borderRadius: 20,
     padding: 24,
     width: "100%",
     maxWidth: 400,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   confirmTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#000",
+    color: Colors.brand.text,
     marginBottom: 12,
     textAlign: "center",
   },
   confirmDescription: {
     fontSize: 16,
-    color: "#666",
+    color: Colors.brand.textMuted,
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 24,
@@ -556,11 +549,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   cancelButton: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: Colors.brand.surface,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   cancelButtonText: {
-    color: "#666",
+    color: Colors.brand.textMuted,
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
@@ -569,7 +564,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   confirmAcceptText: {
-    color: "#fff",
+    color: Colors.brand.darkGreen,
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",

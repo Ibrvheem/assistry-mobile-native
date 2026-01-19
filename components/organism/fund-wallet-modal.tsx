@@ -1,6 +1,7 @@
 
 
 import React, { Dispatch, SetStateAction } from "react";
+import Colors from "@/constants/Colors";
 import {
   View,
   Text,
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "white",
+    backgroundColor: Colors.brand.background,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   },
   inner: {
     // flex: 1,
-    backgroundColor: "white",
+    backgroundColor: Colors.brand.background,
     padding: 16,
   },
   errorBox: {
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
   },
   fundBtn: {
     height: 36,
-    backgroundColor: "#22c55e",
+    backgroundColor: Colors.brand.primary,
     width: "100%",
     marginTop: 35,
   },

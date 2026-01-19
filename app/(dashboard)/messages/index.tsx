@@ -1,4 +1,5 @@
 import React from "react";
+import Colors from "@/constants/Colors";
 import { View, Text, SafeAreaView, StyleSheet } from "react-native";
 import ConversationList from "./ConversationList";
 
@@ -17,7 +18,7 @@ export default function Messages() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
     paddingHorizontal: 16,
   },
   header: {
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#1C332B",
+    color: Colors.brand.text,
     marginBottom: 10,
   },
 });

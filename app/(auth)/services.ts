@@ -4,6 +4,8 @@ import {
   RequestOTPPayload,
   VerifyOTP,
   VerifyStudentRegNo,
+  SignupStudentPayload,
+  VerifyEmailOTP,
 } from "./types";
 
 export function getUser() {
@@ -52,5 +54,30 @@ export function signIn(payload: CreatePasswordPayload) {
 
 export function createPassword(payload: CreatePasswordPayload) {
   const response = api.post("auth/signup", payload);
+  return response;
+}
+
+export function getInstitutions() {
+  const response = api.get("institution");
+  return response;
+}
+
+export function signupStudent(payload: SignupStudentPayload) {
+  const response = api.post("auth/signup-student", payload);
+  return response;
+}
+
+export function verifyEmailOTP(payload: VerifyEmailOTP) {
+  const response = api.post("auth/verify-otp", payload);
+  return response;
+}
+
+export function forgotPassword(email: string) {
+  const response = api.post("auth/forgot", { email });
+  return response;
+}
+
+export function resetPassword(payload: any) {
+  const response = api.post("auth/reset", payload);
   return response;
 }

@@ -1,5 +1,6 @@
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import Colors from "@/constants/Colors";
 import {
   View,
   Text,
@@ -101,7 +102,7 @@ export default function TransactionsPage(): JSX.Element {
     <SafeAreaView style={styles.container}>
       <View style={styles.headercontainer}>
         <Pressable onPress={() => router.back()} style={{ padding: 10 ,marginLeft: 1}}>
-          <Ionicons name="arrow-back" size={26} color="#111827" />
+          <Ionicons name="arrow-back" size={26} color={Colors.brand.text} />
         </Pressable>
         <Text style={styles.header}>My Transactions</Text>
 
@@ -132,7 +133,7 @@ export default function TransactionsPage(): JSX.Element {
 
       {/* --- Transactions --- */}
       {isLoading ? (
-        <ActivityIndicator size="small" color="#0F172A" style={{ marginTop: 20 }} />
+        <ActivityIndicator size="small" color={Colors.brand.primary} style={{ marginTop: 20 }} />
       ) : (
         <FlatList
           ref={listRef}
@@ -144,7 +145,7 @@ export default function TransactionsPage(): JSX.Element {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={handleRefresh}
-              tintColor="#0F172A"
+              tintColor={Colors.brand.primary}
             />
           }
           showsVerticalScrollIndicator={false}
@@ -159,19 +160,17 @@ export default function TransactionsPage(): JSX.Element {
 
 /* ---------------- STYLES ---------------- */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F9FAFB" },
+  container: { flex: 1, backgroundColor: Colors.brand.background },
   headercontainer:{
     flexDirection: "row",
     alignItems: "center",
-
-
   },
   header: {
     // textAlign: "center",
     fontSize: 20,
     fontWeight: "700",
     marginVertical: 16,
-    color: "#111827",
+    color: Colors.brand.text,
   },
   tabs: {
     flexDirection: "row",
@@ -183,25 +182,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 4,
     borderRadius: 20,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: Colors.brand.surface,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
-  tabActive: { backgroundColor: "#14342b" },
-  tabText: { color: "#374151", fontWeight: "600", fontSize: 13 },
-  tabTextActive: { color: "#fff" },
+  tabActive: { backgroundColor: Colors.brand.primary, borderColor: Colors.brand.primary },
+  tabText: { color: Colors.brand.textMuted, fontWeight: "600", fontSize: 13 },
+  tabTextActive: { color: Colors.brand.darkGreen },
   list: { paddingHorizontal: 16, paddingBottom: 40 },
   card: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.surface,
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
+    // shadowColor: "#000",
+    // shadowOpacity: 0.05,
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowRadius: 3,
+    // elevation: 2,
   },
   left: { flexDirection: "row", alignItems: "center" },
   iconCircle: {
@@ -212,14 +215,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  name: { fontSize: 14, fontWeight: "600", color: "#111827" },
-  sub: { fontSize: 12, color: "#9CA3AF", marginTop: 2 },
+  name: { fontSize: 14, fontWeight: "600", color: Colors.brand.text },
+  sub: { fontSize: 12, color: Colors.brand.textMuted, marginTop: 2 },
   right: { alignItems: "flex-end" },
   amount: { fontSize: 15, fontWeight: "700" },
-  date: { fontSize: 12, color: "#9CA3AF", marginTop: 2 },
+  date: { fontSize: 12, color: Colors.brand.textMuted, marginTop: 2 },
   empty: {
     textAlign: "center",
-    color: "#9CA3AF",
+    color: Colors.brand.textMuted,
     fontSize: 13,
     marginTop: 20,
   },

@@ -4,6 +4,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import Colors from "@/constants/Colors";
 import { Image, View, Text, ActivityIndicator } from "react-native";
 import { fetchAvatar } from "./services";
 import { useGobalStoreContext } from "@/store/global-context";
@@ -60,7 +61,7 @@ export function MyAvatar({
         resizeMode="cover"
       />
       {showGreeting && (
-        <Text style={{ fontWeight: "500" }}>Hi, {userData?.first_name}</Text>
+        <Text style={{ fontWeight: "500", color: Colors.brand.text }}>Hi, {userData?.first_name}</Text>
       )}
     </View>
 

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Colors from '@/constants/Colors';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar, Animated, Easing, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff, AlertCircle, XCircle } from 'lucide-react-native';
+import { ErrorToast } from '@/components/ErrorToast';
 import { useSignIn } from './hooks/useSignIn';
 import { Controller } from 'react-hook-form';
 import { router } from 'expo-router';
@@ -72,28 +74,17 @@ export default function SignIn() {
       
       {/* Gradient Background */}
       <LinearGradient
-        colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
-        locations={[0, 0.2, 0.5, 0.8, 1]}
+        colors={Colors.brand.gradient}
+        locations={Colors.brand.gradientLocations as any}
         style={styles.background}
       />
 
-      {/* Unique Error Handling UI - Top Dropdown Toast */}
-      {showError && (
-        <Animated.View 
-          style={[styles.errorToast, { opacity: fadeAnim }]}
-        >
-          <XCircle color="#FF6B6B" size={24} />
-          <View style={styles.errorContent}>
-            <Text style={styles.errorTitle}>Authentication Failed</Text>
-            <Text style={styles.errorMessage}>
-              {error?.message || error?.toString() || "Invalid credentials. Please try again."}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => setShowError(false)}>
-            <Text style={styles.dismissText}>Dismiss</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+      {/* Reusable Error Toast */}
+      <ErrorToast 
+        visible={showError} 
+        error={error} 
+        onDismiss={() => setShowError(false)} 
+      />
 
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView 
@@ -168,7 +159,7 @@ export default function SignIn() {
               </View>
 
               {/* Forgot Password */}
-              <TouchableOpacity style={styles.forgotPassword}>
+              <TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/(auth)/forgot-password')}>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 
@@ -217,7 +208,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: Colors.brand.background,
   },
   background: {
     position: 'absolute',
@@ -246,7 +237,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 64,
     height: 64,
-    backgroundColor: '#B0E17C',
+    backgroundColor: Colors.brand.primary,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -256,17 +247,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderWidth: 4,
-    borderColor: '#1A3E2A',
+    borderColor: Colors.brand.darkGreen,
     borderRadius: 8,
   },
   welcomeText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: Colors.brand.text,
     textAlign: 'center',
   },
   brandText: {
-    color: '#B0E17C',
+    color: Colors.brand.primary,
   },
   subtitleText: {
     color: 'rgba(255,255,255,0.8)',
@@ -308,18 +299,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   forgotPasswordText: {
-    color: '#B0E17C',
+    color: Colors.brand.primary,
     fontSize: 14,
     fontWeight: '500',
   },
   loginButton: {
     width: '100%',
-    backgroundColor: '#B0E17C',
+    backgroundColor: Colors.brand.primary,
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#B0E17C',
+    shadowColor: Colors.brand.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -327,7 +318,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   loginButtonText: {
-    color: '#1A3E2A',
+    color: Colors.brand.darkGreen,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -359,7 +350,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signupLink: {
-    color: '#B0E17C',
+    color: Colors.brand.primary,
     fontSize: 14,
     fontWeight: 'bold',
   },

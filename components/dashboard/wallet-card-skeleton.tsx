@@ -1,5 +1,5 @@
-
 import React, { useEffect, useRef } from 'react';
+import Colors from "@/constants/Colors";
 import { View, StyleSheet, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -25,9 +25,9 @@ export default function WalletCardSkeleton() {
 
   return (
     <LinearGradient
-      colors={["#0F2027", "#2C7744", "#A8E063"]}
+      colors={Colors.brand.gradient}
       style={styles.container}
-        locations={[0, 0.5, 1]}
+        locations={Colors.brand.gradientLocations as any}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
     >

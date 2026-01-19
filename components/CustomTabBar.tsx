@@ -1,5 +1,6 @@
 // components/CustomTabBar.tsx
 import React from "react";
+import Colors from "@/constants/Colors";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { Home, User, List, MessageCircleMore } from "lucide-react-native";
@@ -27,7 +28,7 @@ export default function CustomTabBar() {
             style={[styles.tab, active && styles.activeTab]}
             onPress={() => router.push(route as any)}
           >
-            <Icon color={active ? "#22C55E" : "#9CA3AF"} size={22} />
+            <Icon color={active ? Colors.brand.primary : Colors.brand.textMuted} size={22} />
             <Text style={[styles.label, active && styles.activeLabel]}>
               {label}
             </Text>
@@ -73,9 +74,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     height: 80,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "#E5E7EB",
+    borderTopColor: "rgba(255,255,255,0.1)",
     position: "fixed",
     bottom: 0,
     left: 0,
@@ -91,11 +92,11 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: "#6B7280",
+    color: Colors.brand.textMuted,
     marginTop: 2,
   },
   activeLabel: {
-    color: "#22C55E",
+    color: Colors.brand.primary,
     fontWeight: "600",
   },
 });

@@ -1,4 +1,5 @@
 
+import Colors from "@/constants/Colors";
 import { router } from "expo-router";
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, StatusBar } from "react-native";
@@ -25,7 +26,7 @@ const onboardingData: OnboardingSlide[] = [
     title: "Get Help When You Need It\nNo Task Too Big!",
     description:
       "Need notes, help with an assignment, or someone to run a campus errand? Post your task, someone’s always ready to assist.",
-    image: require("@/assets/images/onboarding1.png"),
+    image: require("@/assets/images/onboarding2.png"),
   },
   {
     id: 3,
@@ -42,11 +43,9 @@ const onboardingData: OnboardingSlide[] = [
   },
 ];
 
-const { width: initialWidth } = Dimensions.get("window");
-
 const Onboarding: React.FC = () => {
-  // Using state for width to handle rotation, but init with Dimensions.get for immediate value
-  const [screenWidth, setScreenWidth] = useState(initialWidth);
+  // Use lazy initialization to get the most current width on mount
+  const [screenWidth, setScreenWidth] = useState(() => Dimensions.get("window").width);
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -59,31 +58,57 @@ const Onboarding: React.FC = () => {
      return () => subscription?.remove();
   }, []);
 
+  // useEffect(() => {
+  //   const startAutoSlide = () => {
+  //     intervalRef.current = setInterval(() => {
+  //       setCurrentIndex((prevIndex) => {
+  //         const nextIndex = (prevIndex + 1) % onboardingData.length;
+  //         if (scrollViewRef.current) {
+  //            scrollViewRef.current.scrollTo({
+  //               x: nextIndex * screenWidth,
+  //               animated: true,
+  //            });
+  //         }
+  //         return nextIndex;
+  //       });
+  //     }, 3000);
+  //   };
+
+  //   startAutoSlide();
+
+  //   return () => {
+  //     if (intervalRef.current) {
+  //       clearInterval(intervalRef.current);
+  //     }
+  //   };
+  // }, [screenWidth]); // Restart interval if width changes
+
+
   useEffect(() => {
-    const startAutoSlide = () => {
-      intervalRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => {
-          const nextIndex = (prevIndex + 1) % onboardingData.length;
-          // Ensure we don't call scrollTo if component unmounted or ref null
-          if (scrollViewRef.current) {
-             scrollViewRef.current.scrollTo({
-                x: nextIndex * screenWidth,
-                animated: true,
-             });
-          }
-          return nextIndex;
-        });
-      }, 3000);
-    };
+  // 🔒 Guard: prevent multiple intervals (React 18 Strict Mode)
+  if (intervalRef.current) return;
 
-    startAutoSlide();
+  intervalRef.current = setInterval(() => {
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % onboardingData.length;
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [screenWidth]); // Restart interval if width changes
+      scrollViewRef.current?.scrollTo({
+        x: nextIndex * screenWidth,
+        animated: true,
+      });
+
+      return nextIndex;
+    });
+  }, 3000);
+
+  return () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null; // 👈 IMPORTANT
+    }
+  };
+}, [screenWidth]);
+
 
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -99,10 +124,10 @@ const Onboarding: React.FC = () => {
     router.push("/(auth)/signup" as any);
   };
 
-  const renderSlide = (item: OnboardingSlide) => (
+  const  renderSlide = (item: OnboardingSlide) => (
+    
     <View key={item.id} style={[styles.slide, { width: screenWidth }]}>
       <View style={styles.imageContainer}>
-        {/* Placeholder images might be needed if these don't exist yet, but using what was there */}
         <Image source={item.image} style={styles.illustration} resizeMode="contain" />
       </View>
       <View style={styles.textContainer}>
@@ -135,8 +160,8 @@ const Onboarding: React.FC = () => {
       <StatusBar barStyle="light-content" />
         {/* Gradient Background */}
       <LinearGradient
-        colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
-        locations={[0, 0.2, 0.5, 0.8, 1]}
+        colors={Colors.brand.gradient}
+        locations={Colors.brand.gradientLocations as any}
         style={styles.background}
       />
       
@@ -162,6 +187,7 @@ const Onboarding: React.FC = () => {
             removeClippedSubviews={false} 
           >
             {onboardingData.map((item) => renderSlide(item))}
+
           </ScrollView>
 
           {renderPaginationDots()}
@@ -184,7 +210,7 @@ const Onboarding: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: Colors.brand.background,
   },
   background: {
     position: 'absolute',
@@ -252,7 +278,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   activeDot: {
-    backgroundColor: "#B0E17C",
+    backgroundColor: Colors.brand.primary,
     width: 20, // stretch effect
   },
   inactiveDot: {
@@ -268,7 +294,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 56,
     borderWidth: 1,
-    borderColor: "#B0E17C",
+    borderColor: Colors.brand.primary,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
@@ -277,16 +303,16 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#B0E17C",
+    color: Colors.brand.primary,
   },
   signUpButton: {
     flex: 1,
     height: 56,
-    backgroundColor: "#B0E17C",
+    backgroundColor: Colors.brand.primary,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#B0E17C",
+    shadowColor: Colors.brand.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -295,7 +321,7 @@ const styles = StyleSheet.create({
   signUpButtonText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1A3E2A",
+    color: Colors.brand.darkGreen,
   },
 });
 

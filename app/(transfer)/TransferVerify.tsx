@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Colors from "@/constants/Colors";
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { transferApi } from '@/utils/transferApi';
@@ -36,7 +37,7 @@ export default function TransferVerify() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <ChevronLeft size={24} color="#000" />
+          <ChevronLeft size={24} color={Colors.brand.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Verify Recipient</Text>
         <View style={{ width: 24 }} />
@@ -44,7 +45,7 @@ export default function TransferVerify() {
 
       <View style={styles.content}>
         {loading ? (
-          <ActivityIndicator size="large" color="#22C55E" />
+          <ActivityIndicator size="large" color={Colors.brand.primary} />
         ) : error ? (
           <View>
             <Text style={styles.errorText}>{error}</Text>
@@ -71,32 +72,32 @@ export default function TransferVerify() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.brand.background },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  title: { fontSize: 18, fontWeight: 'bold' },
+  title: { fontSize: 18, fontWeight: 'bold', color: Colors.brand.text },
   content: { padding: 20, alignItems: 'center', justifyContent: 'center', flex: 1 },
-  card: { alignItems: 'center', width: '100%' },
+  card: { alignItems: 'center', width: '100%', backgroundColor: Colors.brand.surface, padding: 24, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#DCFCE7',
+    backgroundColor: "rgba(176, 225, 124, 0.2)",
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
-  avatarText: { fontSize: 32, fontWeight: 'bold', color: '#22C55E' },
-  name: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' },
-  details: { fontSize: 16, color: '#666', marginBottom: 32 },
+  avatarText: { fontSize: 32, fontWeight: 'bold', color: Colors.brand.primary },
+  name: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, textAlign: 'center', color: Colors.brand.text },
+  details: { fontSize: 16, color: Colors.brand.textMuted, marginBottom: 32 },
   button: {
-    backgroundColor: '#22C55E',
+    backgroundColor: Colors.brand.primary,
     padding: 16,
     borderRadius: 12,
     width: '100%',
     alignItems: 'center',
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  errorText: { color: 'red', fontSize: 16, marginBottom: 16 },
+  buttonText: { color: Colors.brand.darkGreen, fontSize: 16, fontWeight: 'bold' },
+  errorText: { color: Colors.brand.error, fontSize: 16, marginBottom: 16 },
   retryButton: { padding: 10 },
-  retryText: { color: '#22C55E', fontWeight: 'bold' },
+  retryText: { color: Colors.brand.primary, fontWeight: 'bold' },
 });

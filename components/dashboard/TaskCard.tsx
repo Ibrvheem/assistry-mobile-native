@@ -1,5 +1,6 @@
 // components/dashboard/TaskCard.tsx
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import Colors from "@/constants/Colors";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { formatCurrency } from "@/lib/helpers";
@@ -72,7 +73,7 @@ export default function TaskCard({
           </View> */}
           <View style={styles.postedContainer}>
             <View style={styles.locationContainer}>
-            <Ionicons name="location" size={14} color="#666" />
+            <Ionicons name="location" size={14} color={Colors.brand.textMuted} />
             <Text style={styles.location}>{location}</Text>
           </View>
             <Text style={styles.postedBy}>Posted by {postedBy}</Text>
@@ -86,20 +87,12 @@ export default function TaskCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#ffffff",
+    backgroundColor: Colors.brand.surface,
     borderRadius: 16,
     marginHorizontal: 16,
     marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
     borderWidth: 1,
-    borderColor: "#f0f0f0",
+    borderColor: "rgba(255,255,255,0.1)",
   },
   content: {
     padding: 14,
@@ -120,7 +113,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#000",
+    color: Colors.brand.text,
     flex: 1,
     marginRight: 12,
   },
@@ -143,7 +136,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: "#666",
+    color: Colors.brand.textDim,
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -162,7 +155,7 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "rgba(255,255,255,0.1)",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -170,7 +163,7 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
-    color: "#666",
+    color: Colors.brand.textMuted,
     marginLeft: 4,
   },
   postedContainer: {
@@ -178,12 +171,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
+    borderTopColor: "rgba(255,255,255,0.1)",
     paddingTop: 8,
   },
   postedBy: {
     fontSize: 12,
-    color: "#666",
+    color: Colors.brand.textMuted,
   },
   postedAt: {
     fontSize: 12,

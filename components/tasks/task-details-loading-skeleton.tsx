@@ -1,5 +1,5 @@
-
 import React, { useEffect, useRef } from "react";
+import Colors from "@/constants/Colors";
 import { View, StyleSheet, ScrollView, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -12,12 +12,12 @@ const ShimmerPlaceholder = ({ style }: { style: any }) => {
         Animated.timing(shimmerAnim, {
           toValue: 1,
           duration: 1000,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
         Animated.timing(shimmerAnim, {
           toValue: 0,
           duration: 1000,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
       ])
     ).start();
@@ -25,7 +25,7 @@ const ShimmerPlaceholder = ({ style }: { style: any }) => {
 
   const backgroundColor = shimmerAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#E0E0E0", "#F5F5F5"],
+    outputRange: ["#1A1A1A", "#333333"],
   });
 
   return <Animated.View style={[style, { backgroundColor }]} />;

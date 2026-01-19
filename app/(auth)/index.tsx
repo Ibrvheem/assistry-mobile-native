@@ -4,6 +4,8 @@
 import { useEffect, useRef } from "react"
 import { View, Text, Animated, Dimensions, StyleSheet, Image, Easing } from "react-native"
 import { router } from "expo-router"
+import Colors from "@/constants/Colors";
+import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window")
@@ -73,15 +75,20 @@ export default function SplashScreen() {
         } else {
           router.replace("/(auth)/onboard" as any);
         }
-      }, 2000);
+      }, 3000);
     })
   }, [])
 
   return (
     <View style={styles.container}>
       {/* Background with diagonal green overlay */}
-      <View style={styles.background} />
-      <View style={styles.diagonalOverlay} />
+      {/* <View style={styles.background} />
+      <View style={styles.diagonalOverlay} /> */}
+      <LinearGradient
+              colors={Colors.brand.gradient}
+              locations={Colors.brand.gradientLocations as any}
+              style={styles.background}
+            />
 
       {/* Content container */}
       <View style={styles.contentContainer}>
@@ -132,9 +139,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#091D17",
   },
+  // background: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   backgroundColor: "#091D17",
+  // },
+
   background: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#091D17",
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   diagonalOverlay: {
     position: "absolute",

@@ -13,6 +13,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
+import Colors from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -359,7 +360,7 @@ const isLoading =
 
         <View style={styles.taskFooter}>
           <View style={styles.locationContainer}>
-            <Ionicons name="location" size={16} color="#666" />
+            <Ionicons name="location" size={16} color={Colors.brand.textMuted} />
             <Text style={styles.location}>{item.location}</Text>
           </View>
 
@@ -369,7 +370,7 @@ const isLoading =
                   style={styles.chatButton}
                   onPress={() => handleTaskAction(item, "chat")}
                 >
-                  <MessageCircleMore size={32} color="#fff" fill="#b0e17c" />
+                  <MessageCircleMore size={32} color="#fff" fill={Colors.brand.primary} />
                 </Pressable>
               )}
 
@@ -512,7 +513,7 @@ const isLoading =
         </View>
 
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
-          <Ionicons name="eye" size={18} color="#18AE6A" />
+          <Ionicons name="eye" size={18} color={Colors.brand.primary} />
           <Text style={styles.views}>{item.views}</Text>
         </View>
       </View>
@@ -524,7 +525,7 @@ const isLoading =
       <View style={styles.header}>
         <Text style={styles.title}>Campus Tasks</Text>
         <Pressable style={styles.filterButton} onPress={() => setOpen(true)}>
-          <PlusCircle size={20} color="#22C55E" />
+          <PlusCircle size={20} color={Colors.brand.darkGreen} />
           <Text style={styles.filterText}>Post Task</Text>
         </Pressable>
       </View>
@@ -615,11 +616,11 @@ const isLoading =
 
 /* ---------- STYLES ---------- */
 const styles = StyleSheet.create({
-  container: { backgroundColor: "#f8f9fa", flex:1},
-    
+  container: { backgroundColor: Colors.brand.background, flex: 1 },
+
   // tabScrollContainer: { paddingHorizontal: 16, marginBottom: 8, 
   // },
-   tabsWrapper: {
+  tabsWrapper: {
     // tweak height to fit your tab item paddings / text size
     height: 52,
     justifyContent: "center",
@@ -637,50 +638,55 @@ const styles = StyleSheet.create({
     alignItems: "center", // center tabs vertically so no gap appears
   },
 
-  disabledButton: { backgroundColor: "#b0b0b0", opacity: 0.7 },
+  disabledButton: { backgroundColor: Colors.brand.surface, opacity: 0.7 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    
+
   },
-  title: { fontSize: 28, fontWeight: "bold", color: "#000" },
+  title: { fontSize: 28, fontWeight: "bold", color: Colors.brand.text },
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#dcfce7",
+    backgroundColor: Colors.brand.surface,
     padding: 8,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.brand.primary,
   },
-  filterText: { color: "#22C55E", marginLeft: 4, fontWeight: "600" },
+  filterText: { color: Colors.brand.darkGreen, marginLeft: 4, fontWeight: "600" },
   tab: {
     padding: 8,
     marginRight: 8,
     borderRadius: 20,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: Colors.brand.surface,
     height: 36,
   },
-  activeTab: { backgroundColor: "#22C55E" },
-  tabText: { color: "#666", fontWeight: "600" },
-  activeTabText: { color: "#fff" },
+  activeTab: { backgroundColor: Colors.brand.primary },
+  tabText: { color: Colors.brand.textMuted, fontWeight: "600" },
+  activeTabText: { color: Colors.brand.darkGreen },
   listContainer: { paddingBottom: 100 },
   taskCard: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.surface,
     borderRadius: 16,
     margin: 16,
     padding: 16,
     elevation: 5,
     width: width - 24,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   taskHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-  taskTitle: { fontSize: 18, fontWeight: "bold", color: "#000", width: "70%" },
-  incentiveContainer: { 
+  taskTitle: { fontSize: 18, fontWeight: "bold", color: Colors.brand.text, width: "70%" },
+  incentiveContainer: {
     // backgroundColor: "#dcfce7", 
-    backgroundColor: "transparent", 
-    padding: 8, borderRadius: 8 },
-  incentive: { fontSize: 18, fontWeight: "bold", color: "#22C55E" },
-  taskDescription: { fontSize: 14, color: "#666", marginBottom: 12, marginTop:10 },
+    backgroundColor: "transparent",
+    padding: 8, borderRadius: 8
+  },
+  incentive: { fontSize: 18, fontWeight: "bold", color: Colors.brand.primary },
+  taskDescription: { fontSize: 14, color: Colors.brand.textDim, marginBottom: 12, marginTop: 10 },
   taskImage: { width: "100%", height: 200, borderRadius: 12, marginBottom: 12 },
   taskFooter: {
     flexDirection: "row",
@@ -691,23 +697,23 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "rgba(255,255,255,0.1)",
     padding: 8,
     borderRadius: 6,
   },
-  location: { fontSize: 14, color: "#666", marginLeft: 4 },
+  location: { fontSize: 14, color: Colors.brand.textMuted, marginLeft: 4 },
   taskActions: { flexDirection: "row", gap: 8 },
   actionButton: {
-    backgroundColor: "#22C55E",
+    backgroundColor: Colors.brand.primary,
     padding: 8,
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  actionButtonText: { color: "#fff", fontWeight: "600" },
+  actionButtonText: { color: Colors.brand.darkGreen, fontWeight: "600" },
   declineButton: { backgroundColor: "#FFF5F5" },
-   chatButton: {
+  chatButton: {
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -718,17 +724,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
+    borderTopColor: "rgba(255,255,255,0.1)",
     paddingTop: 8,
   },
-  postedBy: { fontSize: 12, color: "#666" },
-  postedAt: { fontSize: 12, color: "#999" },
+  postedBy: { fontSize: 12, color: Colors.brand.textMuted },
+  postedAt: { fontSize: 12, color: Colors.brand.textDim },
   emptyState: { alignItems: "center" },
-  views: { color: "#18AE6A", fontWeight: "600" },
+  views: { color: Colors.brand.primary, fontWeight: "600" },
 });
 
 const modalStyles = StyleSheet.create({
-  bold: { fontWeight: "bold", color: "#18ae6a" },
+  bold: { fontWeight: "bold", color: Colors.brand.primary },
   overlay: {
     flex: 1,
     justifyContent: "center",
@@ -736,14 +742,16 @@ const modalStyles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.surface,
     padding: 24,
     borderRadius: 12,
     width: "85%",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
-  text: { fontSize: 18, textAlign: "center", color: "#333" },
-  taskId: { fontWeight: "bold", color: "#18ae6a", fontSize: 16, marginTop: 8, textAlign: "center" },
+  text: { fontSize: 18, textAlign: "center", color: Colors.brand.text },
+  taskId: { fontWeight: "bold", color: Colors.brand.primary, fontSize: 16, marginTop: 8, textAlign: "center" },
   actions: {
     flexDirection: "row",
     marginTop: 24,
@@ -752,7 +760,7 @@ const modalStyles = StyleSheet.create({
   },
   button: { paddingVertical: 10, paddingHorizontal: 24, borderRadius: 8 },
   cancel: { backgroundColor: "#f0f0f0" },
-  confirm: { backgroundColor: "#18ae6a" },
+  confirm: { backgroundColor: Colors.brand.primary },
   cancelText: { color: "#444", fontWeight: "600" },
-  confirmText: { color: "#fff", fontWeight: "600" },
+  confirmText: { color: Colors.brand.darkGreen, fontWeight: "600" },
 });

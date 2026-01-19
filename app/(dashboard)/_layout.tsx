@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 import { Stack, usePathname } from "expo-router";
 import CustomTabBar from "../../components/CustomTabBar";
+import Colors from "@/constants/Colors";
 
 export default function DashboardLayout() {
   const pathname = usePathname();
@@ -57,7 +58,7 @@ export default function DashboardLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
   },
   tabWrapper: {
     position: "absolute",

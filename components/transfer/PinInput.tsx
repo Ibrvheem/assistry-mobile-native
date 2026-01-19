@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Colors from "@/constants/Colors";
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -73,10 +74,11 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: Colors.brand.text,
   },
   dotFilled: {
-    backgroundColor: '#333',
+    backgroundColor: Colors.brand.primary,
+    borderColor: Colors.brand.primary,
   },
   keypad: {
     flexDirection: 'row',
@@ -91,10 +93,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 35,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.brand.surface,
   },
   keyText: {
     fontSize: 24,
     fontWeight: '600',
+    color: Colors.brand.text,
   },
 });

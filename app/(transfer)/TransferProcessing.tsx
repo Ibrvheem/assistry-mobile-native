@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Colors from "@/constants/Colors";
 import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { transferApi } from '@/utils/transferApi';
@@ -47,13 +48,13 @@ export default function TransferProcessing() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ActivityIndicator size="large" color="#22C55E" />
+      <ActivityIndicator size="large" color={Colors.brand.primary} />
       <Text style={styles.text}>{status}</Text>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' },
-  text: { marginTop: 20, fontSize: 18, fontWeight: '600', color: '#333' },
+  container: { flex: 1, backgroundColor: Colors.brand.background, justifyContent: 'center', alignItems: 'center' },
+  text: { marginTop: 20, fontSize: 18, fontWeight: '600', color: Colors.brand.text },
 });

@@ -214,6 +214,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import Colors from "@/constants/Colors";
 import { Image } from "expo-image";
 // import { Button } from "@/components/ui/button";
 import { Button, Separator } from "tamagui";
@@ -294,11 +295,11 @@ export default function ProfilePage(): JSX.Element {
               onPress={() => router.push("/(dashboard)/tasks")}
             >
               <View style={styles.iconWrapper}>
-                <File color={"gray"} size={20} />
+                <File color={Colors.brand.textMuted} size={20} />
               </View>
               <Text style={styles.rowText}>Task History</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={"gray"} size={20} />
+                <ArrowRight color={Colors.brand.textMuted} size={20} />
               </View>
             </TouchableOpacity>
 
@@ -307,7 +308,7 @@ export default function ProfilePage(): JSX.Element {
               onPress={() => router.push("/(dashboard)/transactions")}
             >
               <View style={styles.iconWrapper}>
-                <CreditCard color={"gray"} size={20} />
+                <CreditCard color={Colors.brand.textMuted} size={20} />
               </View>
               <Text style={styles.rowText}>Transaction History</Text>
               <View style={styles.arrowWrapper}>
@@ -322,7 +323,7 @@ export default function ProfilePage(): JSX.Element {
           <View style={styles.card}>
             <TouchableOpacity style={styles.cardRow}>
               <View style={styles.iconWrapper}>
-                <AlertCircle color={"gray"} size={20} />
+                <AlertCircle color={Colors.brand.textMuted} size={20} />
               </View>
               <Text style={styles.rowText}>Report Fraud Activity</Text>
               <View style={styles.arrowWrapper}>
@@ -332,7 +333,7 @@ export default function ProfilePage(): JSX.Element {
 
             <TouchableOpacity style={[styles.cardRow, styles.noBorder]}>
               <View style={styles.iconWrapper}>
-                <MessageCircle color={"gray"} size={20} />
+                <MessageCircle color={Colors.brand.textMuted} size={20} />
               </View>
               <Text style={styles.rowText}>Support Center</Text>
               <View style={styles.arrowWrapper}>
@@ -357,7 +358,7 @@ export default function ProfilePage(): JSX.Element {
 
             <TouchableOpacity style={[styles.cardRow, styles.noBorder]}>
               <View style={styles.iconWrapper}>
-                <UserMinus color={"gray"} size={20} />
+                <UserMinus color={Colors.brand.textMuted} size={20} />
               </View>
               <Text style={styles.rowText}>Delete Account</Text>
               <View style={styles.arrowWrapper}>
@@ -375,7 +376,7 @@ export default function ProfilePage(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
     marginTop: 24,
   },
   profileHeader: {
@@ -391,22 +392,24 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#000",
+    color: Colors.brand.text,
   },
   email: {
-    color: "#555",
+    color: Colors.brand.textMuted,
     fontSize: 13,
     fontFamily: "poppins",
   },
   editButton: {
     marginTop: 10,
-    backgroundColor: "#000",
+    backgroundColor: Colors.brand.surface,
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 24,
+    borderWidth: 1,
+    borderColor: Colors.brand.primary,
   },
   editButtonText: {
-    color: "#fff",
+    color: Colors.brand.primary,
     fontWeight: "600",
     fontSize: 14,
     fontFamily: "poppins",
@@ -416,10 +419,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   card: {
-    backgroundColor: "#dbf0dd",
+    backgroundColor: Colors.brand.surface,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "rgba(255,255,255,0.1)",
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
@@ -428,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#bbb",
+    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   noBorder: {
     borderBottomWidth: 0,
@@ -439,12 +442,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.05)",
   },
   rowText: {
     flex: 1,
     fontSize: 15,
     fontFamily: "poppins",
-    color: "#000",
+    color: Colors.brand.text,
+    marginLeft: 12,
   },
   arrowWrapper: {
     justifyContent: "center",

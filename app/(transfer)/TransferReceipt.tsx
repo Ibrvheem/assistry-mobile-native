@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import Colors from "@/constants/Colors";
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { CheckCircle, Share2, Download, X } from 'lucide-react-native';
@@ -22,14 +23,14 @@ export default function TransferReceipt() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleClose}>
-          <X size={24} color="#000" />
+          <X size={24} color={Colors.brand.text} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1 }} style={styles.receipt}>
             <View style={styles.iconContainer}>
-            <CheckCircle size={64} color="#22C55E" />
+            <CheckCircle size={64} color={Colors.brand.primary} />
             </View>
             <Text style={styles.status}>{params.status === 'queued' ? 'Transfer Queued' : 'Transfer Successful'}</Text>
             <Text style={styles.amount}>₦{params.amount}</Text>
@@ -60,7 +61,7 @@ export default function TransferReceipt() {
 
         <View style={styles.actions}>
             <TouchableOpacity style={styles.actionButton} onPress={handleShare}>
-                <Share2 size={20} color="#333" />
+                <Share2 size={20} color={Colors.brand.text} />
                 <Text style={styles.actionText}>Share Receipt</Text>
             </TouchableOpacity>
             
@@ -74,43 +75,43 @@ export default function TransferReceipt() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: Colors.brand.background },
   header: { padding: 16, alignItems: 'flex-end' },
   content: { padding: 20, alignItems: 'center' },
   receipt: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.brand.surface,
     borderRadius: 20,
     padding: 24,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   iconContainer: { marginBottom: 16 },
-  status: { fontSize: 20, fontWeight: 'bold', color: '#22C55E', marginBottom: 8 },
-  amount: { fontSize: 36, fontWeight: 'bold', color: '#333', marginBottom: 24 },
-  divider: { height: 1, backgroundColor: '#eee', width: '100%', marginBottom: 24 },
+  status: { fontSize: 20, fontWeight: 'bold', color: Colors.brand.primary, marginBottom: 8 },
+  amount: { fontSize: 36, fontWeight: 'bold', color: Colors.brand.text, marginBottom: 24 },
+  divider: { height: 1, backgroundColor: "rgba(255,255,255,0.1)", width: '100%', marginBottom: 24 },
   row: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 16 },
-  label: { color: '#666', fontSize: 16 },
-  value: { fontWeight: '600', fontSize: 16, color: '#333' },
+  label: { color: Colors.brand.textMuted, fontSize: 16 },
+  value: { fontWeight: '600', fontSize: 16, color: Colors.brand.text },
   actions: { marginTop: 40, width: '100%', gap: 16 },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.brand.surface,
     padding: 16,
     borderRadius: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
-  actionText: { fontWeight: '600', fontSize: 16 },
+  actionText: { fontWeight: '600', fontSize: 16, color: Colors.brand.text },
   closeButton: {
-    backgroundColor: '#22C55E',
+    backgroundColor: Colors.brand.primary,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
   },
-  closeText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  closeText: { color: Colors.brand.darkGreen, fontWeight: 'bold', fontSize: 16 },
 });

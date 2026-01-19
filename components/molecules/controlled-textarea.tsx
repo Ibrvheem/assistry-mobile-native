@@ -1,4 +1,5 @@
 import React from "react";
+import Colors from "@/constants/Colors";
 import {
   View,
   Text,
@@ -42,7 +43,7 @@ const ControlledTextArea = ({
           style={{
             // fontFamily: "PoppinsBold",
             // fontSize: 14,
-            color: "#1C332B",
+            color: Colors.brand.text,
             // paddingVertical: 8,
             marginBottom: 4,
             fontFamily: "ReadexPro-Medium", // must match the font you load in Expo
@@ -65,12 +66,15 @@ const ControlledTextArea = ({
             onChangeText={onChange} // ✅ consistent handler
             onBlur={onBlur}
             placeholder={placeholder}
+            placeholderTextColor={Colors.brand.textMuted}
             editable={!disabled} // ✅ matches Input
             // borderWidth={2}
             rows={rows}
               borderRadius={8}      // rounded corners
   borderWidth={1}       // 1px border
-  borderColor="#000"    // visible border
+  borderColor="rgba(255,255,255,0.2)"    // visible border
+  backgroundColor="rgba(255,255,255,0.1)"
+  color={Colors.brand.text}
   fontSize={13}         // text-lg equivalent
   opacity={1}
             multiline
@@ -80,7 +84,7 @@ const ControlledTextArea = ({
       />
 
       {description && (
-        <Text style={{ fontSize: 12, color: "#6B7280", fontWeight: "bold" }}>
+        <Text style={{ fontSize: 12, color: Colors.brand.textDim, fontWeight: "bold" }}>
           {description}
         </Text>
       )}

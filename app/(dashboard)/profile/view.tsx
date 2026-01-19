@@ -1,4 +1,5 @@
 import React from "react";
+import Colors from "@/constants/Colors";
 import {
   View,
   Text,
@@ -53,8 +54,8 @@ export default function ViewProfileScreen(): JSX.Element {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.centered}>
-        <ActivityIndicator size="large" color="#22C55E" />
-        <Text style={{ marginTop: 12, color: "#555" }}>Loading profile...</Text>
+        <ActivityIndicator size="large" color={Colors.brand.primary} />
+        <Text style={{ marginTop: 12, color: Colors.brand.textMuted }}>Loading profile...</Text>
       </SafeAreaView>
     );
   }
@@ -81,7 +82,7 @@ export default function ViewProfileScreen(): JSX.Element {
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#000" />
+          <Ionicons name="arrow-back" size={24} color={Colors.brand.text} />
         </Pressable>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={{ width: 40 }} /> {/* alignment placeholder */}
@@ -94,14 +95,13 @@ export default function ViewProfileScreen(): JSX.Element {
             colors={["#22C55E", "#16A34A"]}
             style={styles.gradientHeader}
           > */}
-             <LinearGradient
-                    // colors={["#143428", "#B0E17C", "#1BAE6A"]}
-                    colors={["#0F2027", "#2C7744", "#A8E063"]}
-                    locations={[0, 0.5, 1]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                     style={styles.gradientHeader}
-                  >
+          <LinearGradient
+            colors={Colors.brand.gradient}
+            locations={Colors.brand.gradientLocations as any}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientHeader}
+          >
             <Image
               source={{
                 uri: user?.profile_picture || fallbackUser.profileImage,
@@ -133,11 +133,11 @@ export default function ViewProfileScreen(): JSX.Element {
           {/* Contact */}
           <ProfileSection title="Contact">
             <Text style={styles.infoText}>
-              <Ionicons name="mail" size={16} color="#22C55E" /> {user.email}
+              <Ionicons name="mail" size={16} color={Colors.brand.primary} /> {user.email}
             </Text>
             {user.phone_no && (
               <Text style={styles.infoText}>
-                <Ionicons name="call" size={16} color="#22C55E" />{" "}
+                <Ionicons name="call" size={16} color={Colors.brand.primary} />{" "}
                 {user.phone_no}
               </Text>
             )}
@@ -194,21 +194,21 @@ function ProfileSection({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: Colors.brand.background },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
   },
   retryButton: {
     marginTop: 16,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: "#22C55E",
+    backgroundColor: Colors.brand.primary,
   },
-  retryText: { color: "#fff", fontWeight: "600" },
+  retryText: { color: Colors.brand.darkGreen, fontWeight: "600" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -216,10 +216,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   backButton: { padding: 6 },
-  headerTitle: { fontSize: 18, fontWeight: "bold", color: "#000" },
+  headerTitle: { fontSize: 18, fontWeight: "bold", color: Colors.brand.text },
   scrollContent: { paddingBottom: 32 },
   gradientHeader: {
     alignItems: "center",
@@ -241,20 +241,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: Colors.brand.text,
     marginBottom: 8,
   },
-  bodyText: { fontSize: 15, color: "#374151", lineHeight: 22 },
-  infoText: { fontSize: 15, color: "#374151", marginBottom: 6 },
+  bodyText: { fontSize: 15, color: Colors.brand.textDim, lineHeight: 22 },
+  infoText: { fontSize: 15, color: Colors.brand.textDim, marginBottom: 6 },
   tags: { flexDirection: "row", flexWrap: "wrap", marginTop: 4 },
   tag: {
-    backgroundColor: "#f0fdf4",
-    borderColor: "#22C55E",
+    backgroundColor: Colors.brand.surface,
+    borderColor: Colors.brand.primary,
     borderWidth: 1,
     borderRadius: 16,
     paddingHorizontal: 12,
@@ -262,5 +262,5 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 8,
   },
-  tagText: { color: "#22C55E", fontWeight: "500" },
+  tagText: { color: Colors.brand.primary, fontWeight: "500" },
 });

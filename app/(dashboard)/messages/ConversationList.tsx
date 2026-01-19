@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Colors from "@/constants/Colors";
 import { FlatList, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useChatStore, Conversation } from '@/store/chat-store';
 import { Link } from 'expo-router';
@@ -79,9 +80,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.surface,
   },
   avatarContainer: {
     marginRight: 14,
@@ -104,11 +105,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: Colors.brand.text,
   },
   messageTime: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: Colors.brand.textMuted,
     marginRight: 15,
   },
   messageRow: {
@@ -118,14 +119,14 @@ const styles = StyleSheet.create({
   lastMessage: {
     flex: 1,
     fontSize: 14,
-    color: "#6B7280",
+    color: Colors.brand.textDim,
   },
   unreadMessage: {
     fontWeight: "700",
-    color: "#111827",
+    color: Colors.brand.text,
   },
   unreadBadge: {
-    backgroundColor: "#22C55E",
+    backgroundColor: Colors.brand.primary,
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -135,14 +136,14 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   unreadText: {
-    color: "#fff",
+    color: Colors.brand.darkGreen,
     fontSize: 12,
     fontWeight: "700",
   },
   emptyText: {
     textAlign: 'center',
     marginTop: 20,
-    color: '#999',
+    color: Colors.brand.textMuted,
   }
 });
 

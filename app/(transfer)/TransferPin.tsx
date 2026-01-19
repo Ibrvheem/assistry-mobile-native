@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Colors from "@/constants/Colors";
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import PinInput from '@/components/transfer/PinInput';
@@ -47,7 +48,7 @@ export default function TransferPin() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <ChevronLeft size={24} color="#000" />
+          <ChevronLeft size={24} color={Colors.brand.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Enter PIN</Text>
         <View style={{ width: 24 }} />
@@ -71,11 +72,11 @@ export default function TransferPin() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.brand.background },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  title: { fontSize: 18, fontWeight: 'bold' },
+  title: { fontSize: 18, fontWeight: 'bold', color: Colors.brand.text },
   content: { padding: 20, alignItems: 'center' },
-  subtitle: { textAlign: 'center', color: '#666', fontSize: 16, marginBottom: 20 },
+  subtitle: { textAlign: 'center', color: Colors.brand.textMuted, fontSize: 16, marginBottom: 20 },
   bioButton: { marginTop: 40, padding: 16 },
-  bioText: { color: '#22C55E', fontWeight: 'bold', fontSize: 16 },
+  bioText: { color: Colors.brand.primary, fontWeight: 'bold', fontSize: 16 },
 });

@@ -8,6 +8,8 @@ import { useSendOTP } from "./hooks/useSendOTP";
 import LoadingChildren from "@/components/molecules/loading-children";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft } from "lucide-react-native";
+import { ErrorToast } from "@/components/ErrorToast";
+import { useState } from "react";
 
 export default function ConfirmNumber() {
   const { studentData } = useGobalStoreContext();
@@ -18,13 +20,19 @@ export default function ConfirmNumber() {
   }
 
   const { sendOTP, loading } = useSendOTP(studentData?.email, studentData?.phone_no);
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleOtpPress = () => {
-    // This is called by sendOTP success essentially, but here we just trigger sendOTP
-    sendOTP({
-      email: studentData.email,
-      phone_no: studentData.phone_no,
-    });
+  const handleOtpPress = async () => {
+    try {
+        await sendOTP({
+          email: studentData.email,
+          phone_no: studentData.phone_no,
+        });
+    } catch (err: any) {
+        setErrorMsg(err.message || "Failed to send OTP");
+        setShowError(true);
+    }
   };
 
   const handleChangeNumberPress = () => {
@@ -38,6 +46,12 @@ export default function ConfirmNumber() {
         colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
         locations={[0, 0.2, 0.5, 0.8, 1]}
         style={styles.background}
+      />
+      
+      <ErrorToast 
+        visible={showError} 
+        error={errorMsg} 
+        onDismiss={() => setShowError(false)} 
       />
       
       <SafeAreaView style={styles.safeArea}>

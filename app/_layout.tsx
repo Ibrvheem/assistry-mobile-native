@@ -11,6 +11,7 @@ import { useFonts } from "expo-font";
 import { useRouter, Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
+import Colors from "@/constants/Colors";
 
 import { useColorScheme } from "@/components/useColorScheme";
 export { ErrorBoundary } from "expo-router";
@@ -65,11 +66,11 @@ function AppNavigator() {
               headerShown: false,
               headerTitle: "",
               headerStyle: {
-                backgroundColor: "white",
+                backgroundColor: Colors.brand.background,
               },
               // headerBackVisible: false,
               headerLeft: () => <MyAvatar showGreeting={true} />,
-              headerRight: () => <BellDot />,
+              headerRight: () => <BellDot color={Colors.brand.text} />,
             }}
           />
           <Stack.Screen

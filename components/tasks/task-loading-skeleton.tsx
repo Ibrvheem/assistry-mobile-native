@@ -1,5 +1,5 @@
-
 import React, { useEffect, useRef } from "react";
+import Colors from "@/constants/Colors";
 import { View, StyleSheet, Animated } from "react-native";
 
 const SkeletonPlaceholder = () => {
@@ -45,10 +45,12 @@ export default function TaskLoadingSkeleton() {
 
 const styles = StyleSheet.create({
   skeletonCard: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#1A1A1A",
     borderRadius: 16,
     margin: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   skeletonHeader: {
     flexDirection: "row",
@@ -58,26 +60,26 @@ const styles = StyleSheet.create({
   skeletonTitle: {
     width: "50%",
     height: 20,
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 8,
   },
   skeletonIncentive: {
     width: 80,
     height: 20,
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 8,
   },
   skeletonDescription: {
     width: "100%",
     height: 14,
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 8,
     marginBottom: 12,
   },
   skeletonImage: {
     width: "100%",
     height: 200,
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 12,
     marginBottom: 12,
   },
@@ -90,13 +92,13 @@ const styles = StyleSheet.create({
   skeletonLocation: {
     width: 100,
     height: 16,
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 6,
   },
   skeletonButton: {
     width: 100,
     height: 30,
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 12,
   },
 });

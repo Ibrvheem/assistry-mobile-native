@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Colors from "@/constants/Colors";
 import { useEffect } from "react";
 import {
   View,
@@ -198,7 +199,7 @@ const handleSave = async (): Promise<void> => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#000" />
+          <Ionicons name="arrow-back" size={24} color={Colors.brand.text} />
         </Pressable>
         <Text style={styles.headerTitle}>Edit Profile</Text>
         <Pressable
@@ -237,7 +238,7 @@ const handleSave = async (): Promise<void> => {
               <Avatar size={100} />
             )}
             <Pressable style={styles.changePhotoButton} onPress={pickImage}>
-              <Ionicons name="camera" size={20} color="#22C55E" />
+              <Ionicons name="camera" size={20} color={Colors.brand.primary} />
               <Text style={styles.changePhotoText}>Change Photo</Text>
             </Pressable>
           </View>
@@ -270,7 +271,8 @@ const handleSave = async (): Promise<void> => {
               style={styles.input}
               value={email}
               onChangeText={setEmail}
-              placeholder="Your email"
+               placeholder="Your email"
+               placeholderTextColor={Colors.brand.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
             />
@@ -282,7 +284,8 @@ const handleSave = async (): Promise<void> => {
               style={styles.input}
               value={phone}
               onChangeText={setPhone}
-              placeholder="Your phone number"
+               placeholder="Your phone number"
+               placeholderTextColor={Colors.brand.textMuted}
               keyboardType="phone-pad"
             />
           </View>
@@ -293,7 +296,8 @@ const handleSave = async (): Promise<void> => {
               style={styles.input}
               value={department}
               onChangeText={setDepartment}
-              placeholder="Your department"
+               placeholder="Your department"
+               placeholderTextColor={Colors.brand.textMuted}
             />
           </View>
 
@@ -303,7 +307,8 @@ const handleSave = async (): Promise<void> => {
               style={styles.input}
               value={year}
               onChangeText={setYear}
-              placeholder="Your level"
+               placeholder="Your level"
+               placeholderTextColor={Colors.brand.textMuted}
             />
           </View>
 
@@ -313,7 +318,8 @@ const handleSave = async (): Promise<void> => {
               style={[styles.input, styles.textArea]}
               value={bio}
               onChangeText={setBio}
-              placeholder="Tell us about yourself"
+               placeholder="Tell us about yourself"
+               placeholderTextColor={Colors.brand.textMuted}
               multiline
               numberOfLines={4}
             />
@@ -357,7 +363,7 @@ const handleSave = async (): Promise<void> => {
                   onPress={() => removeLanguage(lang)}
                 >
                   <Text style={styles.tagText}>{lang}</Text>
-                  <Ionicons name="close-circle" size={16} color="#22C55E" />
+                  <Ionicons name="close-circle" size={16} color={Colors.brand.primary} />
                 </Pressable>
               ))}
             </View>
@@ -366,11 +372,12 @@ const handleSave = async (): Promise<void> => {
                 style={styles.addItemInput}
                 value={newLanguage}
                 onChangeText={setNewLanguage}
-                placeholder="Add a language"
+                 placeholder="Add a language"
+                 placeholderTextColor={Colors.brand.textMuted}
                 onSubmitEditing={addLanguage}
               />
               <Pressable style={styles.addItemButton} onPress={addLanguage}>
-                <Ionicons name="add" size={24} color="#22C55E" />
+                <Ionicons name="add" size={24} color={Colors.brand.primary} />
               </Pressable>
             </View>
           </View>
@@ -381,7 +388,8 @@ const handleSave = async (): Promise<void> => {
               style={styles.input}
               value={availability}
               onChangeText={setAvailability}
-              placeholder="When are you available?"
+               placeholder="When are you available?"
+               placeholderTextColor={Colors.brand.textMuted}
             />
           </View>
         </View>
@@ -391,12 +399,12 @@ const handleSave = async (): Promise<void> => {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: Colors.brand.background },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: Colors.brand.background,
   },
   header: {
     flexDirection: "row",
@@ -404,24 +412,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: "bold", color: "#000" },
+  headerTitle: { fontSize: 18, fontWeight: "bold", color: Colors.brand.text },
   saveButton: {
-    backgroundColor: "#14342b",
+    backgroundColor: Colors.brand.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
   },
   nameSection: {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-between",
-},
-  saveButtonDisabled: { backgroundColor: "#ccc" },
-  saveButtonText: { color: "#fff", fontWeight: "600" },
-  saveButtonTextDisabled: { color: "#fff" },
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  saveButtonDisabled: { backgroundColor: Colors.brand.surface },
+  saveButtonText: { color: Colors.brand.darkGreen, fontWeight: "600" },
+  saveButtonTextDisabled: { color: Colors.brand.textMuted },
   scrollView: { flex: 1 },
   imageSection: { alignItems: "center", padding: 24 },
   profileImage: {
@@ -433,63 +441,65 @@ const styles = StyleSheet.create({
   changePhotoButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f0fdf4",
+    backgroundColor: "rgba(255,255,255,0.05)",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.brand.primary,
   },
-  changePhotoText: { marginLeft: 8, color: "#22C55E", fontWeight: "600" },
+  changePhotoText: { marginLeft: 8, color: Colors.brand.primary, fontWeight: "600" },
   section: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   n_section: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "rgba(255,255,255,0.1)",
     width: "50%",
   },
-  label: { fontSize: 16, fontWeight: "600", color: "#000", marginBottom: 8 },
+  label: { fontSize: 16, fontWeight: "600", color: Colors.brand.text, marginBottom: 8 },
   input: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
-    color: "#000",
+    color: Colors.brand.text,
   },
   textArea: { height: 120, textAlignVertical: "top" },
   tags: { flexDirection: "row", flexWrap: "wrap", marginBottom: 12 },
   tag: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f0fdf4",
+    backgroundColor: "rgba(255,255,255,0.05)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     margin: 4,
     borderWidth: 1,
-    borderColor: "#22C55E",
+    borderColor: Colors.brand.primary,
   },
-  tagText: { color: "#22C55E", marginRight: 4 },
+  tagText: { color: Colors.brand.primary, marginRight: 4 },
   addItemContainer: { flexDirection: "row", alignItems: "center" },
   addItemInput: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
-    color: "#000",
+    color: Colors.brand.text,
     marginRight: 8,
   },
   addItemButton: {
-    backgroundColor: "#f0fdf4",
+    backgroundColor: "rgba(255,255,255,0.05)",
     width: 48,
     height: 48,
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#22C55E",
+    borderColor: Colors.brand.primary,
   },
 });

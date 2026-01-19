@@ -1,6 +1,7 @@
 
 // components/organism/create-task-modal.tsx
 import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import Colors from "@/constants/Colors";
 import {
   View,
   Text,
@@ -82,15 +83,15 @@ export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps)
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <YStack space>
-            <ScrollView style={{ minHeight: "100%", backgroundColor: "white" }}>
+            <ScrollView style={{ minHeight: "100%", backgroundColor: Colors.brand.background }}>
               <KeyboardAwareScrollView>
-                <View style={{ backgroundColor: "white", height: "100%" }}>
+                <View style={{ backgroundColor: Colors.brand.background, height: "100%" }}>
                   {error && (
                     <Text style={styles.errorText}>{error.toString()}</Text>
                   )}
 
                   <Button style={styles.closeButton2} onPress={() => setOpen(false)}>
-                    <Text>Close</Text>
+                    <Text style={{ color: "black" }}>Close</Text>
                   </Button>
 
                   <FormProvider {...methods}>
@@ -157,8 +158,8 @@ export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps)
 
                     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
                       <View style={styles.lastSection}>
-                        <Text style={styles.label}>Add Photos</Text>
-                        <Text style={styles.imageUploadSubtext}>
+                        <Text style={[styles.label, { color: Colors.brand.text }]}>Add Photos</Text>
+                        <Text style={[styles.imageUploadSubtext, { color: Colors.brand.textMuted }]}>
                                 {images.length}/3 images added
                               </Text>
                         {images.length > 0 && (
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: Colors.brand.background,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     maxHeight: "90%",
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     height: 56,
-    backgroundColor: "#22c55e",
+    backgroundColor: Colors.brand.primary,
     width: "100%",
     marginTop: 6,
   },

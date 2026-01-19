@@ -1,5 +1,5 @@
-
 import React, { useEffect, useRef } from "react";
+import Colors from "@/constants/Colors";
 import { View, StyleSheet, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -36,7 +36,7 @@ const SkeletonLoader = ({
       style={[styles.skeleton, { width, height, opacity: opacityAnim }, style]}
     >
       <LinearGradient
-        colors={["#e0e0e0", "#f5f5f5", "#e0e0e0"]}
+        colors={["#333333", "#444444", "#333333"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={[styles.gradient, { width, height }]}
@@ -59,7 +59,7 @@ export const TaskCardSkeleton = () => {
 
 const styles = StyleSheet.create({
   skeleton: {
-    backgroundColor: "#ddd",
+    backgroundColor: "#333333",
     borderRadius: 8,
     overflow: "hidden",
   },
@@ -68,17 +68,21 @@ const styles = StyleSheet.create({
   },
   walletCardSkeleton: {
     padding: 16,
-    backgroundColor: "white",
+    backgroundColor: "#1A1A1A",
     borderRadius: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   taskCardSkeleton: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "white",
+    backgroundColor: "#1A1A1A",
     borderRadius: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   imagePlaceholder: {
     borderRadius: 12,

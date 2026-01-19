@@ -9,6 +9,8 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Colors from '@/constants/Colors';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { PlusCircle } from 'lucide-react-native';
@@ -88,10 +90,12 @@ export default function Index(): JSX.Element {
   // Render
   // ----------------------------------------
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+
+      <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <MyAvatar showGreeting={true} />
-        <BellDot />
+        <BellDot color={Colors.brand.text} />
       </View>
       {/* Wallet Section */}
       {isWalletLoading ? (
@@ -105,11 +109,11 @@ export default function Index(): JSX.Element {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Campus Tasks</Text>
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <Pressable style={styles.transferButton} onPress={() => router.push('/(transfer)/TransferStart')}>
+            {/* <Pressable style={styles.transferButton} onPress={() => router.push('/(transfer)/TransferStart')}>
               <Text style={styles.transferButtonText}>Transfer</Text>
-            </Pressable>
+            </Pressable> */}
             <Pressable style={styles.postButton} onPress={() => setModalOpen(true)}>
-              <PlusCircle size={20} color="#22C55E" />
+              <PlusCircle size={20} color={Colors.brand.darkGreen} />
               <Text style={styles.postButtonText}>Post Task</Text>
             </Pressable>
           </View>
@@ -152,7 +156,8 @@ export default function Index(): JSX.Element {
           )}
         </ScrollView>
       </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -171,8 +176,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    // backgroundColor: 'red'
+    backgroundColor: Colors.brand.background,
+  },
+  safeArea: {
+    flex: 1,
   },
   sectionContainer: {
     // flex: 1,
@@ -190,18 +197,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000000',
+    color: Colors.brand.text,
   },
   postButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#DCFCE7',
+    backgroundColor: Colors.brand.primary,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,
   },
   postButtonText: {
-    color: '#22C55E',
+    color: Colors.brand.darkGreen,
     marginLeft: 4,
     fontWeight: '600',
   },

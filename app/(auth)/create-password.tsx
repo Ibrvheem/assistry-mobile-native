@@ -8,12 +8,24 @@ import { FormProvider, Controller } from "react-hook-form";
 import LoadingChildren from "@/components/molecules/loading-children";
 import { LinearGradient } from "expo-linear-gradient";
 import { Eye, EyeOff } from "lucide-react-native";
+import { ErrorToast } from "@/components/ErrorToast";
 
 export default function CreatePassword() {
   const { methods, onSubmit, loading } = useCreatePasswordHook();
   const { control } = methods;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleCreatePassword = async () => {
+      try {
+          await onSubmit();
+      } catch (err: any) {
+          setErrorMsg(err.message || "Failed to create password");
+          setShowError(true);
+      }
+  };
 
   return (
     <View style={styles.container}>
@@ -24,6 +36,12 @@ export default function CreatePassword() {
         style={styles.background}
       />
       
+      <ErrorToast 
+        visible={showError} 
+        error={errorMsg} 
+        onDismiss={() => setShowError(false)} 
+      />
+
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
              <View style={styles.header}>
@@ -90,7 +108,7 @@ export default function CreatePassword() {
 
                  <TouchableOpacity 
                     style={styles.submitButton}
-                    onPress={() => onSubmit()}
+                    onPress={handleCreatePassword}
                  >
                      <LoadingChildren loading={loading}>
                         <Text style={styles.submitButtonText}>Create Account</Text>

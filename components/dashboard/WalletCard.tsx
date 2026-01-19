@@ -1,6 +1,7 @@
 
 import React, { useState, useRef } from "react";
 import { View, Text, Pressable, StyleSheet, Animated } from "react-native";
+import Colors from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import FundModal from "@/components/organism/fund-wallet-modal";
@@ -88,7 +89,7 @@ export default function WalletCard({
             <Ionicons
               name={showStats ? "chevron-up" : "chevron-down"}
               size={24}
-              color="#ffffff"
+              color={Colors.brand.text}
             />
           </Pressable>
         </View>
@@ -148,8 +149,8 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
   },
-  balanceLabel: { color: "#ffffff", fontSize: 16, opacity: 0.8 },
-  balanceAmount: { color: "#ffffff", fontSize: 25, fontWeight: "bold", marginTop: 0 },
+  balanceLabel: { color: Colors.brand.text, fontSize: 16, opacity: 0.8 },
+  balanceAmount: { color: Colors.brand.text, fontSize: 25, fontWeight: "bold", marginTop: 0 },
   rightColumn: { alignItems: "flex-end" },
   fundButton: {
     backgroundColor: "#ffffff",
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginTop: 5,
   },
-  fundButtonText: { color: "#22C55E", fontWeight: "600", marginLeft: 4 },
+  fundButtonText: { color: Colors.brand.darkGreen, fontWeight: "600", marginLeft: 4 },
   centerToggle: {
     position: "absolute",
     top: -15,
