@@ -10,7 +10,7 @@ import {
   FlatList,
   Animated,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -34,6 +34,7 @@ const categoryColors = {
 };
 
 export default function TaskDetailsScreen() {
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams() as { id: string };
   const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
   const [acceptanceState, setAcceptanceState] = useState<
@@ -96,29 +97,42 @@ export default function TaskDetailsScreen() {
           </SafeAreaView>
 
           {/* Main Image */}
-          <View style={styles.imageContainer}>
-            <Image
-              source={{
-                uri:
-                  data?.assets?.[0]?.url.replace("auto/upload", "image/upload") || "https://collection.cloudinary.com/dvihh0qu2/643fc511542ea7dc6ddfdf1026e5a677",
-              }}
-              style={styles.mainImage}
-              contentFit="cover"
-            />
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.7)"]}
-              style={styles.imageOverlay}
-            />
-            <View style={styles.imageContent}>
-              <Text style={styles.incentive}>
-                {formatCurrency(data?.incentive)}
-              </Text>
-              <Text style={styles.postedAt}>{dayjs(data.created_at).format("MMMM D, h:mm A")}</Text>
+          {data?.assets?.[0]?.url ? (
+            <View style={styles.imageContainer}>
+              <Image
+                source={{
+                  uri: data.assets[0].url.replace("auto/upload", "image/upload"),
+                }}
+                style={styles.mainImage}
+                contentFit="cover"
+              />
+              <LinearGradient
+                colors={["transparent", "rgba(0,0,0,0.7)"]}
+                style={styles.imageOverlay}
+              />
+              <View style={styles.imageContent}>
+                <Text style={styles.incentive}>
+                  {formatCurrency(data?.incentive)}
+                </Text>
+                <Text style={styles.postedAt}>{dayjs(data.created_at).format("MMMM D, h:mm A")}</Text>
+              </View>
             </View>
-          </View>
+          ) : (
+            <View style={{ height: insets.top + 60 }} />
+          )}
 
           {/* Task Details */}
           <View style={styles.content}>
+            {!data?.assets?.[0]?.url && (
+              <View style={styles.noImageHeader}>
+                <Text style={styles.noImageIncentive}>
+                  {formatCurrency(data?.incentive)}
+                </Text>
+                <Text style={styles.noImagePostedAt}>
+                  {dayjs(data.created_at).format("MMMM D, h:mm A")}
+                </Text>
+              </View>
+            )}
             
             <Text style={styles.title}>{data?.task}</Text>
 
@@ -381,6 +395,19 @@ const styles = StyleSheet.create({
     color: Colors.brand.text,
     marginBottom: 16,
   },
+  noImageHeader: {
+    marginBottom: 20,
+  },
+  noImageIncentive: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: Colors.brand.primary,
+    marginBottom: 4,
+  },
+  noImagePostedAt: {
+    fontSize: 14,
+    color: Colors.brand.textMuted,
+  },
   posterContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -519,7 +546,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   acceptButtonAmountText: {
-    color: Colors.brand.darkGreen,
+    // color: Colors.brand.darkGreen,
+    color: Colors.brand.text,
     fontSize: 18,
     fontWeight: "bold",
   },

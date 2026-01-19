@@ -138,9 +138,15 @@ export default function Index(): JSX.Element {
                 title={task.task}
                 description={task.description ?? ''}
                 incentive={task.incentive}
-                location={task.location ?? 'Coke Village'}
+                location={
+  task.location
+    ? task.location.length > 10
+      ? `${task.location.slice(0, 7)}...`
+      : task.location
+    : 'Coke Village'
+}
                 postedBy={task.user?.first_name ?? 'You'}
-                postedAt={dayjs(task.created_at).format('MMMM D, h:mm A')}
+                postedAt={dayjs(task.created_at).format('MMM D, h:mm A')}
                 views={String(task.views ?? 0)}
                 imageUrl={
                   task.assets?.[0]?.url ??
@@ -225,8 +231,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     // flexGrow: 1,
-    paddingBottom: 50,
-    
-    
+    paddingBottom: 120,
   },
 });

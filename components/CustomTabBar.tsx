@@ -1,13 +1,15 @@
 // components/CustomTabBar.tsx
 import React from "react";
 import Colors from "@/constants/Colors";
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import { View, Pressable, Text, StyleSheet, Platform } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { Home, User, List, MessageCircleMore } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CustomTabBar() {
   const router = useRouter();
   const segments = useSegments();
+  const insets = useSafeAreaInsets();
 
   const currentRoute = segments[segments.length - 1]; // detect active route
 
@@ -19,7 +21,12 @@ export default function CustomTabBar() {
   ];
 
   return (
-    <View style={styles.tabContainer}>
+    <View style={[
+      styles.tabContainer, 
+      Platform.OS === 'android' 
+        ? { paddingBottom: insets.bottom, height: 80 + insets.bottom } 
+        : { height: 80, paddingBottom: 20 } // Default for iOS or if user prefers no dynamic adjustment there
+    ]}>
       {tabs.map(({ label, icon: Icon, route }) => {
         const active = currentRoute === route.split("/").pop();
         return (
@@ -73,7 +80,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    height: 80,
     backgroundColor: Colors.brand.background,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: "rgba(255,255,255,0.1)",

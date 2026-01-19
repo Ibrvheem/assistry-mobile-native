@@ -72,7 +72,7 @@ export default function WalletCard({
                 router.push("/(dashboard)/transactions");
               }}
             >
-              <Ionicons name="swap-horizontal" size={24} color="#22C55E" />
+              <Ionicons name="swap-horizontal" size={24} color={Colors.brand.text} />
             </Pressable>
             </View>
           </View>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   balanceAmount: { color: Colors.brand.text, fontSize: 25, fontWeight: "bold", marginTop: 0 },
   rightColumn: { alignItems: "flex-end" },
   fundButton: {
-    backgroundColor: "#ffffff",
+    backgroundColor: Colors.brand.deepestGreen,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 2,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginTop: 5,
   },
-  fundButtonText: { color: Colors.brand.darkGreen, fontWeight: "600", marginLeft: 4 },
+  fundButtonText: { color: Colors.brand.text, fontWeight: "600", marginLeft: 4 },
   centerToggle: {
     position: "absolute",
     top: -15,
@@ -191,6 +191,8 @@ const styles = StyleSheet.create({
     paddingLeft:10,
     paddingVertical:3,
     borderRadius:12,
-    backgroundColor:'white',
+    // backgroundColor:'white',
+    backgroundColor:Colors.brand.deepestGreen,
+    borderWidth:1,
   }
 });
