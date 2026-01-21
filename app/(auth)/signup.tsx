@@ -11,6 +11,7 @@ import { ChevronDown, Search, X } from 'lucide-react-native';
 import { signupStudentSchema, SignupStudentPayload } from './types';
 import { useSignupStudent } from './hooks/useSignupStudent';
 import { useInstitutions } from './hooks/useInstitutions';
+import { useColorScheme } from '@/components/useColorScheme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,8 +35,11 @@ interface PickerProps {
 }
 
 const CustomPicker = ({ label, items, value, onSelect, placeholder, searchable, error }: PickerProps) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
   
   const filteredItems = items.filter(item => 
     item.label.toLowerCase().includes(searchText.toLowerCase())
@@ -44,78 +48,97 @@ const CustomPicker = ({ label, items, value, onSelect, placeholder, searchable, 
   const selectedItem = items.find(item => item.value === value);
 
   return (
-    <View style={styles.inputContainer}>
-      <Text style={styles.label}>{label}</Text>
+    <View style={[styles.inputContainer, { zIndex: isOpen ? 1000 : 1 }]}>
+      <Text style={[styles.label, { color: themeColors.textDim }]}>{label}</Text>
       <TouchableOpacity 
-        style={[styles.pickerButton, error && styles.inputError]} 
-        onPress={() => setModalVisible(true)}
+        style={[styles.pickerButton, 
+          { 
+             backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+             borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+          },
+          error && styles.inputError,
+          isOpen && { borderColor: themeColors.primary, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+        ]} 
+        onPress={() => setIsOpen(!isOpen)}
+        activeOpacity={0.7}
       >
-        <Text style={[styles.pickerButtonText, !value && styles.placeholderText]}>
+        <Text style={[styles.pickerButtonText, { color: themeColors.text }, !value && { color: themeColors.textMuted }]}>
           {selectedItem ? selectedItem.label : placeholder || "Select"}
         </Text>
-        <ChevronDown size={20} color="rgba(255,255,255,0.6)" />
+        <ChevronDown 
+          size={20} 
+          color={themeColors.textMuted} 
+          style={{ transform: [{ rotate: isOpen ? '180deg' : '0deg' }] }} 
+        />
       </TouchableOpacity>
-      {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <Modal visible={modalVisible} animationType="slide" transparent={true} onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{label}</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <X size={24} color="#FFF" />
-              </TouchableOpacity>
+      {isOpen && (
+        <View style={[styles.dropdownContainer, { backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}>
+          {searchable && (
+            <View style={[styles.searchContainer, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', margin: 8 }]}>
+              <Search size={18} color={themeColors.textMuted} />
+              <TextInput 
+                style={[styles.searchInput, { color: themeColors.text, fontSize: 14 }]}
+                placeholder="Search..."
+                placeholderTextColor={themeColors.textMuted}
+                value={searchText}
+                onChangeText={setSearchText}
+                autoFocus
+              />
             </View>
+          )}
 
-            {searchable && (
-              <View style={styles.searchContainer}>
-                <Search size={20} color="rgba(255,255,255,0.5)" />
-                <TextInput 
-                  style={styles.searchInput}
-                  placeholder="Search..."
-                  placeholderTextColor="rgba(255,255,255,0.5)"
-                  value={searchText}
-                  onChangeText={setSearchText}
-                />
-              </View>
-            )}
-
-            <FlatList 
-              data={filteredItems}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity 
-                  style={styles.modalItem} 
-                  onPress={() => {
-                    onSelect(item.value);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={[styles.modalItemText, item.value === value && styles.selectedItemText]}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+          <ScrollView 
+            style={{ maxHeight: 200 }}
+            nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
+          >
+            {filteredItems.map((item) => (
+              <TouchableOpacity 
+                key={item.value}
+                style={[styles.dropdownItem, { borderBottomColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} 
+                onPress={() => {
+                  onSelect(item.value);
+                  setIsOpen(false);
+                  setSearchText("");
+                }}
+              >
+                <Text style={[styles.dropdownItemText, { color: themeColors.textDim }, item.value === value && { color: themeColors.secondary, fontWeight: 'bold' }]}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-      </Modal>
+      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
 
 const FormInput = ({ control, name, label, placeholder, secureTextEntry, keyboardType, autoCapitalize }: any) => {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
+
   return (
     <Controller
       control={control}
       name={name}
       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
         <View style={styles.inputContainer}>
-            <Text style={styles.label}>{label}</Text>
+            <Text style={[styles.label, { color: themeColors.textDim }]}>{label}</Text>
             <TextInput
-              style={[styles.input, error && styles.inputError]}
+              style={[styles.input, 
+                { 
+                    backgroundColor: isDark ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0,0,0,0.05)',
+                    color: themeColors.text,
+                    borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                },
+                error && styles.inputError
+              ]}
               placeholder={placeholder}
-              placeholderTextColor="rgba(255,255,255,0.4)"
+              placeholderTextColor={themeColors.textMuted}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -135,6 +158,9 @@ export default function SignUp() {
   const { data: institutions, isLoading: loadingInstitutions } = useInstitutions();
   
   const [showError, setShowError] = useState(false);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   // Animation Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -177,11 +203,11 @@ export default function SignUp() {
   const genderItems = GENDER_OPTIONS.map(g => ({ label: g, value: g }));
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <LinearGradient
-        colors={Colors.brand.gradient}
-        locations={Colors.brand.gradientLocations as any}
+        colors={themeColors.gradient}
+        locations={themeColors.gradientLocations as any}
         style={styles.background}
       />
       <ErrorToast visible={showError} error={error?.message || "Signup failed"} onDismiss={() => setShowError(false)} />
@@ -190,11 +216,14 @@ export default function SignUp() {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.contentContainer}>
              <View style={styles.header}>
                  <Animated.View style={[styles.titleContainer, { opacity: fadeAnim }]}>
-                    <View style={styles.logoContainer}>
-                      <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
+                    <View style={[styles.logoContainer, { backgroundColor: themeColors.primary }]}>
+                      <Image 
+                      // source={require("@/assets/logos/logo.png")} 
+                      source={isDark ? require("@/assets/logos/logo.png") : require("@/assets/logos/image.png")}
+                      style={styles.logo} resizeMode="contain" />
                     </View>
-                    <Text style={styles.welcomeText}>Create Account</Text>
-                     <Text style={styles.subtitleText}>Join Assistry today</Text>
+                    <Text style={[styles.welcomeText, { color: themeColors.text }]}>Create Account</Text>
+                     <Text style={[styles.subtitleText, { color: themeColors.textDim }]}>Join Assistry today</Text>
                  </Animated.View>
              </View>
 
@@ -211,33 +240,48 @@ export default function SignUp() {
                              </View>
                         </View>
 
-                        <FormInput control={control} name="email" label="Email" placeholder="jamal@example.com" keyboardType="email-address" autoCapitalize="none" />
-                        <FormInput control={control} name="phone_no" label="Phone Number" placeholder="0810..." keyboardType="phone-pad" />
+                        <View style={[styles.inputContainer, { zIndex: 60 }]}>
+                          <FormInput control={control} name="email" label="Email" placeholder="jamal@example.com" keyboardType="email-address" autoCapitalize="none" />
+                        </View>
+                        <View style={[styles.inputContainer, { zIndex: 50 }]}>
+                          <FormInput control={control} name="username" label="Username" placeholder="jamal_dev" autoCapitalize="none" />
+                        </View>
+                        <View style={[styles.inputContainer, { zIndex: 40 }]}>
+                          <FormInput control={control} name="phone_no" label="Phone Number" placeholder="0810..." keyboardType="phone-pad" />
+                        </View>
                         
-                        <FormInput control={control} name="password" label="Password" placeholder="Minimum 8 characters" secureTextEntry />
+                        <View style={[styles.inputContainer, { zIndex: 35 }]}>
+                          <FormInput control={control} name="password" label="Password" placeholder="Minimum 8 characters" secureTextEntry />
+                        </View>
                         
-                        <View style={styles.divider} />
+                        <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
 
-                        <Controller
-                          control={control}
-                          name="institution"
-                          render={({ field: { onChange, value }, fieldState: { error } }) => (
-                            <CustomPicker 
-                              label="Institution" 
-                              items={institutionItems} 
-                              value={value} 
-                              onSelect={onChange} 
-                              placeholder={loadingInstitutions ? "Loading..." : "Select Institution"}
-                              searchable
-                              error={error?.message}
-                            />
-                          )}
-                        />
+                        <View style={[styles.inputContainer, { zIndex: 30 }]}>
+                          <Controller
+                            control={control}
+                            name="institution"
+                            render={({ field: { onChange, value }, fieldState: { error } }) => (
+                              <CustomPicker 
+                                label="Institution" 
+                                items={institutionItems} 
+                                value={value} 
+                                onSelect={onChange} 
+                                placeholder={loadingInstitutions ? "Loading..." : "Select Institution"}
+                                searchable
+                                error={error?.message}
+                              />
+                            )}
+                          />
+                        </View>
 
-                        <FormInput control={control} name="reg_no" label="Reg No" placeholder="CSC/2021/045" autoCapitalize="none" />
-                        <FormInput control={control} name="department" label="Department" placeholder="Computer Science" />
+                        <View style={[styles.inputContainer, { zIndex: 25 }]}>
+                          <FormInput control={control} name="reg_no" label="Reg No" placeholder="CSC/2021/045" autoCapitalize="none" />
+                        </View>
+                        <View style={[styles.inputContainer, { zIndex: 20 }]}>
+                          <FormInput control={control} name="department" label="Department" placeholder="Computer Science" />
+                        </View>
                         
-                        <View style={styles.row}>
+                        <View style={[styles.row, { zIndex: 15 }]}>
                             <View style={styles.halfWidth}>
                                 <FormInput control={control} name="level" label="Level" placeholder="400" keyboardType="numeric" />
                             </View>
@@ -259,38 +303,40 @@ export default function SignUp() {
                              </View>
                         </View>
 
-                        <Controller
-                            control={control}
-                            name="state"
-                            render={({ field: { onChange, value }, fieldState: { error } }) => (
-                              <CustomPicker 
-                                label="State" 
-                                items={stateItems} 
-                                value={value} 
-                                onSelect={onChange} 
-                                placeholder="Select State"
-                                searchable
-                                error={error?.message}
-                              />
-                            )}
-                          />
+                        <View style={[styles.inputContainer, { zIndex: 10 }]}>
+                          <Controller
+                              control={control}
+                              name="state"
+                              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                                <CustomPicker 
+                                  label="State" 
+                                  items={stateItems} 
+                                  value={value} 
+                                  onSelect={onChange} 
+                                  placeholder="Select State"
+                                  searchable
+                                  error={error?.message}
+                                />
+                              )}
+                            />
+                        </View>
 
                         <TouchableOpacity 
-                          style={styles.actionButton} 
+                          style={[styles.actionButton, { backgroundColor: themeColors.primary }]} 
                           onPress={handleSubmit(onSubmit)}
                           disabled={loading}
                         >
                           {loading ? (
-                            <ActivityIndicator color="#1A3E2A" />
+                            <ActivityIndicator color={Colors.brand.darkGreen} />
                           ) : (
-                            <Text style={styles.actionButtonText}>Sign Up</Text>
+                            <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>Sign Up</Text>
                           )}
                         </TouchableOpacity>
 
                         <View style={styles.authSwitchContainer}>
-                            <Text style={styles.authLabel}>Have an account? </Text>
+                            <Text style={[styles.authLabel, { color: themeColors.textDim }]}>Have an account? </Text>
                             <TouchableOpacity onPress={() => router.push("/(auth)/signin")}>
-                              <Text style={styles.authLink}>Sign In</Text>
+                              <Text style={[styles.authLink, { color: themeColors.primary }]}>Sign In</Text>
                             </TouchableOpacity>
                         </View>
                         
@@ -309,7 +355,7 @@ export default function SignUp() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.brand.background,
+    // Dynamic BG
   },
   background: {
     position: 'absolute',
@@ -329,7 +375,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 64,
     height: 64,
-    backgroundColor: Colors.brand.primary,
+    // Dynamic BG
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -338,15 +384,16 @@ const styles = StyleSheet.create({
   logo: {
     width: 64,
     height: 64,
+    borderRadius: 15
   },
 
   welcomeText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    // Dynamic Color
   },
   subtitleText: {
-    color: 'rgba(255,255,255,0.8)',
+    // Dynamic Color
     fontSize: 16,
     marginTop: 4,
   },
@@ -362,18 +409,18 @@ const styles = StyleSheet.create({
       marginBottom: 12,
   },
   label: {
-      color: 'rgba(255,255,255,0.8)',
+      // Dynamic Color
       fontSize: 14,
       marginBottom: 6,
       marginLeft: 4,
+      fontWeight: 'bold',
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    // Dynamic BG & Border
     borderRadius: 12,
     padding: 14,
-    color: '#FFFFFF',
+    // Dynamic Color
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
     fontSize: 16,
   },
   inputError: {
@@ -393,42 +440,40 @@ const styles = StyleSheet.create({
       flex: 1,
   },
   pickerButton: {
-      backgroundColor: 'rgba(255,255,255,0.1)',
+      // Dynamic BG & Border
       borderRadius: 12,
       padding: 14,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.1)',
   },
   pickerButtonText: {
-      color: '#FFFFFF',
+      // Dynamic Color
       fontSize: 16,
   },
   placeholderText: {
-      color: 'rgba(255,255,255,0.4)',
+      // Dynamic Color (Muted)
   },
   actionButton: {
-    backgroundColor: Colors.brand.primary,
+    // Dynamic BG
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
     marginTop: 20,
-    shadowColor: Colors.brand.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
   },
   actionButtonText: {
-    color: Colors.brand.darkGreen,
+    // Dynamic Color
     fontSize: 16,
     fontWeight: 'bold',
   },
   divider: {
       height: 1,
-      backgroundColor: 'rgba(255,255,255,0.1)',
+      // Dynamic BG
       marginVertical: 10,
   },
   authSwitchContainer: {
@@ -437,65 +482,49 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   authLabel: {
-    color: 'rgba(255,255,255,0.6)',
+    // Dynamic Color
   },
   authLink: {
-    color: Colors.brand.primary,
+    // Dynamic Color
     fontWeight: 'bold',
   },
-  // Modal Styles
-  modalOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.8)',
-      justifyContent: 'flex-end',
+  // Dropdown Styles
+  dropdownContainer: {
+    position: 'absolute',
+    top: 82, // Button height + label height + spacing
+    left: 0,
+    right: 0,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    zIndex: 2000,
+    overflow: 'hidden',
   },
-  modalContent: {
-      backgroundColor: '#1A1A1A',
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
-      maxHeight: height * 0.7,
-      paddingBottom: 40,
+  dropdownItem: {
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
   },
-  modalHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: 'rgba(255,255,255,0.1)',
-  },
-  modalTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: 'white',
+  dropdownItemText: {
+    fontSize: 16,
   },
   searchContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'rgba(255,255,255,0.05)',
-      margin: 16,
-      paddingHorizontal: 12,
-      borderRadius: 12,
-      height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    height: 40,
   },
   searchInput: {
-      flex: 1,
-      color: 'white',
-      marginLeft: 8,
-      height: '100%',
-  },
-  modalItem: {
-      paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: 'rgba(255,255,255,0.05)',
-  },
-  modalItemText: {
-      color: 'rgba(255,255,255,0.7)',
-      fontSize: 16,
-  },
-  selectedItemText: {
-      color: Colors.brand.primary,
-      fontWeight: 'bold',
+    flex: 1,
+    marginLeft: 8,
+    height: '100%',
   },
 });

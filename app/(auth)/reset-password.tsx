@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Colors from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,12 +7,16 @@ import { ChevronLeft } from 'lucide-react-native';
 import { resetPassword } from './services';
 import { useMutation } from '@tanstack/react-query';
 import { ErrorToast } from '@/components/ErrorToast';
+import { useColorScheme } from '@/components/useColorScheme';
 
 export default function ResetPassword() {
   const { email, code } = useLocalSearchParams<{ email: string, code: string }>();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   const mutation = useMutation({
     mutationFn: resetPassword,
@@ -45,11 +49,12 @@ export default function ResetPassword() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       {error ? <ErrorToast error={{ message: error }} visible={!!error} onDismiss={() => setError('')} /> : null}
       <LinearGradient
-        colors={Colors.brand.gradient}
-        locations={Colors.brand.gradientLocations as any}
+        colors={themeColors.gradient}
+        locations={themeColors.gradientLocations as any}
         style={styles.background}
       />
       
@@ -59,22 +64,26 @@ export default function ResetPassword() {
             style={{ flex: 1 }}
         >
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <ChevronLeft size={24} color={Colors.brand.text} />
+                <TouchableOpacity onPress={() => router.back()} style={[styles.backButton, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
+                    <ChevronLeft size={24} color={themeColors.text} />
                 </TouchableOpacity>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                 <View style={styles.content}>
-                    <Text style={styles.title}>New Password</Text>
-                    <Text style={styles.subtitle}>Enter your new password below. Make sure it's secure.</Text>
+                    <Text style={[styles.title, { color: themeColors.text }]}>New Password</Text>
+                    <Text style={[styles.subtitle, { color: themeColors.textDim }]}>Enter your new password below. Make sure it's secure.</Text>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>New Password</Text>
+                        <Text style={[styles.label, { color: themeColors.text }]}>New Password</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { 
+                                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                                color: themeColors.text,
+                                borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                            }]}
                             placeholder="Enter new password"
-                            placeholderTextColor={Colors.brand.textMuted}
+                            placeholderTextColor={themeColors.textMuted}
                             value={newPassword}
                             onChangeText={setNewPassword}
                             secureTextEntry
@@ -82,11 +91,15 @@ export default function ResetPassword() {
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Confirm Password</Text>
+                        <Text style={[styles.label, { color: themeColors.text }]}>Confirm Password</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { 
+                                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                                color: themeColors.text,
+                                borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                            }]}
                             placeholder="Confirm new password"
-                            placeholderTextColor={Colors.brand.textMuted}
+                            placeholderTextColor={themeColors.textMuted}
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
                             secureTextEntry
@@ -94,14 +107,14 @@ export default function ResetPassword() {
                     </View>
 
                     <TouchableOpacity 
-                        style={[styles.button, mutation.isPending && styles.buttonDisabled]} 
+                        style={[styles.button, mutation.isPending && styles.buttonDisabled, { backgroundColor: themeColors.primary }]} 
                         onPress={handleSubmit}
                         disabled={mutation.isPending}
                     >
                         {mutation.isPending ? (
                             <ActivityIndicator color={Colors.brand.darkGreen} />
                         ) : (
-                            <Text style={styles.buttonText}>Reset Password</Text>
+                            <Text style={[styles.buttonText, { color: Colors.brand.darkGreen }]}>Reset Password</Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -115,7 +128,6 @@ export default function ResetPassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.brand.background,
   },
   background: {
     ...StyleSheet.absoluteFillObject,
@@ -131,7 +143,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.brand.surface,
     borderRadius: 20,
   },
   content: {
@@ -146,12 +157,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: Colors.brand.text,
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.brand.textMuted,
     marginBottom: 40,
     lineHeight: 24,
   },
@@ -160,21 +169,16 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: Colors.brand.text,
     marginBottom: 8,
     fontWeight: '600',
   },
   input: {
-    backgroundColor: Colors.brand.surface,
     borderRadius: 12,
     padding: 16,
-    color: Colors.brand.text,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
     fontSize: 16,
   },
   button: {
-    backgroundColor: Colors.brand.primary,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -184,7 +188,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: Colors.brand.darkGreen,
     fontSize: 16,
     fontWeight: 'bold',
   },

@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import FundModal from "@/components/organism/fund-wallet-modal";
 import { formatCurrency, formatCurrency1 } from "@/lib/helpers";
 import { router } from "expo-router";
+import { useColorScheme } from "@/components/useColorScheme";
 
 export default function WalletCard({
   balance,
@@ -17,6 +18,9 @@ export default function WalletCard({
 }) {
   const [open_fund, setOpen_fund] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   // Animated value 0 -> hidden, 1 -> visible
   const progress = useRef(new Animated.Value(0)).current;
@@ -60,10 +64,10 @@ export default function WalletCard({
       >
         <View style={styles.topSection2}>
           <View style={styles.balanceContainer2}>
-            <Text style={styles.balanceLabel}>Current Balance</Text>
+            <Text style={[styles.balanceLabel, { color: Colors.dark.text }]}>Current Balance</Text>
             <View
             className="bg-white bg-opacity-20 px-40" 
-            style={styles.transactioncontainer}
+            style={[styles.transactioncontainer, { backgroundColor: isDark ? Colors.brand.deepestGreen : themeColors.background, borderColor: isDark ? "transparent" : themeColors.primary }]}
             >
 
             
@@ -72,12 +76,12 @@ export default function WalletCard({
                 router.push("/(dashboard)/transactions");
               }}
             >
-              <Ionicons name="swap-horizontal" size={24} color={Colors.brand.text} />
+              <Ionicons name="swap-horizontal" size={24} color={themeColors.text} />
             </Pressable>
             </View>
           </View>
 
-          <Text style={styles.balanceAmount}>{formatCurrency1(balance)}</Text>
+          <Text style={[styles.balanceAmount, { color: Colors.dark.text }]}>{formatCurrency1(balance)}</Text>
           
 
           <View style={styles.rightColumn}>
@@ -89,7 +93,7 @@ export default function WalletCard({
             <Ionicons
               name={showStats ? "chevron-up" : "chevron-down"}
               size={24}
-              color={Colors.brand.text}
+              color={Colors.dark.text}
             />
           </Pressable>
         </View>
@@ -97,23 +101,23 @@ export default function WalletCard({
         {/* Animated stats container */}
         <Animated.View style={[styles.statsContainer, { height, opacity, transform: [{ translateY }] }]}>
           <Pressable
-              style={styles.fundButton}
+              style={[styles.fundButton, { backgroundColor: isDark ? Colors.brand.deepestGreen : themeColors.background }]}
               onPress={() => {
                 setOpen_fund(true);
               }}
             >
               <Ionicons name="add-circle" size={20} color="#22C55E" />
-              <Text style={styles.fundButtonText}>Fund Wallet</Text>
+              <Text style={[styles.fundButtonText, { color: themeColors.text }]}>Fund Wallet</Text>
             </Pressable>
           <View style={styles.divider} />
           <Pressable
-              style={styles.fundButton}
+              style={[styles.fundButton, { backgroundColor: isDark ? Colors.brand.deepestGreen : themeColors.background }]}
               onPress={() => {
                 // setOpen_fund(true);
               }}
             >
               <Ionicons name="add-circle" size={20} color="#22C55E" />
-              <Text style={styles.fundButtonText}>Transfer</Text>
+              <Text style={[styles.fundButtonText, { color: themeColors.text }]}>Transfer</Text>
             </Pressable>
         </Animated.View>
       </LinearGradient>
@@ -149,11 +153,10 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
   },
-  balanceLabel: { color: Colors.brand.text, fontSize: 16, opacity: 0.8 },
-  balanceAmount: { color: Colors.brand.text, fontSize: 25, fontWeight: "bold", marginTop: 0 },
+  balanceLabel: { fontSize: 16, opacity: 0.8 },
+  balanceAmount: { fontSize: 25, fontWeight: "bold", marginTop: 0 },
   rightColumn: { alignItems: "flex-end" },
   fundButton: {
-    backgroundColor: Colors.brand.deepestGreen,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 2,
@@ -166,7 +169,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginTop: 5,
   },
-  fundButtonText: { color: Colors.brand.text, fontWeight: "600", marginLeft: 4 },
+  fundButtonText: { fontWeight: "600", marginLeft: 4 },
   centerToggle: {
     position: "absolute",
     top: -15,
@@ -191,8 +194,6 @@ const styles = StyleSheet.create({
     paddingLeft:10,
     paddingVertical:3,
     borderRadius:12,
-    // backgroundColor:'white',
-    backgroundColor:Colors.brand.deepestGreen,
     borderWidth:1,
   }
 });

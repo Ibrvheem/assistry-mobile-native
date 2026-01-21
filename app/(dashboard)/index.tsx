@@ -8,6 +8,7 @@ import {
   Text,
   Pressable,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
@@ -28,6 +29,7 @@ import { TaskSchema } from './types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MyAvatar } from '../myavatar';
 import { BellDot } from 'lucide-react-native';
+import { useColorScheme } from '@/components/useColorScheme';
 
 // ----------------------------------------
 // Component
@@ -36,6 +38,9 @@ export default function Index(): JSX.Element {
   const queryClient = useQueryClient();
   const [isModalOpen, setModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   // ----------------------------------------
   // Queries
@@ -90,12 +95,13 @@ export default function Index(): JSX.Element {
   // Render
   // ----------------------------------------
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
       <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <MyAvatar showGreeting={true} />
-        <BellDot color={Colors.brand.text} />
+        <BellDot color={themeColors.text} />
       </View>
       {/* Wallet Section */}
       {isWalletLoading ? (
@@ -107,14 +113,11 @@ export default function Index(): JSX.Element {
       {/* Task Section */}
       <View style={styles.sectionContainer}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Campus Tasks</Text>
+          <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Campus Tasks</Text>
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            {/* <Pressable style={styles.transferButton} onPress={() => router.push('/(transfer)/TransferStart')}>
-              <Text style={styles.transferButtonText}>Transfer</Text>
-            </Pressable> */}
-            <Pressable style={styles.postButton} onPress={() => setModalOpen(true)}>
+            <Pressable style={[styles.postButton, { backgroundColor: themeColors.primary }]} onPress={() => setModalOpen(true)}>
               <PlusCircle size={20} color={Colors.brand.darkGreen} />
-              <Text style={styles.postButtonText}>Post Task</Text>
+              <Text style={[styles.postButtonText, { color: Colors.brand.darkGreen }]}>Post Task</Text>
             </Pressable>
           </View>
         </View>
@@ -125,7 +128,7 @@ export default function Index(): JSX.Element {
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={themeColors.primary} />
           }
           showsVerticalScrollIndicator={false}
         >
@@ -177,18 +180,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 5,
-    // borderBottomWidth: 1,          // 👈 Adds the underline
-    // borderBottomColor: '#e0e0e0',  // 👈 Divider color (light gray)
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.brand.background,
   },
   safeArea: {
     flex: 1,
   },
   sectionContainer: {
-    // flex: 1,
     marginTop: 24,
     paddingBottom: 180,
   },
@@ -203,18 +202,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.brand.text,
   },
   postButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.brand.primary,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,
   },
   postButtonText: {
-    color: Colors.brand.darkGreen,
     marginLeft: 4,
     fontWeight: '600',
   },
@@ -230,7 +226,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   scrollContainer: {
-    // flexGrow: 1,
     paddingBottom: 120,
   },
 });

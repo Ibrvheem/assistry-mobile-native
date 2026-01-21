@@ -1,12 +1,12 @@
-
 "use client"
 
 import { useEffect, useRef } from "react"
-import { View, Text, Animated, Dimensions, StyleSheet, Image, Easing } from "react-native"
+import { View, Text, Animated, Dimensions, StyleSheet, Image, Easing, StatusBar } from "react-native"
 import { router } from "expo-router"
 import Colors from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useColorScheme } from "@/components/useColorScheme";
 
 const { width, height } = Dimensions.get("window")
 
@@ -19,6 +19,10 @@ export default function SplashScreen() {
 
   const descSlideAnim = useRef(new Animated.Value(30)).current    // ⬇ starts below text
   const descOpacityAnim = useRef(new Animated.Value(0)).current
+  
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
     Animated.sequence([
@@ -81,12 +85,10 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Background with diagonal green overlay */}
-      {/* <View style={styles.background} />
-      <View style={styles.diagonalOverlay} /> */}
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <LinearGradient
-              colors={Colors.brand.gradient}
-              locations={Colors.brand.gradientLocations as any}
+              colors={themeColors.gradient}
+              locations={themeColors.gradientLocations as any}
               style={styles.background}
             />
 
@@ -103,7 +105,10 @@ export default function SplashScreen() {
           ]}
         >
           <View style={styles.logoFrame}>
-            <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
+            <Image 
+            // source={require("@/assets/logos/logo.png")} 
+            source={isDark ? require("@/assets/logos/logo.png") : require("@/assets/logos/image.png")}
+            style={styles.logo} resizeMode="contain" />
           </View>
         </Animated.View>
 
@@ -117,7 +122,7 @@ export default function SplashScreen() {
             },
           ]}
         >
-          <Text style={styles.brandText}>Assistry</Text>
+          <Text style={[styles.brandText, { color: themeColors.text }]}>Assistry</Text>
 
           {/* Animated BrandDesc */}
           <Animated.View
@@ -126,7 +131,7 @@ export default function SplashScreen() {
               opacity: descOpacityAnim,
             }}
           >
-            <Text style={styles.brandDesc}>Your all in one campus solutions</Text>
+            <Text style={[styles.brandDesc, { color: themeColors.textDim }]}>Your all in one campus solutions</Text>
           </Animated.View>
         </Animated.View>
       </View>
@@ -137,30 +142,14 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#091D17",
+    backgroundColor: "#091D17", // Fallback
   },
-  // background: {
-  //   ...StyleSheet.absoluteFillObject,
-  //   backgroundColor: "#091D17",
-  // },
-
   background: {
     position: 'absolute',
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
-  },
-  diagonalOverlay: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    left: 500,
-    width: width * 1,
-    height: height,
-    backgroundColor: "#4A7C59",
-    transform: [{ skewX: "-30deg" }],
-    transformOrigin: "top right",
   },
   contentContainer: {
     flex: 1,
@@ -188,6 +177,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 80,
     height: 80,
+    borderRadius: 15
   },
   textContainer: {
     flex: 1,
@@ -195,15 +185,13 @@ const styles = StyleSheet.create({
   brandText: {
     fontSize: 48,
     fontWeight: "600",
-    color: "white",
     fontFamily: "System",
     letterSpacing: -1,
   },
   brandDesc: {
     fontSize: 14,
     fontWeight: "700",
-    color: "white",
-    fontFamily: "inter",
+    fontFamily: "Poppins",
     letterSpacing: -1,
     fontStyle: "italic",
   },

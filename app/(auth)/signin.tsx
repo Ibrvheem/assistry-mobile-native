@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 
 import { registerForPushNotificationsAsync } from '@/lib/notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useColorScheme } from '@/components/useColorScheme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,6 +19,9 @@ export default function SignIn() {
   const { control, handleSubmit } = methods;
   const [showPassword, setShowPassword] = useState(false);
   const [showError, setShowError] = useState(false);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   // Animation Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -69,13 +73,13 @@ export default function SignIn() {
 
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       
       {/* Gradient Background */}
       <LinearGradient
-        colors={Colors.brand.gradient}
-        locations={Colors.brand.gradientLocations as any}
+        colors={themeColors.gradient}
+        locations={themeColors.gradientLocations as any}
         style={styles.background}
       />
 
@@ -95,14 +99,17 @@ export default function SignIn() {
             
             {/* Top Section - Logo/Brand */}
             <Animated.View style={[styles.logoSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-              <View style={styles.logoContainer}>
+              <View style={[styles.logoContainer, { backgroundColor: themeColors.primary }]}>
                 {/* <View style={styles.logoInner} /> */}
-                <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
+                <Image 
+                // source={require("@/assets/logos/logo.png")} 
+                source={isDark ? require("@/assets/logos/logo.png") : require("@/assets/logos/image.png")}
+                style={styles.logo} resizeMode="contain" />
               </View>
-              <Text style={styles.welcomeText}>
-                Welcome to <Text style={styles.brandText}>Assistry</Text>
+              <Text style={[styles.welcomeText, { color: themeColors.text }]}>
+                Welcome to <Text style={[styles.brandText, { color: themeColors.subprimary }]}>Assistry</Text>
               </Text>
-              <Text style={styles.subtitleText}>
+              <Text style={[styles.subtitleText, { color: themeColors.textDim }]}>
                 Sign in to continue to your account
               </Text>
             </Animated.View>
@@ -112,15 +119,19 @@ export default function SignIn() {
               
               {/* Registration Number Input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Registration Number</Text>
+                <Text style={[styles.label, { color: themeColors.textDim }]}>Registration Number</Text>
                 <Controller
                   control={control}
                   name="reg_no"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { 
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                        color: themeColors.text,
+                        borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+                      }]}
                       placeholder="Enter Registration No"
-                      placeholderTextColor="rgba(255,255,255,0.4)"
+                      placeholderTextColor={themeColors.textMuted}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
@@ -132,16 +143,21 @@ export default function SignIn() {
 
               {/* Password Input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Password</Text>
+                <Text style={[styles.label, { color: themeColors.textDim }]}>Password</Text>
                 <View style={styles.passwordContainer}>
                   <Controller
                     control={control}
                     name="password"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
-                        style={[styles.input, { paddingRight: 50 }]}
+                        style={[styles.input, { 
+                            paddingRight: 50,
+                            backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                            color: themeColors.text,
+                            borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+                        }]}
                         placeholder="Enter your password"
-                        placeholderTextColor="rgba(255,255,255,0.4)"
+                        placeholderTextColor={themeColors.textMuted}
                         secureTextEntry={!showPassword}
                         onBlur={onBlur}
                         onChangeText={onChange}
@@ -153,26 +169,29 @@ export default function SignIn() {
                     style={styles.eyeIcon} 
                     onPress={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff color="rgba(255,255,255,0.6)" size={20} /> : <Eye color="rgba(255,255,255,0.6)" size={20} />}
+                    {showPassword ? 
+                        <EyeOff color={themeColors.textMuted} size={20} /> : 
+                        <Eye color={themeColors.textMuted} size={20} />
+                    }
                   </TouchableOpacity>
                 </View>
               </View>
 
               {/* Forgot Password */}
               <TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/(auth)/forgot-password')}>
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                <Text style={[styles.forgotPasswordText, { color: themeColors.subprimary }]}>Forgot Password?</Text>
               </TouchableOpacity>
 
               {/* Login Button */}
               <TouchableOpacity 
-                style={styles.loginButton} 
+                style={[styles.loginButton, { backgroundColor: themeColors.primary, shadowColor: themeColors.primary }]} 
                 onPress={handleLogin}
                 disabled={loading}
               >
                 {loading ? (
-                  <ActivityIndicator color="#1A3E2A" />
+                  <ActivityIndicator color={Colors.brand.darkGreen} />
                 ) : (
-                  <Text style={styles.loginButtonText}>Sign In</Text>
+                  <Text style={[styles.loginButtonText, { color: Colors.brand.darkGreen }]}>Sign In</Text>
                 )}
               </TouchableOpacity>
 
@@ -181,15 +200,15 @@ export default function SignIn() {
             {/* Bottom Section */}
             <Animated.View style={[styles.bottomSection, { opacity: fadeAnim }]}>
               <View style={styles.dividerContainer}>
-                <View style={styles.divider} />
-                <Text style={styles.orText}>or</Text>
-                <View style={styles.divider} />
+                <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }]} />
+                <Text style={[styles.orText, { color: themeColors.textMuted }]}>or</Text>
+                <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }]} />
               </View>
 
               <View style={styles.signupContainer}>
-                <Text style={styles.signupLabel}>Don't have an account? </Text>
+                <Text style={[styles.signupLabel, { color: themeColors.textDim }]}>Don't have an account? </Text>
                 <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-                  <Text style={styles.signupLink}>Sign Up</Text>
+                  <Text style={[styles.signupLink, { color: themeColors.primary }]}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
             </Animated.View>
@@ -205,10 +224,11 @@ const styles = StyleSheet.create({
   logo: {
     width: 64,
     height: 64,
+    borderRadius:15
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.brand.background,
+    // backgroundColor handled dynamically
   },
   background: {
     position: 'absolute',
@@ -237,7 +257,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 64,
     height: 64,
-    backgroundColor: Colors.brand.primary,
+    // backgroundColor handled dynamically
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -253,14 +273,12 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.brand.text,
     textAlign: 'center',
   },
   brandText: {
-    color: Colors.brand.primary,
+    // color handled dynamically
   },
   subtitleText: {
-    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
     marginTop: 8,
     fontSize: 16,
@@ -273,18 +291,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    color: 'rgba(255,255,255,0.9)',
     fontSize: 14,
     fontWeight: '500',
   },
   input: {
     width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 16,
     padding: 16,
-    color: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
     fontSize: 16,
   },
   passwordContainer: {
@@ -299,18 +313,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   forgotPasswordText: {
-    color: Colors.brand.primary,
     fontSize: 14,
     fontWeight: '500',
   },
   loginButton: {
     width: '100%',
-    backgroundColor: Colors.brand.primary,
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.brand.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -318,7 +329,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   loginButtonText: {
-    color: Colors.brand.darkGreen,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -334,10 +344,8 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   orText: {
-    color: 'rgba(255,255,255,0.6)',
     fontSize: 14,
   },
   signupContainer: {
@@ -346,11 +354,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   signupLabel: {
-    color: 'rgba(255,255,255,0.7)',
     fontSize: 14,
   },
   signupLink: {
-    color: Colors.brand.primary,
     fontSize: 14,
     fontWeight: 'bold',
   },

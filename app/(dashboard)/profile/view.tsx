@@ -7,6 +7,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,6 +18,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "./services";
 import { UserSchema } from "../types";
+import { useColorScheme } from "@/components/useColorScheme";
 
 const fallbackUser = {
   profileImage:
@@ -31,6 +33,9 @@ const fallbackUser = {
 
 export default function ViewProfileScreen(): JSX.Element {
   const { id } = useLocalSearchParams() as { id?: string };
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   // // console.log("Profile ID:", id);
 
@@ -53,9 +58,9 @@ export default function ViewProfileScreen(): JSX.Element {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.brand.primary} />
-        <Text style={{ marginTop: 12, color: Colors.brand.textMuted }}>Loading profile...</Text>
+      <SafeAreaView style={[styles.centered, { backgroundColor: themeColors.background }]}>
+        <ActivityIndicator size="large" color={themeColors.primary} />
+        <Text style={{ marginTop: 12, color: themeColors.textMuted }}>Loading profile...</Text>
       </SafeAreaView>
     );
   }
@@ -78,13 +83,15 @@ export default function ViewProfileScreen(): JSX.Element {
   // }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+      <SafeAreaView style={styles.safeArea}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }]}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.brand.text} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Profile</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Profile</Text>
         <View style={{ width: 40 }} /> {/* alignment placeholder */}
       </View>
 
@@ -96,8 +103,8 @@ export default function ViewProfileScreen(): JSX.Element {
             style={styles.gradientHeader}
           > */}
           <LinearGradient
-            colors={Colors.brand.gradient}
-            locations={Colors.brand.gradientLocations as any}
+            colors={themeColors.gradient}
+            locations={themeColors.gradientLocations as any}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientHeader}
@@ -124,20 +131,20 @@ export default function ViewProfileScreen(): JSX.Element {
       >
 
           {/* Bio */}
-          <ProfileSection title="About">
-            <Text style={styles.bodyText}>
+          <ProfileSection title="About" color={themeColors.text} borderColor={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}>
+            <Text style={[styles.bodyText, { color: themeColors.textDim }]}>
               { fallbackUser.bio}
             </Text>
           </ProfileSection>
 
           {/* Contact */}
-          <ProfileSection title="Contact">
-            <Text style={styles.infoText}>
-              <Ionicons name="mail" size={16} color={Colors.brand.primary} /> {user.email}
+          <ProfileSection title="Contact" color={themeColors.text} borderColor={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}>
+            <Text style={[styles.infoText, { color: themeColors.textDim }]}>
+              <Ionicons name="mail" size={16} color={themeColors.primary} /> {user.email}
             </Text>
             {user.phone_no && (
-              <Text style={styles.infoText}>
-                <Ionicons name="call" size={16} color={Colors.brand.primary} />{" "}
+              <Text style={[styles.infoText, { color: themeColors.textDim }]}>
+                <Ionicons name="call" size={16} color={themeColors.primary} />{" "}
                 {user.phone_no}
               </Text>
             )}
@@ -155,60 +162,63 @@ export default function ViewProfileScreen(): JSX.Element {
           </ProfileSection> */}
 
           {/* Languages */}
-          <ProfileSection title="Languages">
+          <ProfileSection title="Languages" color={themeColors.text} borderColor={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}>
             <View style={styles.tags}>
               {(fallbackUser.languages).map((lang) => (
-                <View key={lang} style={styles.tag}>
-                  <Text style={styles.tagText}>{lang}</Text>
+                <View key={lang} style={[styles.tag, { backgroundColor: themeColors.surface, borderColor: themeColors.primary }]}>
+                  <Text style={[styles.tagText, { color: themeColors.primary }]}>{lang}</Text>
                 </View>
               ))}
             </View>
           </ProfileSection>
 
           {/* Availability */}
-          <ProfileSection title="Availability">
-            <Text style={styles.bodyText}>
+          <ProfileSection title="Availability" color={themeColors.text} borderColor={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}>
+            <Text style={[styles.bodyText, { color: themeColors.textDim }]}>
               {fallbackUser.availability}
             </Text>
           </ProfileSection>
           </ScrollView>
         </View>
-      
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 function ProfileSection({
   title,
   children,
+  color,
+  borderColor,
 }: {
   title: string;
   children: React.ReactNode;
+  color: string;
+  borderColor: string;
 }): JSX.Element {
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={[styles.section, { borderBottomColor: borderColor }]}>
+      <Text style={[styles.sectionTitle, { color }]}>{title}</Text>
       {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.brand.background },
+  container: { flex: 1 },
+  safeArea: { flex: 1 },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.brand.background,
   },
   retryButton: {
     marginTop: 16,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: Colors.brand.primary,
   },
-  retryText: { color: Colors.brand.darkGreen, fontWeight: "600" },
+  retryText: { fontWeight: "600" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -216,10 +226,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   backButton: { padding: 6 },
-  headerTitle: { fontSize: 18, fontWeight: "bold", color: Colors.brand.text },
+  headerTitle: { fontSize: 18, fontWeight: "bold" },
   scrollContent: { paddingBottom: 32 },
   gradientHeader: {
     alignItems: "center",
@@ -241,20 +250,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.brand.text,
     marginBottom: 8,
   },
-  bodyText: { fontSize: 15, color: Colors.brand.textDim, lineHeight: 22 },
-  infoText: { fontSize: 15, color: Colors.brand.textDim, marginBottom: 6 },
+  bodyText: { fontSize: 15, lineHeight: 22 },
+  infoText: { fontSize: 15, marginBottom: 6 },
   tags: { flexDirection: "row", flexWrap: "wrap", marginTop: 4 },
   tag: {
-    backgroundColor: Colors.brand.surface,
-    borderColor: Colors.brand.primary,
     borderWidth: 1,
     borderRadius: 16,
     paddingHorizontal: 12,
@@ -262,5 +267,5 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 8,
   },
-  tagText: { color: Colors.brand.primary, fontWeight: "500" },
+  tagText: { fontWeight: "500" },
 });

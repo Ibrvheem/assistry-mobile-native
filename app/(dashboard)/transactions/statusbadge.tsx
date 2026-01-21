@@ -1,6 +1,7 @@
 // StatusBadge.tsx
 import React from "react";
 import { View, Text, StyleSheet, ViewStyle } from "react-native";
+import { useColorScheme } from "@/components/useColorScheme";
 
 type Palette = { bg: string; dot: string; text: string };
 
@@ -9,9 +10,16 @@ const STATUS_PALETTE = {
   success: { bg: "#DBF0DD", dot: "#18AE6A", text: "#498c00" },
   failed:  { bg: "#FFB6B1", dot: "#D8483D", text: "#d30e0a" },
   default: { bg: "#B0E17C", dot: "#14342B", text: "#14342B" },
-} as const; // 'as const' lets TS infer literal types
+} as const; 
 
-type StatusKey = keyof typeof STATUS_PALETTE; // "pending" | "success" | "failed" | "default"
+const STATUS_PALETTE_DARK = {
+  pending: { bg: "rgba(238, 221, 151, 0.2)", dot: "#D5A247", text: "#EEDD97" },
+  success: { bg: "rgba(24, 174, 106, 0.2)", dot: "#18AE6A", text: "#4ade80" },
+  failed:  { bg: "rgba(216, 72, 61, 0.2)", dot: "#D8483D", text: "#ff6b6b" },
+  default: { bg: "rgba(176, 225, 124, 0.2)", dot: "#14342B", text: "#e2e8f0" },
+} as const;
+
+type StatusKey = keyof typeof STATUS_PALETTE; 
 
 type Props = {
   status?: string | null;
@@ -19,6 +27,9 @@ type Props = {
 };
 
 export default function StatusBadge({ status, style }: Props) {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  
   // normalize incoming status to lowercase string
   const raw = (status ?? "default").toString().toLowerCase();
 
@@ -27,7 +38,7 @@ export default function StatusBadge({ status, style }: Props) {
     ? raw
     : "default") as StatusKey;
 
-  const palette: Palette = STATUS_PALETTE[key];
+  const palette: any = isDark ? STATUS_PALETTE_DARK[key] : STATUS_PALETTE[key];
 
   // Capitalize each word for display: "pending" => "Pending"
   const label = key.replace(/\b\w/g, (c) => c.toUpperCase());

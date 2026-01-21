@@ -234,11 +234,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Avatar } from "../../avatar";
 import { cloudinaryUrl } from "@/lib/helpers";
 import { MyAvatar } from "@/app/myavatar";
+import { useColorScheme } from "@/components/useColorScheme";
 
 export default function ProfilePage(): JSX.Element {
    const router = useRouter();
   const { userData, refreshUser } = useGobalStoreContext();
   const { setUserData, setStudentData } = useGobalStoreContext();
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light' as keyof typeof Colors];
+  const isDark = colorScheme === 'dark';
 
   useFocusEffect(
     useCallback(() => {
@@ -270,36 +274,42 @@ export default function ProfilePage(): JSX.Element {
 
   return (
     
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
         {/* ===== Profile Header ===== */}
         <View style={styles.profileHeader}>
           <MyAvatar size={100} />
-          <Text style={styles.name}>{userData?.first_name}</Text>
-          <Text style={styles.email}>{userData?.email}</Text>
+          <Text style={[styles.name, { color: themeColors.text }]}>{userData?.first_name}</Text>
+          <Text style={[styles.email, { color: themeColors.textMuted }]}>{userData?.email}</Text>
 
           <Button
             className="rounded-3xl"
-            style={styles.editButton}
+            style={[styles.editButton, { 
+                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                borderColor: Colors.brand.secondary 
+            }]}
             onPress={() => router.push("/(dashboard)/profile/edit")}
           >
-            <Text style={styles.editButtonText}>Edit Profile</Text>
+            <Text style={[styles.editButtonText, { color: Colors.brand.secondary }]}>Edit Profile</Text>
           </Button>
         </View>
         <ScrollView >
 
         {/* ===== Task + Transaction Section ===== */}
         <View style={styles.section}>
-          <View style={styles.card}>
+          <View style={[styles.card, { 
+              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#fff',
+              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+          }]}>
             <TouchableOpacity
-              style={styles.cardRow}
+              style={[styles.cardRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
               onPress={() => router.push("/(dashboard)/tasks")}
             >
-              <View style={styles.iconWrapper}>
-                <File color={Colors.brand.textMuted} size={20} />
+              <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                <File color={themeColors.textMuted} size={20} />
               </View>
-              <Text style={styles.rowText}>Task History</Text>
+              <Text style={[styles.rowText, { color: themeColors.text }]}>Task History</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={Colors.brand.textMuted} size={20} />
+                <ArrowRight color={themeColors.textMuted} size={20} />
               </View>
             </TouchableOpacity>
 
@@ -307,12 +317,12 @@ export default function ProfilePage(): JSX.Element {
               style={[styles.cardRow, styles.noBorder]}
               onPress={() => router.push("/(dashboard)/transactions")}
             >
-              <View style={styles.iconWrapper}>
-                <CreditCard color={Colors.brand.textMuted} size={20} />
+              <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                <CreditCard color={themeColors.textMuted} size={20} />
               </View>
-              <Text style={styles.rowText}>Transaction History</Text>
+              <Text style={[styles.rowText, { color: themeColors.text }]}>Transaction History</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={"gray"} size={20} />
+                <ArrowRight color={themeColors.textMuted} size={20} />
               </View>
             </TouchableOpacity>
           </View>
@@ -320,24 +330,27 @@ export default function ProfilePage(): JSX.Element {
 
         {/* ===== Support Section ===== */}
         <View style={styles.section}>
-          <View style={styles.card}>
-            <TouchableOpacity style={styles.cardRow}>
-              <View style={styles.iconWrapper}>
-                <AlertCircle color={Colors.brand.textMuted} size={20} />
+          <View style={[styles.card, { 
+              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#fff',
+              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+          }]}>
+            <TouchableOpacity style={[styles.cardRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}>
+              <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                <AlertCircle color={themeColors.textMuted} size={20} />
               </View>
-              <Text style={styles.rowText}>Report Fraud Activity</Text>
+              <Text style={[styles.rowText, { color: themeColors.text }]}>Report Fraud Activity</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={"gray"} size={20} />
+                <ArrowRight color={themeColors.textMuted} size={20} />
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.cardRow, styles.noBorder]}>
-              <View style={styles.iconWrapper}>
-                <MessageCircle color={Colors.brand.textMuted} size={20} />
+              <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                <MessageCircle color={themeColors.textMuted} size={20} />
               </View>
-              <Text style={styles.rowText}>Support Center</Text>
+              <Text style={[styles.rowText, { color: themeColors.text }]}>Support Center</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={"gray"} size={20} />
+                <ArrowRight color={themeColors.textMuted} size={20} />
               </View>
             </TouchableOpacity>
           </View>
@@ -345,24 +358,27 @@ export default function ProfilePage(): JSX.Element {
 
         {/* ===== Account Section ===== */}
         <View style={styles.section}>
-          <View style={styles.card}>
-            <TouchableOpacity style={styles.cardRow} onPress={handleLogout}>
-              <View style={styles.iconWrapper}>
-                <AlertCircle color={"gray"} size={20} />
+          <View style={[styles.card, { 
+              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#fff',
+              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+          }]}>
+            <TouchableOpacity style={[styles.cardRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} onPress={handleLogout}>
+              <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                <AlertCircle color={themeColors.textMuted} size={20} />
               </View>
-              <Text style={styles.rowText}>Log Out</Text>
+              <Text style={[styles.rowText, { color: themeColors.text }]}>Log Out</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={"gray"} size={20} />
+                <ArrowRight color={themeColors.textMuted} size={20} />
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.cardRow, styles.noBorder]}>
-              <View style={styles.iconWrapper}>
-                <UserMinus color={Colors.brand.textMuted} size={20} />
+              <View style={[styles.iconWrapper, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
+                <UserMinus color={themeColors.textMuted} size={20} />
               </View>
-              <Text style={styles.rowText}>Delete Account</Text>
+              <Text style={[styles.rowText, { color: themeColors.text }]}>Delete Account</Text>
               <View style={styles.arrowWrapper}>
-                <ArrowRight color={"gray"} size={20} />
+                <ArrowRight color={themeColors.textMuted} size={20} />
               </View>
             </TouchableOpacity>
           </View>

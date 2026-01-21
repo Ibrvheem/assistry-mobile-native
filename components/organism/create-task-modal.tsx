@@ -2,6 +2,7 @@
 // components/organism/create-task-modal.tsx
 import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import Colors from "@/constants/Colors";
+import { Controller } from "react-hook-form";
 import {
   View,
   Text,
@@ -12,8 +13,9 @@ import {
   StyleSheet,
   Modal,
   Animated,
+  Platform
 } from "react-native";
-import { Button, YStack } from "tamagui";
+import { Button, YStack, XStack } from "tamagui";
 import * as ImagePicker from "expo-image-picker";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { FormProvider } from "react-hook-form";
@@ -154,6 +156,40 @@ export default function CreateTaskModal({ open, setOpen }: CreateTaskModalProps)
                           keyboardType="numeric"
                         />
                       </View>
+                    </View>
+
+                    <View className="mt-4">
+                        <ControlledInput
+                          name="timeline"
+                          label="Timeline"
+                          placeholder="e.g. By 5 PM today"
+                        />
+                    </View>
+
+                    {/* Payment Method Selector */}
+                    <View className="mt-4">
+                        <Text style={styles.label}>Payment Method</Text>
+                        <Controller
+                            control={methods.control}
+                            name="payment_method"
+                            defaultValue="IN_APP"
+                            render={({ field: { onChange, value } }) => (
+                                <View style={styles.paymentSelector}>
+                                    <TouchableOpacity 
+                                        style={[styles.paymentOption, value === 'IN_APP' && styles.paymentOptionSelected]}
+                                        onPress={() => onChange('IN_APP')}
+                                    >
+                                        <Text style={[styles.paymentText, value === 'IN_APP' && styles.paymentTextSelected]}>In-App Wallet</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity 
+                                        style={[styles.paymentOption, value === 'CASH' && styles.paymentOptionSelected]}
+                                        onPress={() => onChange('CASH')}
+                                    >
+                                        <Text style={[styles.paymentText, value === 'CASH' && styles.paymentTextSelected]}>Cash on Delivery</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        />
                     </View>
 
                     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
@@ -332,4 +368,28 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 6,
   },
+  paymentSelector: {
+      flexDirection: 'row',
+      backgroundColor: 'rgba(255,255,255,0.05)',
+      borderRadius: 12,
+      padding: 4,
+      marginTop: 8,
+  },
+  paymentOption: {
+      flex: 1,
+      paddingVertical: 12,
+      alignItems: 'center',
+      borderRadius: 10,
+  },
+  paymentOptionSelected: {
+      backgroundColor: Colors.brand.primary,
+  },
+  paymentText: {
+      color: 'rgba(255,255,255,0.6)',
+      fontWeight: '600',
+  },
+  paymentTextSelected: {
+      color: Colors.brand.darkGreen,
+      fontWeight: 'bold',
+  }
 });

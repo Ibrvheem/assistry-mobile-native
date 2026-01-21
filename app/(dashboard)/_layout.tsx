@@ -5,9 +5,11 @@ import { View, StyleSheet, Animated } from "react-native";
 import { Stack, usePathname } from "expo-router";
 import CustomTabBar from "../../components/CustomTabBar";
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/components/useColorScheme";
 
 export default function DashboardLayout() {
   const pathname = usePathname();
+  const colorScheme = useColorScheme();
 
   // hide only when route matches /messages/[something] or /tasks/[something]
   const hideTabBar =
@@ -32,7 +34,7 @@ export default function DashboardLayout() {
   }, [hideTabBar]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Colors[colorScheme ?? "light"].background }]}>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -58,7 +60,6 @@ export default function DashboardLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.brand.background,
   },
   tabWrapper: {
     position: "absolute",

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
+import { useColorScheme } from "@/components/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,10 +20,11 @@ import { cloudinaryUrl } from "@/lib/helpers";
 
 import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { acceptTask, getTask } from "./services";
+import { acceptTask, getTask, completeTask, approveTask } from "./services";
 import { formatCurrency } from "@/lib/helpers";
 import TaskDetailsSkeleton from "@/components/tasks/task-details-loading-skeleton";
 import { TaskSchema, TaskStatus } from "../types";
+import { useGobalStoreContext } from "@/store/global-context";
 
 const categoryColors = {
   academic: { primary: "#22C55E", gradient: ["#22C55E", "#4ADE80"] },
@@ -36,10 +38,14 @@ const categoryColors = {
 export default function TaskDetailsScreen() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams() as { id: string };
+  const { userData } = useGobalStoreContext();
   const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
   const [acceptanceState, setAcceptanceState] = useState<
-    "idle" | "accepting" | "accepted" | "error"
+    "idle" | "accepting" | "accepted" | "completing" | "approving" | "error"
   >("idle");
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   const { data, isLoading, error } = useQuery({
     queryKey: [`task-${id}`],
@@ -79,12 +85,37 @@ export default function TaskDetailsScreen() {
     }
   };
 
+  const handleCompleteTask = async () => {
+      try {
+        setAcceptanceState("completing");
+        await completeTask({ taskId: id });
+        await queryClient.invalidateQueries({ queryKey: [`task-${id}`] });
+        setAcceptanceState("idle");
+      } catch (err) {
+        console.error(err);
+        setAcceptanceState("error");
+      }
+  };
+
+  const handleApproveTask = async () => {
+      try {
+        setAcceptanceState("approving");
+        await approveTask({ taskId: id });
+        await queryClient.invalidateQueries({ queryKey: [`task-${id}`] });
+        setAcceptanceState("idle");
+        router.back();
+      } catch (err) {
+        console.error(err);
+        setAcceptanceState("error");
+      }
+  };
+
   return isLoading ? (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <TaskDetailsSkeleton />
     </View>
   ) : (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           <SafeAreaView style={styles.header}>
@@ -134,10 +165,13 @@ export default function TaskDetailsScreen() {
               </View>
             )}
             
-            <Text style={styles.title}>{data?.task}</Text>
+            <Text style={[styles.title, { color: themeColors.text }]}>{data?.task}</Text>
 
             {/* User Info */}
-            <Pressable style={styles.posterContainer}>
+            <Pressable style={[styles.posterContainer, { 
+                backgroundColor: themeColors.surface,
+                borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+            }]}>
               <Image
                 source={{
                   uri:data?.user?.profile_picture
@@ -148,47 +182,72 @@ export default function TaskDetailsScreen() {
                 contentFit="cover"
               />
               <View style={styles.posterInfo}>
-                <Text style={styles.posterName}>
+                <Text style={[styles.posterName, { color: themeColors.text }]}>
                   {data?.user?.first_name} {data?.user?.last_name}
                 </Text>
                 <View style={styles.posterStats}>
                   <Ionicons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.statText}>3.03</Text>
+                  <Text style={[styles.statText, { color: themeColors.textMuted }]}>3.03</Text>
                   <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                  <Text style={styles.statText}>10 tasks</Text>
+                  <Text style={[styles.statText, { color: themeColors.textMuted }]}>10 tasks</Text>
                 </View>
               </View>
-              <Pressable style={styles.viewProfile} 
+              <Pressable style={[styles.viewProfile, { borderColor: themeColors.primary }]} 
               onPress={() => {
                              router.push({ pathname: "/profile/view", params: {id:data?.user?._id  } })
                           }}>
-                <Text style={styles.viewProfileText}>View Profile</Text>
+                <Text style={[styles.viewProfileText, { color: themeColors.primary }]}>View Profile</Text>
               </Pressable>
             </Pressable>
 
             {/* Location */}
             <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
                    
-             <View style={styles.locationContainer}>
+             <View style={[styles.locationContainer, { 
+                 backgroundColor: themeColors.surface,
+                 borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+             }]}>
                <Ionicons
                  name="location"
                  size={20}
                  color={categoryColors.delivery.primary}
                />
-               <Text style={styles.location}>{data?.location}</Text>
+               <Text style={[styles.location, { color: themeColors.text }]}>{data?.location}</Text>
              </View>
               <View style={{flexDirection:'row',alignItems:'center',gap:4,marginBottom:8}}>
                          <Ionicons name="eye" size={24} color="#18AE6A" />
-                         <Text style={styles.views}>{data?.views}</Text>
+                         <Text style={[styles.views, { color: themeColors.primary }]}>{data?.views}</Text>
                      </View>
               </View>
 
             {/* Description */}
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.description}>{data?.description}</Text>
+            <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Description</Text>
+            <Text style={[styles.description, { color: themeColors.textDim }]}>{data?.description}</Text>
+
+            {/* Payment & Timeline Info */}
+            <View style={styles.infoRow}>
+                <View style={[styles.infoBox, { 
+                    backgroundColor: themeColors.surface,
+                    borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+                }]}>
+                    <Text style={[styles.infoLabel, { color: themeColors.textMuted }]}>Payment Method</Text>
+                    <Text style={[styles.infoValue, { color: data.payment_method === 'CASH' ? '#FFA500' : '#4ADE80' }]}>
+                        {data.payment_method === 'CASH' ? 'Cash on Delivery' : 'In-App Wallet'}
+                    </Text>
+                </View>
+                {data.timeline && (
+                    <View style={[styles.infoBox, { 
+                        backgroundColor: themeColors.surface,
+                        borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+                    }]}>
+                        <Text style={[styles.infoLabel, { color: themeColors.textMuted }]}>Timeline</Text>
+                        <Text style={[styles.infoValue, { color: themeColors.text }]}>{data.timeline}</Text>
+                    </View>
+                )}
+            </View>
 
             {/* Additional Photos */}
-            <Text style={styles.sectionTitle}>Additional Photos</Text>
+            <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Additional Photos</Text>
             <FlatList
               data={assets}
               horizontal
@@ -210,60 +269,75 @@ export default function TaskDetailsScreen() {
       </ScrollView>
 
       {/* Accept Task Button */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { 
+          backgroundColor: themeColors.background,
+          borderTopColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+      }]}>
 
-        {data.status === TaskStatus.PENDING ? (
-              <>
+        {/* ACTION BUTTONS LOGIC */}
+        {/* 1. Executor: PENDING -> Accept */}
+        {data.status === TaskStatus.PENDING && data.user?._id !== userData?._id && (
            <LinearGradient
-        colors={Colors.brand.gradient}
-        locations={Colors.brand.gradientLocations as any}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.acceptButton}
-      >
-          <Pressable
-            onPress={() => setShowAcceptConfirm(true)}
-            style={styles.acceptButtonContent}
+            colors={themeColors.gradient}
+            locations={themeColors.gradientLocations as any}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.acceptButton}
           >
-                <Text style={styles.acceptButtonText}>
-                  {acceptanceState === "accepting"
-                    ? "Accepting..."
-                    : " Accept Task"}
-                </Text>
-                <View style={styles.acceptButtonAmount}>
-                  <Text style={styles.acceptButtonAmountText}>
-                    {formatCurrency(data?.incentive)}
-                  </Text>
+              <Pressable onPress={() => setShowAcceptConfirm(true)} style={styles.acceptButtonContent}>
+                    <Text style={[styles.acceptButtonText, { color: isDark ? themeColors.background : '#fff' }]}>
+                      {acceptanceState === "accepting" ? "Accepting..." : " Accept Task"}
+                    </Text>
+                    <View style={styles.acceptButtonAmount}>
+                      <Text style={[styles.acceptButtonAmountText, { color: isDark ? themeColors.background : '#fff' }]}>{formatCurrency(data?.incentive)}</Text>
+                    </View>
+              </Pressable>
+            </LinearGradient>
+        )}
+
+        {/* 2. Executor: ONGOING -> Complete Task */}
+        {data.status === TaskStatus.ONGOING && data.acceptedBy === userData?._id && (
+            <Pressable style={[styles.acceptButton, { backgroundColor: themeColors.primary }]} onPress={handleCompleteTask}>
+                <View style={styles.acceptButtonContent}>
+                    <Text style={[styles.acceptButtonText, { color: Colors.brand.darkGreen }]}>
+                        {acceptanceState === "completing" ? "Marking Done..." : "Mark as Completed"}
+                    </Text>
                 </View>
-          </Pressable>
-        </LinearGradient>
-        </>
-        ) : (
-          <>
-               <LinearGradient
-  colors={['#0c2339', '#113355', '#5973a9']}
-  locations={[0, 0.45, 1]}
-  start={{ x: 0, y: 0 }}
-  end={{ x: 1, y: 1 }}
-  style={styles.acceptButton}
->
-          <Pressable
-            onPress={() => setShowAcceptConfirm(true)}
-            style={styles.acceptButtonContent}
-            disabled={true}
-          >
-                <Text style={styles.acceptButtonText}>
-                  On going ...
-                </Text>
-                <View style={styles.acceptButtonAmount}>
-                  <Text style={styles.acceptButtonAmountText}>
-                    {formatCurrency(data?.incentive)}
-                  </Text>
+            </Pressable>
+        )}
+
+        {/* 3. Poster: FINISHED -> Approve & Pay */}
+        {data.status === TaskStatus.FINISHED && data.user?._id === userData?._id && (
+            <Pressable style={[styles.acceptButton, { backgroundColor: data.payment_method === 'CASH' ? '#FFA500' : '#4ADE80' }]} onPress={handleApproveTask}>
+                <View style={styles.acceptButtonContent}>
+                    <Text style={[styles.acceptButtonText, { color: '#000' }]}>
+                         {acceptanceState === "approving" ? "Processing..." : (data.payment_method === 'CASH' ? "Confirm Cash Received" : "Approve & Pay")}
+                    </Text>
                 </View>
-          </Pressable>
-        </LinearGradient>
-              </> 
-            )}
+            </Pressable>
+        )}
+
+        {/* 4. Others/Status Display */}
+        {data.status !== TaskStatus.PENDING && 
+         !(data.status === TaskStatus.ONGOING && data.acceptedBy === userData?._id) &&
+         !(data.status === TaskStatus.FINISHED && data.user?._id === userData?._id) && (
+              <LinearGradient
+                colors={['#0c2339', '#113355', '#5973a9']}
+                locations={[0, 0.45, 1]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.acceptButton}
+                >
+                <Pressable style={styles.acceptButtonContent} disabled={true}>
+                        <Text style={styles.acceptButtonText}>
+                        {data.status === TaskStatus.ACCEPTED ? "Accepted" : 
+                         data.status === TaskStatus.ONGOING ? "Ongoing" :
+                         data.status === TaskStatus.FINISHED ? "Finished (Reviewing)" :
+                         data.status === TaskStatus.COMPLETED ? "Completed" : data.status}
+                        </Text>
+                </Pressable>
+            </LinearGradient>
+        )}
       </View>
 
       {/* Confirmation Modal */}
@@ -271,18 +345,24 @@ export default function TaskDetailsScreen() {
         <Animated.View
           style={[styles.confirmModal, { opacity: fadeAnim }]}
         >
-          <View style={styles.confirmContent}>
-            <Text style={styles.confirmTitle}>Accept this task?</Text>
-            <Text style={styles.confirmDescription}>
+          <View style={[styles.confirmContent, { 
+              backgroundColor: isDark ? "#1A1A1A" : "#fff",
+              borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+          }]}>
+            <Text style={[styles.confirmTitle, { color: themeColors.text }]}>Accept this task?</Text>
+            <Text style={[styles.confirmDescription, { color: themeColors.textMuted }]}>
               You're about to accept this task. Make sure you can meet all the
               requirements and complete it on time.
             </Text>
             <View style={styles.confirmButtons}>
               <Pressable
-                style={[styles.confirmButton, styles.cancelButton]}
+                style={[styles.confirmButton, styles.cancelButton, { 
+                    backgroundColor: themeColors.surface,
+                    borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" 
+                }]}
                 onPress={() => setShowAcceptConfirm(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={[styles.cancelButtonText, { color: themeColors.textMuted }]}>Cancel</Text>
               </Pressable>
               {/* <LinearGradient
                 colors={
@@ -293,14 +373,14 @@ export default function TaskDetailsScreen() {
                 
               > */}
                 <Pressable
-                style={[styles.confirmButton, styles.confirmAcceptButton]}
+                style={[styles.confirmButton, styles.confirmAcceptButton, { backgroundColor: isDark ? '#fff' : themeColors.primary }]}
                   onPress={() => {
                     setShowAcceptConfirm(false);
 
                     handleAcceptTask();
                   }}
                 >
-                  <Text style={styles.confirmAcceptText}>{"Accept"}</Text>
+                  <Text style={[styles.confirmAcceptText, { color: isDark ? Colors.brand.darkGreen : '#fff' }]}>{"Accept"}</Text>
                 </Pressable>
               {/* </LinearGradient> */}
             </View>
@@ -641,4 +721,27 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
+  infoRow: {
+      flexDirection: 'row',
+      gap: 16,
+      marginBottom: 24,
+  },
+  infoBox: {
+      backgroundColor: Colors.brand.surface,
+      padding: 12,
+      borderRadius: 12,
+      flex: 1,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.1)",
+  },
+  infoLabel: {
+      color: Colors.brand.textMuted,
+      fontSize: 12,
+      marginBottom: 4,
+  },
+  infoValue: {
+      color: Colors.brand.text,
+      fontSize: 14,
+      fontWeight: 'bold',
+  }
 });

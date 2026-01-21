@@ -18,6 +18,8 @@ import dayjs from "dayjs";
 import { getAllTx, getCreditTx, getDebitTx } from "./services";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import StatusBadge from './statusbadge';
+import { useColorScheme } from "@/components/useColorScheme";
+
 dayjs.extend(advancedFormat);
 
 type TxType = "all" | "credits" | "debits";
@@ -37,6 +39,9 @@ const koboToUSD = (kobo: number): number => kobo / 100; // adjust conversion as 
 export default function TransactionsPage(): JSX.Element {
   const [activeTab, setActiveTab] = useState<TxType>("all");
   const listRef = useRef<FlatList<TransactionSchema>>(null);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   /** --- Fetch Transactions --- */
   const fetchTransactions = useCallback(async (): Promise<TransactionSchema[]> => {
@@ -68,17 +73,20 @@ export default function TransactionsPage(): JSX.Element {
     const icon = isCredit ? "arrow-down" : "arrow-up";
 
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { 
+          backgroundColor: themeColors.surface,
+          borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+      }]}>
         <View style={styles.left}>
           <View style={[styles.iconCircle, { backgroundColor: color + "15" }]}>
             <Ionicons name={icon} size={16} color={color} />
           </View>
           <View>
-            <Text style={styles.name}>
+            <Text style={[styles.name, { color: themeColors.text }]}>
               {item.description}
             </Text>
             {/* <Text style={styles.sub}>{item.status}</Text> */}
-            <Text style={styles.date}>
+            <Text style={[styles.date, { color: themeColors.textMuted }]}>
             {/* {dayjs(item.createdAt).format("DD.MM.YYYY")} */}
             {dayjs(item.createdAt).format("MMM Do, h:mm:ss a")}
 
@@ -96,15 +104,15 @@ export default function TransactionsPage(): JSX.Element {
         </View>
       </View>
     );
-  }, []);
+  }, [themeColors, isDark]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
       <View style={styles.headercontainer}>
         <Pressable onPress={() => router.back()} style={{ padding: 10 ,marginLeft: 1}}>
-          <Ionicons name="arrow-back" size={26} color={Colors.brand.text} />
+          <Ionicons name="arrow-back" size={26} color={themeColors.text} />
         </Pressable>
-        <Text style={styles.header}>My Transactions</Text>
+        <Text style={[styles.header, { color: themeColors.text }]}>My Transactions</Text>
 
       </View>
       
@@ -120,10 +128,13 @@ export default function TransactionsPage(): JSX.Element {
           return (
             <Pressable
               key={t.value}
-              style={[styles.tab, active && styles.tabActive]}
+              style={[
+                  styles.tab, 
+                  active ? { backgroundColor: themeColors.primary, borderColor: themeColors.primary } : { backgroundColor: themeColors.surface, borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }
+              ]}
               onPress={() => setActiveTab(t.value as TxType)}
             >
-              <Text style={[styles.tabText, active && styles.tabTextActive]}>
+              <Text style={[styles.tabText, active ? { color: Colors.brand.darkGreen } : { color: themeColors.textMuted }]}>
                 {t.label}
               </Text>
             </Pressable>
@@ -133,7 +144,7 @@ export default function TransactionsPage(): JSX.Element {
 
       {/* --- Transactions --- */}
       {isLoading ? (
-        <ActivityIndicator size="small" color={Colors.brand.primary} style={{ marginTop: 20 }} />
+        <ActivityIndicator size="small" color={themeColors.primary} style={{ marginTop: 20 }} />
       ) : (
         <FlatList
           ref={listRef}
@@ -145,12 +156,12 @@ export default function TransactionsPage(): JSX.Element {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={handleRefresh}
-              tintColor={Colors.brand.primary}
+              tintColor={themeColors.primary}
             />
           }
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={styles.empty}>No transactions found.</Text>
+            <Text style={[styles.empty, { color: themeColors.textMuted }]}>No transactions found.</Text>
           }
         />
       )}
@@ -160,7 +171,7 @@ export default function TransactionsPage(): JSX.Element {
 
 /* ---------------- STYLES ---------------- */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.brand.background },
+  container: { flex: 1 },
   headercontainer:{
     flexDirection: "row",
     alignItems: "center",
@@ -170,7 +181,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginVertical: 16,
-    color: Colors.brand.text,
   },
   tabs: {
     flexDirection: "row",
@@ -182,24 +192,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 4,
     borderRadius: 20,
-    backgroundColor: Colors.brand.surface,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  tabActive: { backgroundColor: Colors.brand.primary, borderColor: Colors.brand.primary },
-  tabText: { color: Colors.brand.textMuted, fontWeight: "600", fontSize: 13 },
-  tabTextActive: { color: Colors.brand.darkGreen },
+  activeTab: { },
+  tabText: { fontWeight: "600", fontSize: 13 },
   list: { paddingHorizontal: 16, paddingBottom: 40 },
   card: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Colors.brand.surface,
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
     // shadowColor: "#000",
     // shadowOpacity: 0.05,
     // shadowOffset: { width: 0, height: 2 },
@@ -215,14 +220,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  name: { fontSize: 14, fontWeight: "600", color: Colors.brand.text },
-  sub: { fontSize: 12, color: Colors.brand.textMuted, marginTop: 2 },
+  name: { fontSize: 14, fontWeight: "600" },
+  sub: { fontSize: 12, marginTop: 2 },
   right: { alignItems: "flex-end" },
   amount: { fontSize: 15, fontWeight: "700" },
-  date: { fontSize: 12, color: Colors.brand.textMuted, marginTop: 2 },
+  date: { fontSize: 12, marginTop: 2 },
   empty: {
     textAlign: "center",
-    color: Colors.brand.textMuted,
     fontSize: 13,
     marginTop: 20,
   },

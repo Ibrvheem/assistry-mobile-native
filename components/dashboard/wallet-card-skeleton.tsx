@@ -2,9 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import Colors from "@/constants/Colors";
 import { View, StyleSheet, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "@/components/useColorScheme";
 
 export default function WalletCardSkeleton() {
   const opacityAnim = useRef(new Animated.Value(1)).current;
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
 
   useEffect(() => {
     Animated.loop(
@@ -25,11 +28,17 @@ export default function WalletCardSkeleton() {
 
   return (
     <LinearGradient
-      colors={Colors.brand.gradient}
-      style={styles.container}
-        locations={Colors.brand.gradientLocations as any}
+      // colors={themeColors.gradient}
+      // style={styles.container}
+      //   locations={themeColors.gradientLocations as any}
+      //   start={{ x: 0, y: 0 }}
+      //   end={{ x: 1, y: 1 }}
+
+        colors={["#0F2027", "#2C7744", "#A8E063"]}
+        locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
+        style={styles.container}
     >
       <Animated.View style={{ opacity: opacityAnim }}>
         <View style={styles.topSection}>

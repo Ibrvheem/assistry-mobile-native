@@ -8,7 +8,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { useRouter, Stack, usePathname } from "expo-router";
+import { useRouter, Stack, usePathname, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
@@ -66,11 +66,11 @@ function AppNavigator() {
               headerShown: false,
               headerTitle: "",
               headerStyle: {
-                backgroundColor: Colors.brand.background,
+                backgroundColor: Colors[colorScheme ?? "light"].background, // Use theme background
               },
               // headerBackVisible: false,
               headerLeft: () => <MyAvatar showGreeting={true} />,
-              headerRight: () => <BellDot color={Colors.brand.text} />,
+              headerRight: () => <BellDot color={Colors[colorScheme ?? "light"].text} />, // Use theme text color
             }}
           />
           <Stack.Screen
@@ -79,7 +79,7 @@ function AppNavigator() {
           />
         </Stack>
       </ThemeProvider>
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </>
   );
 }
@@ -87,6 +87,10 @@ function AppNavigator() {
 
 
 import { useNotificationObserver } from "@/lib/notifications";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useGobalStoreContext } from "@/store/global-context";
+import { updateProfile } from "./(auth)/services";
+import { UserDataSchema } from "./(auth)/types";
 
 // ... imports
 
@@ -130,44 +134,86 @@ function ProvidersShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-
-// function NavigationDecider() {
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     const decideAndHide = async () => {
-//       try {
-//         const token = await AsyncStorage.getItem("token");
-//         router.replace("/(auth)");
-//       } finally {
-//         SplashScreen.hideAsync().catch(() => {});
-//       }
-//     };
-//     decideAndHide();
-//   }, []);
-
-//   return <AppNavigator />;
-// }
-
 function NavigationDecider() {
   const router = useRouter();
+  const { userData, loading, refreshUser } = useGobalStoreContext();
+  const pathname = usePathname();
+  const segments = useSegments();
+
+  // Push Notifications Token
+  const { expoPushToken } = usePushNotifications();
+
+  useEffect(() => {
+    const handlePushToken = async () => {
+        if (userData && expoPushToken && userData.push_token !== expoPushToken && userData._id) {
+            console.log("Updating push token for user:", userData._id);
+            // try {
+            //     await updateProfile({ push_token: expoPushToken });
+            //     await refreshUser(); // Refresh checks
+            // } catch (error) {
+            //     console.error("Failed to update push token", error);
+            // }
+        }
+    };
+    if(expoPushToken && userData) {
+        handlePushToken();
+    }
+  }, [expoPushToken, userData, refreshUser]);
+
 
   useEffect(() => {
     const decideAndHide = async () => {
+        if(loading) return; // Wait for user data
+
       try {
         const token = await AsyncStorage.getItem("token");
-
-        if (token) {
-          router.replace("/(dashboard)");
-        } else {
-          router.replace("/(auth)");
+        const hasSkipped = await AsyncStorage.getItem("skipProfileCompletion");
+        
+        // 1. Not Logged In
+        if (!token) {
+          console.log('No token')
+          // useSegments returns segments representing the file system structure (e.g. ['(auth)', 'index'])
+          // So we check the first segment (the group).
+          if (segments[0] !== '(auth)') {
+              router.replace("/(auth)");
+          }
+        } 
+        // 2. Logged In
+        else {
+             // Check Profile Completion (if userData is loaded)
+             if (userData) {
+                 const isProfileComplete = 
+                    userData.username && 
+                    userData.dob && 
+                    userData.id_card_url && 
+                    userData.preferred_task_categories && userData.preferred_task_categories.length > 0;
+                 
+                 // If Profile Incomplete and NOT already on profile-completion page AND HAS NOT SKIPPED
+                 if (!isProfileComplete && !hasSkipped && pathname !== '/(auth)/profile-completion') {
+                     console.log("Profile incomplete, redirecting...");
+                     router.replace("/(auth)/profile-completion");
+                 } 
+                 // If Profile Complete and user tries to access auth (like signin), redirect to dashboard
+                 else if (segments[0] === '(auth)' && pathname !== '/(auth)/profile-completion') {
+                      router.replace("/(dashboard)");
+                 }
+                 // If Profile Complete and on profile-completion, redirect to dashboard
+                 else if (isProfileComplete && pathname === '/(auth)/profile-completion') {
+                      router.replace("/(dashboard)");
+                 }
+                 // If Skipped and on profile-completion, redirect to dashboard
+                 else if (!isProfileComplete && hasSkipped && pathname === '/(auth)/profile-completion') {
+                      router.replace("/(dashboard)");
+                 }
+             }
         }
+
       } finally {
         SplashScreen.hideAsync().catch(() => {});
       }
     };
     decideAndHide();
-  }, []);
+  }, [loading, userData, pathname]);
 
   return <AppNavigator />;
 }

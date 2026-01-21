@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { View, Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, StatusBar, Image } from "react-native";
+import { View, Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, StatusBar, Image, Platform, KeyboardAvoidingView, ScrollView } from "react-native";
 import { useNavigation, router } from "expo-router";
 import { useGobalStoreContext } from "@/store/global-context";
 import { useCreatePasswordHook } from "./hooks/useCreatePasswordHook";
@@ -9,6 +9,8 @@ import LoadingChildren from "@/components/molecules/loading-children";
 import { LinearGradient } from "expo-linear-gradient";
 import { Eye, EyeOff } from "lucide-react-native";
 import { ErrorToast } from "@/components/ErrorToast";
+import { useColorScheme } from "@/components/useColorScheme";
+import Colors from "@/constants/Colors";
 
 export default function CreatePassword() {
   const { methods, onSubmit, loading } = useCreatePasswordHook();
@@ -17,6 +19,10 @@ export default function CreatePassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   const handleCreatePassword = async () => {
       try {
@@ -28,11 +34,11 @@ export default function CreatePassword() {
   };
 
   return (
-    <View style={styles.container}>
-       <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <LinearGradient
-        colors={['#B0E17C', '#4CAF50', '#1A3E2A', '#0d1f16', '#000000']}
-        locations={[0, 0.2, 0.5, 0.8, 1]}
+        colors={themeColors.gradient}
+        locations={themeColors.gradientLocations as any}
         style={styles.background}
       />
       
@@ -43,79 +49,103 @@ export default function CreatePassword() {
       />
 
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
-             <View style={styles.header}>
-                 <View style={styles.logoContainer}>
-                      {/* Logo is optional here, maybe just the text */}
-                      <Image source={require("@/assets/logos/logo.png")} style={styles.logo} resizeMode="contain" />
-                 </View>
-                 <Text style={styles.title}>Secure Your Account</Text>
-                 <Text style={styles.subtitle}>
-                    Create a strong and unique password to protect your data.
-                 </Text>
-             </View>
+        <KeyboardAvoidingView 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <View style={styles.content}>
+                    <View style={styles.header}>
+                        <View style={[styles.logoContainer, { backgroundColor: themeColors.primary }]}>
+                            <Image 
+                                source={isDark ? require("@/assets/logos/logo.png") : require("@/assets/logos/image.png")} 
+                                style={styles.logo} 
+                                resizeMode="contain" 
+                            />
+                        </View>
+                        <Text style={[styles.title, { color: themeColors.text }]}>Secure Your Account</Text>
+                        <Text style={[styles.subtitle, { color: themeColors.textDim }]}>
+                            Create a strong and unique password to protect your data.
+                        </Text>
+                    </View>
 
-             <View style={styles.form}>
-                 {/* Password */}
-                 <View style={styles.inputGroup}>
-                     <Text style={styles.label}>Password</Text>
-                     <View style={styles.inputContainer}>
-                        <Controller
-                            control={control}
-                            name="password"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter password"
-                                    placeholderTextColor="rgba(255,255,255,0.4)"
-                                    secureTextEntry={!showPassword}
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
+                    <View style={styles.form}>
+                        {/* Password */}
+                        <View style={styles.inputGroup}>
+                            <Text style={[styles.label, { color: themeColors.text }]}>Password</Text>
+                            <View style={styles.inputContainer}>
+                                <Controller
+                                    control={control}
+                                    name="password"
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            style={[styles.input, { 
+                                                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                                                color: themeColors.text,
+                                                borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+                                            }]}
+                                            placeholder="Enter password"
+                                            placeholderTextColor={themeColors.textMuted}
+                                            secureTextEntry={!showPassword}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                        <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
-                             {showPassword ? <EyeOff color="rgba(255,255,255,0.6)" size={20} /> : <Eye color="rgba(255,255,255,0.6)" size={20} />}
-                        </TouchableOpacity>
-                     </View>
-                 </View>
+                                <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? 
+                                        <EyeOff color={themeColors.textMuted} size={20} /> : 
+                                        <Eye color={themeColors.textMuted} size={20} />
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
-                 {/* Confirm Password */}
-                 <View style={styles.inputGroup}>
-                     <Text style={styles.label}>Confirm Password</Text>
-                     <View style={styles.inputContainer}>
-                        <Controller
-                            control={control}
-                            name="confirm_password"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Confirm password"
-                                    placeholderTextColor="rgba(255,255,255,0.4)"
-                                    secureTextEntry={!showConfirmPassword}
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
+                        {/* Confirm Password */}
+                        <View style={styles.inputGroup}>
+                            <Text style={[styles.label, { color: themeColors.text }]}>Confirm Password</Text>
+                            <View style={styles.inputContainer}>
+                                <Controller
+                                    control={control}
+                                    name="confirm_password"
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            style={[styles.input, { 
+                                                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                                                color: themeColors.text,
+                                                borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+                                            }]}
+                                            placeholder="Confirm password"
+                                            placeholderTextColor={themeColors.textMuted}
+                                            secureTextEntry={!showConfirmPassword}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                         <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                             {showConfirmPassword ? <EyeOff color="rgba(255,255,255,0.6)" size={20} /> : <Eye color="rgba(255,255,255,0.6)" size={20} />}
-                        </TouchableOpacity>
-                     </View>
-                 </View>
+                                <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                                    {showConfirmPassword ? 
+                                        <EyeOff color={themeColors.textMuted} size={20} /> : 
+                                        <Eye color={themeColors.textMuted} size={20} />
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
-                 <TouchableOpacity 
-                    style={styles.submitButton}
-                    onPress={handleCreatePassword}
-                 >
-                     <LoadingChildren loading={loading}>
-                        <Text style={styles.submitButtonText}>Create Account</Text>
-                     </LoadingChildren>
-                 </TouchableOpacity>
-             </View>
-        </View>
+                        <TouchableOpacity 
+                            style={[styles.submitButton, { backgroundColor: themeColors.primary, shadowColor: themeColors.primary }]}
+                            onPress={handleCreatePassword}
+                        >
+                            <LoadingChildren loading={loading}>
+                                <Text style={[styles.submitButtonText, { color: Colors.brand.darkGreen }]}>Create Account</Text>
+                            </LoadingChildren>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );
@@ -124,17 +154,16 @@ export default function CreatePassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
   },
   background: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
   },
   safeArea: {
     flex: 1,
+  },
+  scrollContent: {
+      flexGrow: 1,
+      justifyContent: 'center',
   },
   content: {
     flex: 1,
@@ -147,7 +176,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 20,
-    backgroundColor: '#B0E17C',
     padding: 10,
     borderRadius: 16,
   },
@@ -158,12 +186,10 @@ const styles = StyleSheet.create({
   title: {
       fontSize: 28,
       fontWeight: 'bold',
-      color: '#FFFFFF',
       marginBottom: 12,
   },
   subtitle: {
       fontSize: 16,
-      color: 'rgba(255,255,255,0.8)',
       textAlign: 'center',
       lineHeight: 24,
   },
@@ -175,7 +201,6 @@ const styles = StyleSheet.create({
       gap: 8,
   },
   label: {
-      color: 'rgba(255,255,255,0.9)',
       fontSize: 14,
       fontWeight: '500',
   },
@@ -184,13 +209,10 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 16,
     padding: 16,
     paddingRight: 50,
-    color: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
     fontSize: 16,
   },
   eyeIcon: {
@@ -199,12 +221,10 @@ const styles = StyleSheet.create({
       top: 18,
   },
   submitButton: {
-    backgroundColor: '#B0E17C',
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#B0E17C',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -212,7 +232,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   submitButtonText: {
-    color: '#1A3E2A',
     fontSize: 16,
     fontWeight: 'bold',
   },

@@ -81,3 +81,8 @@ export function resetPassword(payload: any) {
   const response = api.post("auth/reset", payload);
   return response;
 }
+
+export function updateProfile(payload: any) {
+  const response = api.patch("users/update-profile", payload);
+  return response;
+}

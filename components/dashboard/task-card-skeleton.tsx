@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Colors from "@/constants/Colors";
 import { View, StyleSheet, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "@/components/useColorScheme";
 
 const SkeletonLoader = ({
   width,
@@ -31,12 +32,17 @@ const SkeletonLoader = ({
     ).start();
   }, []);
 
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const skeletonColor = isDark ? "#333333" : "#E0E0E0";
+  const shimmerColor = isDark ? "#444444" : "#F0F0F0";
+
   return (
     <Animated.View
-      style={[styles.skeleton, { width, height, opacity: opacityAnim }, style]}
+      style={[styles.skeleton, { width, height, opacity: opacityAnim, backgroundColor: skeletonColor }, style]}
     >
       <LinearGradient
-        colors={["#333333", "#444444", "#333333"]}
+        colors={[skeletonColor, shimmerColor, skeletonColor]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={[styles.gradient, { width, height }]}
@@ -46,13 +52,14 @@ const SkeletonLoader = ({
 };
 
 export const TaskCardSkeleton = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const cardBg = isDark ? "#1A1A1A" : "#FFFFFF";
+  const borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+
   return (
-    <View style={styles.taskCardSkeleton}>
+    <View style={[styles.taskCardSkeleton, { backgroundColor: cardBg, borderColor }]}>
       <SkeletonLoader width={80} height={80} style={styles.imagePlaceholder} />
-      {/* <View style={styles.textContainer}>
-        <SkeletonLoader width={160} height={20} style={styles.marginBottom} />
-        <SkeletonLoader width={120} height={15} />
-      </View> */}
     </View>
   );
 };
@@ -78,11 +85,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#1A1A1A",
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
   imagePlaceholder: {
     borderRadius: 12,

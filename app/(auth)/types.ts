@@ -53,9 +53,15 @@ export const userDataSchema = z.object({
   _id: z.string(),
   first_name: z.string(),
   last_name: z.string(),
+  username: z.string().optional(),
   email: z.string(),
   phone_no: z.string(),
   profile_picture: z.string().nullable(),
+  dob: z.string().or(z.date()).optional(),
+  id_card_url: z.string().optional(),
+  preferred_task_categories: z.array(z.string()).optional(),
+  push_token: z.string().optional(),
+  is_online: z.boolean().optional(),
 });
 
 export type UserDataSchema = z.infer<typeof userDataSchema>;
@@ -70,6 +76,7 @@ export const signupStudentSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   reg_no: z.string().min(1, "Registration number is required"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   department: z.string().min(1, "Department is required"),

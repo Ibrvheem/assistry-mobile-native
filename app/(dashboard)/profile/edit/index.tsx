@@ -21,9 +21,10 @@ import { uploadImage, updateUser, getMe } from "../services";
 import { useQuery } from "@tanstack/react-query";
 // import { useRouter } from "expo-router";
 import { useGobalStoreContext } from "@/store/global-context";
-// // import { Avatar } from "@/components/avatar";
+// import { Avatar } from "@/components/avatar";
 // import { useFocusEffect } from "@react-navigation/native";
 // import  {  useCallback } from "react";
+import { useColorScheme } from "@/components/useColorScheme";
 
 const mockUser = {
   name: "John Smith",
@@ -54,6 +55,9 @@ export default function EditProfileScreen(): JSX.Element {
   const [newLanguage, setNewLanguage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const { saveUserData, refreshUser } = useGobalStoreContext();
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   
   const {
@@ -185,9 +189,9 @@ const handleSave = async (): Promise<void> => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.centered}>
-        <ActivityIndicator size="large" color="#22C55E" />
-        <Text style={{ marginTop: 12, color: "#555" }}>Loading profile...</Text>
+      <SafeAreaView style={[styles.centered, { backgroundColor: themeColors.background }]}>
+        <ActivityIndicator size="large" color={themeColors.primary} />
+        <Text style={{ marginTop: 12, color: themeColors.textMuted }}>Loading profile...</Text>
       </SafeAreaView>
     );
   }
@@ -196,14 +200,14 @@ const handleSave = async (): Promise<void> => {
 
  
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <View style={[styles.header, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.brand.text} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Edit Profile</Text>
         <Pressable
-          style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
+          style={[styles.saveButton, isSaving && styles.saveButtonDisabled, { backgroundColor: isSaving ? themeColors.surface : themeColors.primary }]}
           onPress={handleSave}
           disabled={isSaving}
         >
@@ -211,6 +215,7 @@ const handleSave = async (): Promise<void> => {
             style={[
               styles.saveButtonText,
               isSaving && styles.saveButtonTextDisabled,
+              { color: isSaving ? themeColors.textMuted : Colors.brand.darkGreen } 
             ]}
           >
             {isSaving ? "Saving..." : "Save"}
@@ -237,89 +242,97 @@ const handleSave = async (): Promise<void> => {
             ) : (
               <Avatar size={100} />
             )}
-            <Pressable style={styles.changePhotoButton} onPress={pickImage}>
-              <Ionicons name="camera" size={20} color={Colors.brand.primary} />
-              <Text style={styles.changePhotoText}>Change Photo</Text>
+            <Pressable 
+                style={[styles.changePhotoButton, { 
+                    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                    borderColor: themeColors.primary
+                }]} 
+                onPress={pickImage}
+            >
+              <Ionicons name="camera" size={20} color={themeColors.primary} />
+              <Text style={[styles.changePhotoText, { color: themeColors.primary }]}>Change Photo</Text>
             </Pressable>
           </View>
 
           <View style={styles.nameSection}>
 
-          <View style={styles.n_section}>
+          <View style={[styles.n_section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
             {/* <Text style={styles.label}>Name</Text> */}
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={first_name}
               onChangeText={setFirstName}
               placeholder="Your name"
+              placeholderTextColor={themeColors.textMuted}
             />
           </View>
-          <View style={styles.n_section}>
+          <View style={[styles.n_section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
             {/* <Text style={styles.label}>Name</Text> */}
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={last_name}
               onChangeText={setLastName}
               placeholder="Your name"
+              placeholderTextColor={themeColors.textMuted}
             />
           </View>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Email</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Email</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={email}
               onChangeText={setEmail}
                placeholder="Your email"
-               placeholderTextColor={Colors.brand.textMuted}
+               placeholderTextColor={themeColors.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
             />
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Phone Number</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Phone Number</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={phone}
               onChangeText={setPhone}
                placeholder="Your phone number"
-               placeholderTextColor={Colors.brand.textMuted}
+               placeholderTextColor={themeColors.textMuted}
               keyboardType="phone-pad"
             />
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Department</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Department</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={department}
               onChangeText={setDepartment}
                placeholder="Your department"
-               placeholderTextColor={Colors.brand.textMuted}
+               placeholderTextColor={themeColors.textMuted}
             />
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Level</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Level</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={year}
               onChangeText={setYear}
                placeholder="Your level"
-               placeholderTextColor={Colors.brand.textMuted}
+               placeholderTextColor={themeColors.textMuted}
             />
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Bio</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Bio</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[styles.input, styles.textArea, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={bio}
               onChangeText={setBio}
                placeholder="Tell us about yourself"
-               placeholderTextColor={Colors.brand.textMuted}
+               placeholderTextColor={themeColors.textMuted}
               multiline
               numberOfLines={4}
             />
@@ -353,43 +366,52 @@ const handleSave = async (): Promise<void> => {
             </View>
           </View> */}
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Languages</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Languages</Text>
             <View style={styles.tags}>
               {languages.map((lang) => (
                 <Pressable
                   key={lang}
-                  style={styles.tag}
+                  style={[styles.tag, { 
+                      backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", 
+                      borderColor: themeColors.primary 
+                  }]}
                   onPress={() => removeLanguage(lang)}
                 >
-                  <Text style={styles.tagText}>{lang}</Text>
-                  <Ionicons name="close-circle" size={16} color={Colors.brand.primary} />
+                  <Text style={[styles.tagText, { color: themeColors.primary }]}>{lang}</Text>
+                  <Ionicons name="close-circle" size={16} color={themeColors.primary} />
                 </Pressable>
               ))}
             </View>
             <View style={styles.addItemContainer}>
               <TextInput
-                style={styles.addItemInput}
+                style={[styles.addItemInput, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
                 value={newLanguage}
                 onChangeText={setNewLanguage}
                  placeholder="Add a language"
-                 placeholderTextColor={Colors.brand.textMuted}
+                 placeholderTextColor={themeColors.textMuted}
                 onSubmitEditing={addLanguage}
               />
-              <Pressable style={styles.addItemButton} onPress={addLanguage}>
-                <Ionicons name="add" size={24} color={Colors.brand.primary} />
+              <Pressable 
+                  style={[styles.addItemButton, { 
+                      backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                      borderColor: themeColors.primary
+                  }]} 
+                  onPress={addLanguage}
+              >
+                <Ionicons name="add" size={24} color={themeColors.primary} />
               </Pressable>
             </View>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Availability</Text>
+          <View style={[styles.section, { borderBottomColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }]}>
+            <Text style={[styles.label, { color: themeColors.text }]}>Availability</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)", color: themeColors.text }]}
               value={availability}
               onChangeText={setAvailability}
                placeholder="When are you available?"
-               placeholderTextColor={Colors.brand.textMuted}
+               placeholderTextColor={themeColors.textMuted}
             />
           </View>
         </View>

@@ -11,8 +11,10 @@ import { useGobalStoreContext } from "@/store/global-context";
 import { cloudinaryUrl } from "@/lib/helpers";
 // import { Notification} from "lucide-react-native"
 import { BellDot } from "lucide-react-native";
+import { useColorScheme } from "@/components/useColorScheme";
 
 const queryClient = new QueryClient();
+
 
 export function MyAvatar({
   size = 40,
@@ -26,11 +28,14 @@ export function MyAvatar({
     queryFn: fetchAvatar,
   });
   const { userData } = useGobalStoreContext();
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  console.log('UserData', userData)
  
   // // // console.log(userData);
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color={themeColors.primary} />;
   }
 
   if (error) {
@@ -61,7 +66,7 @@ export function MyAvatar({
         resizeMode="cover"
       />
       {showGreeting && (
-        <Text style={{ fontWeight: "500", color: Colors.brand.text }}>Hi, {userData?.first_name}</Text>
+        <Text style={{ fontWeight: "500", color: themeColors.text }}>Hi, {userData?.first_name}</Text>
       )}
     </View>
 

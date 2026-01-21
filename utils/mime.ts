@@ -8,6 +8,11 @@ const mimeMap: Record<string, string> = {
   heic: "image/heic",
   mp4: "video/mp4",
   mov: "video/quicktime",
+  mp3: "audio/mpeg",
+  wav: "audio/wav",
+  m4a: "audio/m4a",
+  aac: "audio/aac",
+  "3gp": "audio/3gpp",
 };
 
 export function getMimeType(uri: string): string {

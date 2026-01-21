@@ -95,12 +95,10 @@
 //       console.error("Submit Failed:", error);
 //     }
 
-
 //     // try {
 
 //     //   if (images.length != 0) {
-        
-      
+
 //     //   const assets = await Promise.all(
 //     //     images.map(async (image) => {
 //     //       const formData = new FormData();
@@ -146,9 +144,6 @@
 //   };
 // }
 
-
-
-
 import { useForm } from "react-hook-form";
 import { postTask } from "../services";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -188,10 +183,10 @@ export function usePostTask({
             // } as any);
 
             const optimizedUri = await optimizeImageBeforeUpload(image);
-            
+
             const formData = new FormData();
             const type = getMimeType(optimizedUri);
-            
+
             formData.append("file", {
               uri: optimizedUri,
               name: optimizedUri.split("/").pop(),
@@ -200,14 +195,16 @@ export function usePostTask({
 
             const response = await api.formData(formData);
             return { kind: type, assetStorageKey: response.key as string };
-          })
+          }),
         );
       }
 
       const payload = {
         ...values,
-        expires: Number(values.expires),
-        incentive: Number(values.incentive),
+        expires: String(values.expires),
+        incentive: String(values.incentive),
+        payment_method: values.payment_method || "IN_APP",
+        timeline: values.timeline || "ASAP",
         ...(assets.length ? { assets } : {}),
       };
 
@@ -226,9 +223,7 @@ export function usePostTask({
   const onSubmit = handleSubmit(async (values) => {
     try {
       await mutation.mutateAsync(values);
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   });
 
   return {

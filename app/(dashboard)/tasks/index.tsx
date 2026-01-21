@@ -17,7 +17,6 @@ import Colors from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-
 import { Image } from "expo-image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -31,9 +30,8 @@ import {
 } from "../services";
 import { useFocusEffect } from "expo-router";
 import {
-
   chatTaskUser,
-  performTaskAction, // ✅ your API call handler
+  performTaskAction, 
 } from "./services";
 import { formatCurrency } from "@/lib/helpers";
 import { useGobalStoreContext } from "@/store/global-context";
@@ -47,8 +45,9 @@ import EditTaskModal from "@/components/organism/edit-tasl-modal";
 import { MessageCircleMore, PlusCircle } from "lucide-react-native";
 import { MessageCircle } from "lucide-react-native";
 import { Dimensions } from "react-native";
-const { width } = Dimensions.get("window");
+import { useColorScheme } from "@/components/useColorScheme";
 
+const { width } = Dimensions.get("window");
 
 dayjs.extend(relativeTime);
 
@@ -77,12 +76,16 @@ const ActionConfirmModal = ({
   onConfirm: () => void;
   loading: boolean;
 }) => {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
+
   if (!visible) return null;
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={modalStyles.overlay}>
-        <View style={modalStyles.container}>
-          <Text style={modalStyles.text}>
+        <View style={[modalStyles.container, { backgroundColor: themeColors.surface, borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}>
+          <Text style={[modalStyles.text, { color: themeColors.text }]}>
   {action === "chat" ? (
     <>
       You are about to start a chat with 
@@ -92,17 +95,10 @@ const ActionConfirmModal = ({
   )}
 </Text>
 
-          {/* <Text style={modalStyles.text}>
-            {
-              action === "chat" ? "You are about to start a chat with {user}." : `Are you sure you want to {action.toUpperCase()}`
-            }
-            Are you sure you want to {action.toUpperCase()}
-          </Text> */}
-
           <Text style={modalStyles.taskId}>
           {action === "chat" ? (
     <>
-      <Text style={modalStyles.bold}>{user ?? "this user"}</Text>
+      <Text style={[modalStyles.bold, { color: themeColors.primary }]}>{user ?? "this user"}</Text>
     </>
   ) : (
     <>{task?.task}?</>
@@ -113,11 +109,11 @@ const ActionConfirmModal = ({
             <ActivityIndicator size="large" color="#22C55E" style={{ marginTop: 20 }} />
           ) : (
             <View style={modalStyles.actions}>
-              <Pressable style={[modalStyles.button, modalStyles.cancel]} onPress={onCancel}>
-                <Text style={modalStyles.cancelText}>Exit</Text>
+              <Pressable style={[modalStyles.button, modalStyles.cancel, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0' }]} onPress={onCancel}>
+                <Text style={[modalStyles.cancelText, { color: themeColors.text }]}>Exit</Text>
               </Pressable>
-              <Pressable style={[modalStyles.button, modalStyles.confirm]} onPress={onConfirm}>
-                <Text style={modalStyles.confirmText}>
+              <Pressable style={[modalStyles.button, modalStyles.confirm, { backgroundColor: themeColors.primary }]} onPress={onConfirm}>
+                <Text style={[modalStyles.confirmText, { color: Colors.brand.darkGreen }]}>
                    {
               action === "chat" ? "Chat" : `Yes`
             }
@@ -130,7 +126,6 @@ const ActionConfirmModal = ({
     </Modal>
   );
 };
-
 
 
 /** ---------- End Modal ---------- */
@@ -147,11 +142,12 @@ export default function TasksPage() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // const queryClient = useQueryClient();
-
   const { userData } = useGobalStoreContext();
   const queryClient = useQueryClient();
-  // ⬇️ Place this right below
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
+
   useFocusEffect(
     useCallback(() => {
       const tabKeyMap: Record<TabType, string> = {
@@ -194,11 +190,6 @@ export default function TasksPage() {
     queryFn: getYourOngoingTasks,
   });
 
-  // // console.log('Ongoing Loading:', ongoingTasks.length);
-
- 
-
-
   const tasks = useMemo(() => {
   switch (activeTab) {
     case "myPosts":
@@ -226,7 +217,7 @@ const queryKeyMap: Record<TabType, string> = {
   try {
     setRefreshing(true);
     const key = queryKeyMap[activeTab];
-    await queryClient.invalidateQueries({ queryKey: [key] }); // 🔁 Refetch only active tab
+    await queryClient.invalidateQueries({ queryKey: [key] });
   } catch (err) {
     console.error("Refresh failed:", err);
   } finally {
@@ -237,8 +228,6 @@ const queryKeyMap: Record<TabType, string> = {
   const handleTaskAction = useCallback((task: TaskSchema, action: string) => {
   setSelectedTask(task);
   setCurrentAction(action);
-  // if (action === "chat") // console.log('CATTTTT');
-  // if (action === "chat") return setChatConfirmVisible(true);
   setConfirmVisible(true);
 }, []);
 
@@ -253,40 +242,23 @@ const handleEdit = useCallback((task: TaskSchema) => {
 
   try {
     if (currentAction === 'chat') {
-      // create or fetch chat room for this task + participant
       const chat = await chatTaskUser([selectedTask.user._id], selectedTask._id);
-
-      // server might return different shapes: response.data, { _id }, { id }, { key }, etc.
       const chatObj = chat?.data ?? chat;
-
-      const chatId =
-        chatObj?._id ?? chatObj?.id ?? chatObj?.key ?? chatObj?.roomId ?? chatObj;
+      const chatId = chatObj?._id ?? chatObj?.id ?? chatObj?.key ?? chatObj?.roomId ?? chatObj;
 
       if (!chatId) {
         throw new Error('Chat created but no id was returned from server.');
       }
       console.log('data',chatObj)
-
-      // Navigate to the messages screen. For expo-router use params `id`.
-      // router.push({ pathname: '/messages/[id]', params: { room: chatObj } });
       router.push({
-  pathname: '/messages/[id]',
-  params: { id: chatId, data: JSON.stringify(chatObj) },
-})
-
-//   router.push({
-//   pathname: '/messages'
-// })
-
-;
-
+        pathname: '/messages/[id]',
+        params: { id: chatId, data: JSON.stringify(chatObj) },
+      })
       return;
     }
 
+    await performTaskAction(selectedTask._id, currentAction);
 
-      await performTaskAction(selectedTask._id, currentAction);
-
-    // 🔁 Define tab-to-queryKey mapping
     const tabKeyMap: Record<TabType, string> = {
       available: "for-you",
       myPosts: "by-you",
@@ -295,7 +267,6 @@ const handleEdit = useCallback((task: TaskSchema) => {
       ongoing: "your-ongoing-tasks",
     };
 
-    // 🧭 Define automatic redirection after each action
     const actionRedirects: Record<string, TabType> = {
       accept: "yourToDo",
       start: "ongoing",
@@ -307,7 +278,6 @@ const handleEdit = useCallback((task: TaskSchema) => {
 
     const nextTab = actionRedirects[currentAction] ?? activeTab;
 
-    // 🔁 Refetch both current and next tab data in background
     const refetchTabs = new Set([activeTab, nextTab]);
     await Promise.all(
       Array.from(refetchTabs).map((tab) =>
@@ -315,7 +285,6 @@ const handleEdit = useCallback((task: TaskSchema) => {
       )
     );
 
-    // 🚀 Switch tab if needed
     setActiveTab(nextTab);
   } catch (err) {
     console.error("Task action failed:", err);
@@ -336,15 +305,20 @@ const isLoading =
       onPress={() =>
         router.push({ pathname: "/tasks/[id]", params: { id: item._id } })
       }>
-      <View style={styles.taskCard}>
+      <View style={[styles.taskCard, 
+          { 
+              backgroundColor: themeColors.surface, 
+              borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+          }
+      ]}>
         <View style={styles.taskHeader}>
-          <Text style={styles.taskTitle}>{item.task}</Text>
+          <Text style={[styles.taskTitle, { color: themeColors.text }]}>{item.task}</Text>
           <View >
-            <Text style={styles.incentive}>{formatCurrency(item.incentive)}</Text>
+            <Text style={[styles.incentive, { color: Colors.brand.secondary }]}>{formatCurrency(item.incentive)}</Text>
           </View>
         </View>
 
-        <Text style={styles.taskDescription} numberOfLines={2}>
+        <Text style={[styles.taskDescription, { color: themeColors.textDim }]} numberOfLines={2}>
           {item.description}
         </Text>
 
@@ -359,9 +333,9 @@ const isLoading =
         )}
 
         <View style={styles.taskFooter}>
-          <View style={styles.locationContainer}>
-            <Ionicons name="location" size={16} color={Colors.brand.textMuted} />
-            <Text style={styles.location}>{item.location}</Text>
+          <View style={[styles.locationContainer, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }]}>
+            <Ionicons name="location" size={16} color={themeColors.textMuted} />
+            <Text style={[styles.location, { color: themeColors.textMuted }]}>{item.location}</Text>
           </View>
 
           <View style={styles.taskActions}>
@@ -370,7 +344,7 @@ const isLoading =
                   style={styles.chatButton}
                   onPress={() => handleTaskAction(item, "chat")}
                 >
-                  <MessageCircleMore size={32} color="#fff" fill={Colors.brand.primary} />
+                  <MessageCircleMore size={32} color={isDark ? themeColors.text : "#fff"} fill={themeColors.primary} />
                 </Pressable>
               )}
 
@@ -380,10 +354,11 @@ const isLoading =
                 onPress={() => handleTaskAction(item, "accept")}
                 style={[
                   styles.actionButton,
+                  { backgroundColor: themeColors.primary },
                   item.user.email === userData?.email && styles.disabledButton,
                 ]}>
-                <Ionicons name="checkmark" size={16} color="#fff" />
-                <Text style={styles.actionButtonText}>Accept</Text>
+                <Ionicons name="checkmark" size={16} color={Colors.brand.darkGreen} />
+                <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>Accept</Text>
               </Pressable>
             )}
 
@@ -415,10 +390,10 @@ const isLoading =
 
             {item.status === TaskStatus.EXPIRED && (
               <Pressable
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: themeColors.primary }]}
                 onPress={() => handleTaskAction(item, "repost")}>
-                <Ionicons name="refresh" size={16} color="#fff" />
-                <Text style={styles.actionButtonText}>Repost</Text>
+                <Ionicons name="refresh" size={16} color={Colors.brand.darkGreen} />
+                <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>Repost</Text>
               </Pressable>
             )}
 
@@ -426,12 +401,12 @@ const isLoading =
               item.status,
             ) && activeTab === "myPosts" && (
               <Pressable
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: themeColors.primary }]}
                 // onPress={() => handleTaskAction(item, "edit")}
                 onPress={() =>  handleEdit(item)}
                 >
-                <Ionicons name="create" size={16} color="#fff" />
-                <Text style={styles.actionButtonText}>Edit</Text>
+                <Ionicons name="create" size={16} color={Colors.brand.darkGreen} />
+                <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>Edit</Text>
               </Pressable>
             )}
 
@@ -442,11 +417,12 @@ const isLoading =
               disabled={item.status === TaskStatus.ONGOING}
                 style={[
         styles.actionButton,
+        { backgroundColor: themeColors.primary },
         item.status === TaskStatus.ONGOING && styles.disabledButton,
       ]}
                 onPress={() => handleTaskAction(item, "approve")}>
-                <Ionicons name="checkmark-circle" size={16} color="#fff" />
-                <Text style={styles.actionButtonText}>
+                <Ionicons name="checkmark-circle" size={16} color={Colors.brand.darkGreen} />
+                <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>
                    {item.status === TaskStatus.ONGOING
           ? "Ongoing ..."
           : "Approve"}
@@ -462,11 +438,12 @@ const isLoading =
       onPress={() => handleTaskAction(item, "complete")}
       style={[
         styles.actionButton,
+        { backgroundColor: themeColors.primary },
         item.status === TaskStatus.FINISHED && styles.disabledButton,
       ]}
     >
-      <Ionicons name="checkmark-done" size={16} color="#fff" />
-      <Text style={styles.actionButtonText}>
+      <Ionicons name="checkmark-done" size={16} color={Colors.brand.darkGreen} />
+      <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>
         {item.status === TaskStatus.FINISHED
           ? "Waiting Acknowledgement"
           : "Complete"}
@@ -478,10 +455,10 @@ const isLoading =
             {(activeTab === "yourToDo") &&
               item.status === TaskStatus.ACCEPTED && (
                 <Pressable
-                  style={styles.actionButton}
+                  style={[styles.actionButton, { backgroundColor: themeColors.primary }]}
                   onPress={() => handleTaskAction(item, "start")}>
-                  <Ionicons name="play" size={16} color="#fff" />
-                  <Text style={styles.actionButtonText}>Start</Text>
+                  <Ionicons name="play" size={16} color={Colors.brand.darkGreen} />
+                  <Text style={[styles.actionButtonText, { color: Colors.brand.darkGreen }]}>Start</Text>
                 </Pressable>
                 
               )}
@@ -502,31 +479,31 @@ const isLoading =
         </View>
 
         <View style={styles.taskMeta}>
-          <Text style={styles.postedBy}>
+          <Text style={[styles.postedBy, { color: themeColors.textMuted }]}>
             {`${activeTab === "accepted" ? "Accepted" : "Posted"} by ${
               item?.user
                 ? item.user.first_name + " " + item.user.last_name
                 : "You"
             }`}
           </Text>
-          <Text style={styles.postedAt}>{dayjs(item.created_at).fromNow()}</Text>
+          <Text style={[styles.postedAt, { color: themeColors.textDim }]}>{dayjs(item.created_at).fromNow()}</Text>
         </View>
 
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
-          <Ionicons name="eye" size={18} color={Colors.brand.primary} />
-          <Text style={styles.views}>{item.views}</Text>
+          <Ionicons name="eye" size={18} color={Colors.brand.secondary} />
+          <Text style={[styles.views, { color: themeColors.primary }]}>{item.views}</Text>
         </View>
       </View>
     </Pressable>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Campus Tasks</Text>
-        <Pressable style={styles.filterButton} onPress={() => setOpen(true)}>
+        <Text style={[styles.title, { color: themeColors.text }]}>Campus Tasks</Text>
+        <Pressable style={[styles.filterButton, { backgroundColor: themeColors.primary, borderColor: themeColors.primary }]} onPress={() => setOpen(true)}>
           <PlusCircle size={20} color={Colors.brand.darkGreen} />
-          <Text style={styles.filterText}>Post Task</Text>
+          <Text style={[styles.filterText, { color: Colors.brand.darkGreen }]}>Post Task</Text>
         </Pressable>
       </View>
       <CreateTaskModal open={open} setOpen={setOpen} />
@@ -535,24 +512,27 @@ const isLoading =
       )}
 
 
-
   <View style={styles.tabsWrapper}>
       <ScrollView
         horizontal
-        // style={{ height: 49}}    
         showsHorizontalScrollIndicator={false}
-        // keep ScrollView from growing vertically
       style={styles.tabScroll} 
         contentContainerStyle={styles.tabScrollContainer}
-        contentInsetAdjustmentBehavior="never" // iOS: prevents automatic inset
+        contentInsetAdjustmentBehavior="never" 
         >
         {["available", "myPosts", "yourToDo", "accepted", "ongoing"].map((tab) => (
           <Pressable
             key={tab}
-            style={[styles.tab, activeTab === tab && styles.activeTab]}
+            style={[styles.tab, 
+                { backgroundColor: themeColors.surface },
+                activeTab === tab && { backgroundColor: themeColors.primary }
+            ]}
             onPress={() => setActiveTab(tab as TabType)}>
             <Text
-              style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+              style={[styles.tabText, 
+                  { color: themeColors.textMuted },
+                  activeTab === tab && { color: Colors.brand.darkGreen }
+              ]}>
               {tab === "available"
                 ? "Available"
                 : tab === "myPosts"
@@ -568,8 +548,6 @@ const isLoading =
       </ScrollView>
       </View>
 
-
-
       {isLoading ? (
         <TaskLoadingSkeleton />
       ) : tasks.length > 0 ? (
@@ -581,23 +559,19 @@ const isLoading =
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
            refreshControl={
-                      <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                      <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={themeColors.primary} />
                     }
         />
       ) : (
         <ScrollView
                   contentContainerStyle={styles.emptyState}
                   refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={themeColors.primary} />
                   }
                   showsVerticalScrollIndicator={false}
                 >
                   <EmptyTaskState />
                 </ScrollView>
-        // <View style={styles.emptyState}>
-        //   {/* <Text style={{ fontSize: 16, marginBottom: 16, color: "#666" }}> NO task</Text> */}
-        //   <EmptyTaskState />
-        // </View>
       )}
 
       {/* ✅ Confirmation Modal */}
@@ -616,17 +590,13 @@ const isLoading =
 
 /* ---------- STYLES ---------- */
 const styles = StyleSheet.create({
-  container: { backgroundColor: Colors.brand.background, flex: 1 },
+  container: { flex: 1 },
 
-  // tabScrollContainer: { paddingHorizontal: 16, marginBottom: 8, 
-  // },
   tabsWrapper: {
-    // tweak height to fit your tab item paddings / text size
     height: 52,
     justifyContent: "center",
   },
 
-  // prevents ScrollView from overflowing the wrapper
   tabScroll: {
     maxHeight: 52,
     height: "100%",
@@ -635,10 +605,10 @@ const styles = StyleSheet.create({
   tabScrollContainer: {
     paddingHorizontal: 16,
     paddingVertical: 0,
-    alignItems: "center", // center tabs vertically so no gap appears
+    alignItems: "center", 
   },
 
-  disabledButton: { backgroundColor: Colors.brand.surface, opacity: 0.7 },
+  disabledButton: { opacity: 0.7 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -646,48 +616,41 @@ const styles = StyleSheet.create({
     padding: 16,
 
   },
-  title: { fontSize: 28, fontWeight: "bold", color: Colors.brand.text },
+  title: { fontSize: 28, fontWeight: "bold" },
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    // backgroundColor: Colors.brand.surface,
-     backgroundColor: Colors.brand.primary,
     padding: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.brand.primary,
   },
-  filterText: { color: Colors.brand.darkGreen, marginLeft: 4, fontWeight: "600" },
+  filterText: { marginLeft: 4, fontWeight: "600" },
   tab: {
     padding: 8,
     marginRight: 8,
     borderRadius: 20,
-    backgroundColor: Colors.brand.surface,
     height: 36,
   },
-  activeTab: { backgroundColor: Colors.brand.primary },
-  tabText: { color: Colors.brand.textMuted, fontWeight: "600" },
-  activeTabText: { color: Colors.brand.darkGreen },
+  activeTab: { },
+  tabText: { fontWeight: "600" },
+  activeTabText: { },
   listContainer: { paddingBottom: 100 },
   taskCard: {
-    backgroundColor: Colors.brand.surface,
     borderRadius: 16,
     margin: 16,
     padding: 16,
     elevation: 5,
     width: width - 24,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
   taskHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-  taskTitle: { fontSize: 18, fontWeight: "bold", color: Colors.brand.text, width: "70%" },
+  taskTitle: { fontSize: 18, fontWeight: "bold", width: "70%" },
   incentiveContainer: {
-    // backgroundColor: "#dcfce7", 
     backgroundColor: "transparent",
     padding: 8, borderRadius: 8
   },
-  incentive: { fontSize: 18, fontWeight: "bold", color: Colors.brand.primary },
-  taskDescription: { fontSize: 14, color: Colors.brand.textDim, marginBottom: 12, marginTop: 10 },
+  incentive: { fontSize: 18, fontWeight: "bold" },
+  taskDescription: { fontSize: 14, marginBottom: 12, marginTop: 10 },
   taskImage: { width: "100%", height: 200, borderRadius: 12, marginBottom: 12 },
   taskFooter: {
     flexDirection: "row",
@@ -698,27 +661,25 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.1)",
     padding: 8,
     borderRadius: 6,
   },
-  location: { fontSize: 14, color: Colors.brand.textMuted, marginLeft: 4 },
+  location: { fontSize: 14, marginLeft: 4 },
   taskActions: { flexDirection: "row", gap: 8 },
   actionButton: {
-    backgroundColor: Colors.brand.primary,
     padding: 8,
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  actionButtonText: { color: Colors.brand.darkGreen, fontWeight: "600" },
+  actionButtonText: { fontWeight: "600" },
   declineButton: { backgroundColor: "#FFF5F5" },
   chatButton: {
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
-    gap: 4, // soft blue background
+    gap: 4, 
   },
   declineText: { color: "#FF4444" },
   taskMeta: {
@@ -728,14 +689,14 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(255,255,255,0.1)",
     paddingTop: 8,
   },
-  postedBy: { fontSize: 12, color: Colors.brand.textMuted },
-  postedAt: { fontSize: 12, color: Colors.brand.textDim },
+  postedBy: { fontSize: 12 },
+  postedAt: { fontSize: 12 },
   emptyState: { alignItems: "center" },
-  views: { color: Colors.brand.primary, fontWeight: "600" },
+  views: { fontWeight: "600" },
 });
 
 const modalStyles = StyleSheet.create({
-  bold: { fontWeight: "bold", color: Colors.brand.primary },
+  bold: { fontWeight: "bold" },
   overlay: {
     flex: 1,
     justifyContent: "center",
@@ -743,16 +704,14 @@ const modalStyles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   container: {
-    backgroundColor: Colors.brand.surface,
     padding: 24,
     borderRadius: 12,
     width: "85%",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
-  text: { fontSize: 18, textAlign: "center", color: Colors.brand.text },
-  taskId: { fontWeight: "bold", color: Colors.brand.primary, fontSize: 16, marginTop: 8, textAlign: "center" },
+  text: { fontSize: 18, textAlign: "center" },
+  taskId: { fontWeight: "bold", fontSize: 16, marginTop: 8, textAlign: "center" },
   actions: {
     flexDirection: "row",
     marginTop: 24,
@@ -760,8 +719,8 @@ const modalStyles = StyleSheet.create({
     width: "80%",
   },
   button: { paddingVertical: 10, paddingHorizontal: 24, borderRadius: 8 },
-  cancel: { backgroundColor: "#f0f0f0" },
-  confirm: { backgroundColor: Colors.brand.primary },
-  cancelText: { color: "#444", fontWeight: "600" },
-  confirmText: { color: Colors.brand.darkGreen, fontWeight: "600" },
+  cancel: { },
+  confirm: { },
+  cancelText: { fontWeight: "600" },
+  confirmText: { fontWeight: "600" },
 });

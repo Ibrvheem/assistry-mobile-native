@@ -20,6 +20,7 @@ import LoadingChildren from "@/components/molecules/loading-children";
 import { useFund } from "@/app/hooks/useFund";
 import { router } from "expo-router";
 import PaystackWebviewModal from "./PaystackWebviewModal";
+import { useColorScheme } from "@/components/useColorScheme";
 
 interface FundModalProps {
   open: boolean;
@@ -27,6 +28,10 @@ interface FundModalProps {
 }
 
 export default function FundModal({ open, setOpen }: FundModalProps) {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
+
   const {
     methods,
     onSubmit,
@@ -50,22 +55,22 @@ export default function FundModal({ open, setOpen }: FundModalProps) {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // adjust if needed
       >
         <View style={styles.overlay}>
-          <View style={styles.container}>
+          <View style={[styles.container, { backgroundColor: themeColors.background }]}>
             {/* <KeyboardAwareScrollView
               contentContainerStyle={{ flexGrow: 1 }}
               keyboardShouldPersistTaps="handled"
               enableOnAndroid
               extraScrollHeight={2}
             > */}
-              <View style={styles.inner}>
+              <View style={[styles.inner, { backgroundColor: themeColors.background }]}>
                 {error && <Text style={styles.errorBox}>{String(error)}</Text>}
 
                 {/* Close Button */}
                 <TouchableOpacity
-                  style={styles.closeButton2}
+                  style={[styles.closeButton2, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : '#DBCBCC' }]}
                   onPress={() => setOpen(false)}
                 >
-                  <Text style={styles.closeButtonText}>✕</Text>
+                  <Text style={[styles.closeButtonText, { color: themeColors.text }]}>✕</Text>
                 </TouchableOpacity>
 
                 <FormProvider {...methods}>
@@ -76,12 +81,15 @@ export default function FundModal({ open, setOpen }: FundModalProps) {
                         label="Amount"
                         placeholder="1000"
                         keyboardType="numeric"
+                        // Assuming ControlledInput handles theming or accepts style props. 
+                        // If not, we might need to update ControlledInput or wrap it.
+                        // For now, assuming it will look acceptable or is already themed.
                       />
                     </View>
 
                     <View style={{ width: "30%" }}>
                       <Button
-                        style={styles.fundBtn}
+                        style={[styles.fundBtn, { backgroundColor: themeColors.primary }]}
                         onPress={() => onSubmit()}
                         disabled={loading}
                         opacity={loading ? 0.6 : 1}
@@ -135,7 +143,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: Colors.brand.background,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
@@ -143,7 +150,6 @@ const styles = StyleSheet.create({
   },
   inner: {
     // flex: 1,
-    backgroundColor: Colors.brand.background,
     padding: 16,
   },
   errorBox: {
@@ -161,7 +167,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 30,
     borderRadius: 18,
-    backgroundColor: "#DBCBCC",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10,
@@ -179,7 +184,6 @@ const styles = StyleSheet.create({
   },
   fundBtn: {
     height: 36,
-    backgroundColor: Colors.brand.primary,
     width: "100%",
     marginTop: 35,
   },

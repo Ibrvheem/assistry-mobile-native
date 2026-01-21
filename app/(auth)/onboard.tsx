@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "@/components/useColorScheme";
 
 interface OnboardingSlide {
   id: number;
@@ -49,6 +50,9 @@ const Onboarding: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
      // Handle dimension changes if needed (e.g. rotation)
@@ -131,8 +135,8 @@ const Onboarding: React.FC = () => {
         <Image source={item.image} style={styles.illustration} resizeMode="contain" />
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+        <Text style={[styles.title, { color: themeColors.text }]}>{item.title}</Text>
+        <Text style={[styles.description, { color: themeColors.textDim }]}>{item.description}</Text>
       </View>
     </View>
   );
@@ -142,7 +146,7 @@ const Onboarding: React.FC = () => {
       {onboardingData.map((_, index) => (
         <TouchableOpacity
           key={index}
-          style={[styles.dot, index === currentIndex ? styles.activeDot : styles.inactiveDot]}
+          style={[styles.dot, index === currentIndex ? { backgroundColor: themeColors.primary, width: 20 } : { backgroundColor: themeColors.textMuted }]}
           onPress={() => {
             setCurrentIndex(index);
             scrollViewRef.current?.scrollTo({
@@ -156,20 +160,20 @@ const Onboarding: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
         {/* Gradient Background */}
       <LinearGradient
-        colors={Colors.brand.gradient}
-        locations={Colors.brand.gradientLocations as any}
+        colors={themeColors.gradient}
+        locations={themeColors.gradientLocations as any}
         style={styles.background}
       />
       
       <SafeAreaView style={styles.safeArea}>
          <View style={{ marginTop: 12, marginLeft: 24 }}>
             <Image
-              source={require("@/assets/logos/logo.png")}
-              style={{ width: 40, height: 40 }}
+              source={isDark ? require("@/assets/logos/logo.png") : require("@/assets/logos/image.png")}
+              style={{ width: 40, height: 40, borderRadius: 10 }}
               resizeMode="contain"
             />
          </View>
@@ -193,12 +197,12 @@ const Onboarding: React.FC = () => {
           {renderPaginationDots()}
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Sign In</Text>
+            <TouchableOpacity style={[styles.loginButton, { borderColor: themeColors.subprimary }]} onPress={handleLogin}>
+              <Text style={[styles.loginButtonText, { color: themeColors.subprimary }]}>Sign In</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-              <Text style={styles.signUpButtonText}>Get Started</Text>
+            <TouchableOpacity style={[styles.signUpButton, { backgroundColor: themeColors.primary, shadowColor: themeColors.primary }]} onPress={handleSignUp}>
+              <Text style={[styles.signUpButtonText, { color: Colors.brand.darkGreen }]}>Get Started</Text>
             </TouchableOpacity>
           </View>
         </View>

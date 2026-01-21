@@ -2,9 +2,12 @@ import React, { useEffect, useRef } from "react";
 import Colors from "@/constants/Colors";
 import { View, StyleSheet, ScrollView, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "@/components/useColorScheme";
 
 const ShimmerPlaceholder = ({ style }: { style: any }) => {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
     Animated.loop(
@@ -25,15 +28,18 @@ const ShimmerPlaceholder = ({ style }: { style: any }) => {
 
   const backgroundColor = shimmerAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#1A1A1A", "#333333"],
+    outputRange: isDark ? ["#1A1A1A", "#333333"] : ["#E0E0E0", "#F5F5F5"],
   });
 
   return <Animated.View style={[style, { backgroundColor }]} />;
 };
 
 const TaskDetailsSkeleton = () => {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: themeColors.background }}>
       {/* Task Image */}
       <ShimmerPlaceholder style={styles.imagePlaceholder} />
       <View style={styles.container}>

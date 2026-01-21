@@ -7,18 +7,18 @@ export enum TaskStatus {
   COMPLETED = "completed",
   CANCELED = "canceled",
   EXPIRED = "expired",
-  ONGOING = 'ongoing',
-  FINISHED='finished',
+  ONGOING = "ongoing",
+  FINISHED = "finished",
 }
 export enum TransactionType {
-  CREDIT = 'credit',
-  DEBIT = 'debit',
+  CREDIT = "credit",
+  DEBIT = "debit",
 }
 
 export enum TransactionStatus {
-  PENDING = 'pending',
-  SUCCESS = 'success',
-  FAILED = 'failed',
+  PENDING = "pending",
+  SUCCESS = "success",
+  FAILED = "failed",
 }
 export const createTaskPayload = z.object({
   task: z.string(),
@@ -38,14 +38,16 @@ export const taskSchema = z.object({
   created_at: z.string(),
   views: z.string().optional(),
   updated_at: z.string(),
-  acceptedBy:z.string(),
+
+  acceptedBy: z.string(),
+  payment_method: z.enum(["IN_APP", "CASH"]).optional(),
+  timeline: z.string().optional(),
   user: z.object({
     _id: z.string(),
     first_name: z.string(),
     last_name: z.string(),
     email: z.string(),
     profile_picture: z.string().nullable(),
-
   }),
   location: z.string(),
   assets: z.array(
@@ -53,10 +55,9 @@ export const taskSchema = z.object({
       url: z.string(),
       kind: z.string(),
       assetStorageKey: z.string(),
-    })
+    }),
   ),
 });
-
 
 export const transactionSchema = z.object({
   _id: z.string(), // MongoDB ObjectId serialized as string
@@ -75,19 +76,19 @@ export const deposit = z.object({
 
 export const userSchema = z.object({
   _id: z.string(),
-  first_name:z.string(),
-  last_name:z.string(),
-  profile_picture:z.string().nullable(),
-  email:z.string(),
-  phone_no:z.string(),
-  reg_no:z.string(),
+  first_name: z.string(),
+  last_name: z.string(),
+  profile_picture: z.string().nullable(),
+  email: z.string(),
+  phone_no: z.string(),
+  reg_no: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
-  status:z.string()
+  status: z.string(),
 });
 
 export type CreateTaskPayload = z.infer<typeof createTaskPayload>;
 export type TaskSchema = z.infer<typeof taskSchema>;
 export type UserSchema = z.infer<typeof userSchema>;
 export type Deposit = z.infer<typeof deposit>;
-export type TransactionSchema= z.infer<typeof transactionSchema>;
+export type TransactionSchema = z.infer<typeof transactionSchema>;

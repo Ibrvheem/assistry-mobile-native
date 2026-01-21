@@ -4,6 +4,7 @@ import Colors from "@/constants/Colors";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { formatCurrency } from "@/lib/helpers";
+import { useColorScheme } from "@/components/useColorScheme";
 
 type TaskProps = {
   title: string;
@@ -29,20 +30,24 @@ export default function TaskCard({
 
   onPress,
 }: TaskProps) {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
+
   return (
-    <Pressable style={styles.container} onPress={onPress}>
+    <Pressable style={[styles.container, { backgroundColor: themeColors.surface, borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }]} onPress={onPress}>
       <View style={styles.content}>
         <View style={styles.header}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={[styles.title, { color: themeColors.text }]}>{title}</Text>
             <View style={styles.incentiveContainer}>
               {/* <Text style={styles.incentiveLabel}>Reward</Text> */}
-              <Text style={styles.incentive}>{formatCurrency(incentive)}</Text>
+              <Text style={[styles.incentive, { color: Colors.brand.secondary }]}>{formatCurrency(incentive)}</Text>
             </View>
           </View>
         </View>
 
-        <Text style={styles.description} numberOfLines={2}>
+        <Text style={[styles.description, { color: themeColors.textDim }]} numberOfLines={2}>
           {description}
         </Text>
 
@@ -51,8 +56,8 @@ export default function TaskCard({
         </Text> */}
 
         <View style={{flexDirection:'row',alignItems:'center',gap:4,marginBottom:8}}>
-            <Ionicons name="eye" size={16} color="#18AE6A" />
-            <Text style={styles.views}>{views}</Text>
+            <Ionicons name="eye" size={16} color={Colors.brand.secondary} />
+            <Text style={[styles.views, { color: Colors.brand.secondary }]}>{views}</Text>
         </View>
 
         {/* <View style={styles.imageContainer}>
@@ -71,13 +76,13 @@ export default function TaskCard({
             <Ionicons name="location" size={16} color="#666" />
             <Text style={styles.location}>{location}</Text>
           </View> */}
-          <View style={styles.postedContainer}>
-            <View style={styles.locationContainer}>
-            <Ionicons name="location" size={14} color={Colors.brand.textMuted} />
-            <Text style={styles.location}>{location}</Text>
+          <View style={[styles.postedContainer, { borderTopColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }]}>
+            <View style={[styles.locationContainer, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }]}>
+            <Ionicons name="location" size={14} color={themeColors.textMuted} />
+            <Text style={[styles.location, { color: themeColors.textMuted }]}>{location}</Text>
           </View>
-            <Text style={styles.postedBy}>Posted by {postedBy}</Text>
-            <Text style={styles.postedAt}>{postedAt}</Text>
+            <Text style={[styles.postedBy, { color: themeColors.textMuted }]}>Posted by {postedBy}</Text>
+            <Text style={[styles.postedAt, { color: themeColors.textDim }]}>{postedAt}</Text>
           </View>
         </View>
       </View>
@@ -87,18 +92,15 @@ export default function TaskCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.brand.surface,
     borderRadius: 16,
     marginHorizontal: 16,
     marginVertical: 8,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
   },
   content: {
     padding: 14,
   },
   views:{
-    color:'#18AE6A',
     fontWeight:'600',
 
   },
@@ -113,7 +115,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.brand.text,
     flex: 1,
     marginRight: 12,
   },
@@ -132,11 +133,9 @@ const styles = StyleSheet.create({
   incentive: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#22C55E",
   },
   description: {
     fontSize: 14,
-    color: Colors.brand.textDim,
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -155,7 +154,6 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.1)",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -163,7 +161,6 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
-    color: Colors.brand.textMuted,
     marginLeft: 4,
   },
   postedContainer: {
@@ -171,12 +168,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.1)",
     paddingTop: 8,
   },
   postedBy: {
     fontSize: 12,
-    color: Colors.brand.textMuted,
   },
   postedAt: {
     fontSize: 12,

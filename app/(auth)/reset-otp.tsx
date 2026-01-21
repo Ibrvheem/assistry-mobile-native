@@ -6,12 +6,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ChevronLeft } from 'lucide-react-native';
 import { verifyEmailOTP } from './services';
 import { useMutation } from '@tanstack/react-query';
+import { useColorScheme } from '@/components/useColorScheme';
 
 export default function ResetOTP() {
   const { email } = useLocalSearchParams<{ email: string }>();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputs = useRef<TextInput[]>([]);
   const [error, setError] = useState('');
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isDark = colorScheme === 'dark';
 
   const mutation = useMutation({
     mutationFn: verifyEmailOTP,
@@ -63,11 +67,11 @@ export default function ResetOTP() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <LinearGradient
-        colors={Colors.brand.gradient}
-        locations={Colors.brand.gradientLocations as any}
+        colors={themeColors.gradient}
+        locations={themeColors.gradientLocations as any}
         style={styles.background}
       />
       
@@ -77,15 +81,15 @@ export default function ResetOTP() {
             style={{ flex: 1 }}
         >
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <ChevronLeft size={24} color={Colors.brand.text} />
+                <TouchableOpacity onPress={() => router.back()} style={[styles.backButton, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
+                    <ChevronLeft size={24} color={themeColors.text} />
                 </TouchableOpacity>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                 <View style={styles.content}>
-                    <Text style={styles.title}>Enter Code</Text>
-                    <Text style={styles.subtitle}>We sent a verification code to {email}</Text>
+                    <Text style={[styles.title, { color: themeColors.text }]}>Enter Code</Text>
+                    <Text style={[styles.subtitle, { color: themeColors.textDim }]}>We sent a verification code to {email}</Text>
 
                     <View style={styles.otpContainer}>
                         {otp.map((digit, index) => (
@@ -94,6 +98,11 @@ export default function ResetOTP() {
                                 ref={(ref) => { inputs.current[index] = ref as TextInput; }}
                                 style={[
                                     styles.otpInput,
+                                    { 
+                                        borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                                        backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                                        color: themeColors.text
+                                    },
                                     error ? { borderColor: Colors.brand.error } : null
                                 ]}
                                 keyboardType="numeric"
@@ -102,7 +111,7 @@ export default function ResetOTP() {
                                 onChangeText={(text) => handleInputChange(text, index)}
                                 onKeyPress={(e) => handleKeyPress(e, index)}
                                 autoFocus={index === 0}
-                                selectionColor={Colors.brand.primary}
+                                selectionColor={themeColors.primary}
                             />
                         ))}
                     </View>
@@ -110,14 +119,14 @@ export default function ResetOTP() {
                     {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
                     <TouchableOpacity 
-                        style={[styles.button, mutation.isPending && styles.buttonDisabled]} 
+                        style={[styles.button, mutation.isPending && styles.buttonDisabled, { backgroundColor: themeColors.primary }]} 
                         onPress={handleVerify}
                         disabled={mutation.isPending}
                     >
                         {mutation.isPending ? (
                             <ActivityIndicator color={Colors.brand.darkGreen} />
                         ) : (
-                            <Text style={styles.buttonText}>Verify Code</Text>
+                            <Text style={[styles.buttonText, { color: Colors.brand.darkGreen }]}>Verify Code</Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -131,7 +140,6 @@ export default function ResetOTP() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.brand.background,
   },
   background: {
     ...StyleSheet.absoluteFillObject,
@@ -147,7 +155,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.brand.surface,
     borderRadius: 20,
   },
   content: {
@@ -163,12 +170,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: Colors.brand.text,
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.brand.textMuted,
     marginBottom: 40,
     lineHeight: 24,
   },
@@ -182,16 +187,12 @@ const styles = StyleSheet.create({
     width: 48,
     height: 56,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
     borderRadius: 12,
-    backgroundColor: Colors.brand.surface,
-    color: Colors.brand.text,
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   button: {
-    backgroundColor: Colors.brand.primary,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -202,7 +203,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: Colors.brand.darkGreen,
     fontSize: 16,
     fontWeight: 'bold',
   },
